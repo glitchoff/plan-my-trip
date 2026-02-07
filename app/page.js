@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import BackgroundSlider from "./components/BackgroundSlider";
 import { useLanguage } from "./context/LanguageContext";
 
 // Mock Data
@@ -75,7 +76,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+    <div className="min-h-screen text-gray-900 font-sans">
+      <BackgroundSlider />
       {/* Navbar */}
 
 
@@ -88,7 +90,7 @@ export default function Home() {
               {t('heroTitle').split("Starts")[1] || "Starts Here"}
             </span>
           </h1>
-          <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-500 mb-10">
+          <p className="mt-4 max-w-2xl mx-auto text-xl text-white drop-shadow-md font-medium mb-10">
             {t('heroSubtitle')}
           </p>
 
@@ -138,7 +140,7 @@ export default function Home() {
       </section>
 
       {/* Discount Section */}
-      <section className="py-10 bg-blue-50">
+      <section className="py-10 bg-blue-50/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('discounts')}</h2>
           <div className="flex justify-center gap-4 flex-wrap">
@@ -165,7 +167,7 @@ export default function Home() {
 
       {/* Results Section */}
       {results && (
-        <section id="results" className="py-20 bg-white">
+        <section id="results" className="py-20 bg-white/80 backdrop-blur-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
@@ -291,7 +293,7 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 pt-16 pb-8">
+      <footer className="bg-white/80 backdrop-blur-md border-t border-gray-100 pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div>

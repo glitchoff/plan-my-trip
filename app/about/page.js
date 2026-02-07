@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import BackgroundSlider from "../components/BackgroundSlider";
 
 export default function About() {
     const stats = [
@@ -29,7 +30,8 @@ export default function About() {
     ];
 
     return (
-        <div className="bg-white min-h-screen">
+        <div className="min-h-screen">
+            <BackgroundSlider />
             {/* Hero Section */}
             <div className="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32">
                 <Image
@@ -63,7 +65,7 @@ export default function About() {
             </div>
 
             {/* Values Section */}
-            <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8 mb-32">
+            <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8 mb-32 bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-sm">
                 <div className="mx-auto max-w-2xl lg:mx-0">
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Our Values</h2>
                     <p className="mt-6 text-lg leading-8 text-gray-600">
@@ -88,7 +90,7 @@ export default function About() {
             </div>
 
             {/* Team Section */}
-            <div className="bg-gray-50 py-24 sm:py-32 rounded-3xl mx-4 mb-20">
+            <div className="bg-white/80 backdrop-blur-md py-24 sm:py-32 rounded-3xl mx-4 mb-20 shadow-sm">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="mx-auto max-w-2xl lg:mx-0">
                         <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Meet the Team</h2>
@@ -119,7 +121,7 @@ export default function About() {
                     </button>
                 </div>
             </div>
-            <footer className="bg-gray-900 border-t border-gray-800 pt-16 pb-8 text-white">
+            <footer className="bg-gray-900/90 backdrop-blur-md border-t border-gray-800 pt-16 pb-8 text-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
                         <div>

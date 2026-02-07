@@ -1,4 +1,5 @@
 "use client";
+import BackgroundSlider from "../components/BackgroundSlider";
 
 export default function Wishlist() {
     // Mock Wishlist Data
@@ -22,8 +23,9 @@ export default function Wishlist() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="min-h-screen pt-20">
+            <BackgroundSlider />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg mt-4">
                 <h1 className="text-3xl font-bold text-gray-900 mb-8">My Wishlist</h1>
 
                 {wishlistItems.length === 0 ? (
