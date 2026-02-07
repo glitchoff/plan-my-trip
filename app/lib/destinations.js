@@ -21,10 +21,11 @@ export const destinations = [
             },
             {
                 name: "City Palace",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Mubarak_Mahal%2C_City_Palace%2C_Jaipur.jpg",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGN2rvi6DT6yPxHy3QHEKwsi0NPNWlTVCJ8g&s",
+                // image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/City_Palace%2C_Jaipur.jpg/800px-City_Palace%2C_Jaipur.jpg",
                 description: "A complex of courtyards, gardens, and buildings right in the center of the Old City."
             },
-             {
+            {
                 name: "Jantar Mantar",
                 image: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Jantar_Mantar_Jaipur.jpg",
                 description: "A collection of nineteen architectural astronomical instruments."
@@ -72,7 +73,7 @@ export const destinations = [
             }
         ]
     },
-     {
+    {
         id: "hampi",
         name: "Hampi",
         country: "India",
@@ -98,12 +99,12 @@ export const destinations = [
             },
             {
                 name: "Elephant Stables",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Elephant_Stables_Hampi.jpg",
+                 image:"https://s7ap1.scene7.com/is/image/incredibleindia/elephant-stable-hampi-karnataka-3-attr-hero?qlt=82&ts=1726721346689",
                 description: "A long building with a row of domed chambers which were used to 'park' the royal elephants."
             },
             {
                 name: "Matanga Hill",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Hampi_Matanga_Hill.jpg",
+                 image:"https://thewandertherapy.com/wp-content/uploads/2024/10/24.matanga-hill-hampi-the-wander-therapy.jpg",
                 description: "The highest point in Hampi offering the best view of the entire landscape."
             }
         ]
@@ -121,12 +122,12 @@ export const destinations = [
         placesToVisit: [
             {
                 name: "Kashi Vishwanath Temple",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Kashi_Vishwanath_Temple_Banaras.jpg",
+                image:"https://www.amritara.co.in/_next/image?url=https%3A%2F%2Famritaracms.cinuniverse.com%2Fimg%2Fpost%2Fimage_2025-03-12-07-44-13_67d13b4d87593.jpg&w=1920&q=75",
                 description: "One of the most famous Hindu temples dedicated to Lord Shiva."
             },
             {
                 name: "Dashashwamedh Ghat",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Dashashwamedh_Ghat_Ganga_Aarti.jpg",
+               image:"https://www.varanasiguru.com/wp-content/uploads/2021/03/Dashashwamedh-Ghat.jpg",
                 description: "The main ghat on the Ganga River, famous for the evening Ganga Aarti."
             },
             {
@@ -136,12 +137,12 @@ export const destinations = [
             },
             {
                 name: "Sarnath",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Dhamek_Stupa_Sarnath.jpg",
+               image:"https://www.agoda.com/wp-content/uploads/2023/10/3-Dhamekh-Stupa-Sarnath-India-Buddhist-Circuit.jpg",
                 description: "Where Gautama Buddha first taught the Dharma."
             },
-             {
+            {
                 name: "Manikarnika Ghat",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Manikarnika_Ghat_2013-03-08.jpg",
+                image:"https://cdn.getyourguide.com/img/tour/507d9e404184eab54fc7b3c583cac6c5384d5128eb651a66e03174323fb77d15.jpeg/145.jpg",
                 description: "The primary cremation ghat in Varanasi, implying the cycle of life and death."
             }
         ]
@@ -162,17 +163,17 @@ export const destinations = [
             },
             {
                 name: "Jallianwala Bagh",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Jallianwala_Bagh_Memorial.jpg",
+                 image:"https://s7ap1.scene7.com/is/image/incredibleindia/jallianwala-bagh-amritsar-punjab-1-attr-hero?qlt=82&ts=1726662275638",
                 description: "A historic garden and memorial of national importance."
             },
             {
                 name: "Wagah Border",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Wagah_Border_Ceremony.jpg",
+              image:"https://www.trawell.in/admin/images/upload/597529728Amritsar_Wagah_Border_Main.jpg",
                 description: "Famous for the daily Beating Retreat ceremony between India and Pakistan."
             },
             {
                 name: "Partition Museum",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Partition_Museum_Amritsar.jpg",
+               image:"https://assets.bwbx.io/images/users/iqjWHBFdfxIU/i_is2hSgAWMI/v0/-1x-1.webp",
                 description: "The world's first museum dedicated to the Partition of 1947."
             },
             {
@@ -198,22 +199,22 @@ export const destinations = [
             },
             {
                 name: "Kapila Theertham",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Kapila_Theertham.jpg",
+               image:"https://avathioutdoors.gumlet.io/travelGuide/dev/tirupati_P1121.jpg",
                 description: "A famous Saivite temple and holy water spring at the foot of Tirumala Hills."
             },
             {
                 name: "Talakona Waterfalls",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Talakona_waterfalls_3.jpg",
+               image:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Talakona_Waterfalls_near_Tirupati_India.jpg/250px-Talakona_Waterfalls_near_Tirupati_India.jpg",
                 description: "The highest waterfall in the Andhra Pradesh state."
             },
             {
                 name: "Chandragiri Fort",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Chandragiri_Fort_View.jpg",
+               image:"https://s7ap1.scene7.com/is/image/incredibleindia/chandragiri-fort-tirupati-andhra-pradesh-1-new-attr-hero?qlt=82&ts=1742149835282",
                 description: "A historical fort dating back to the 11th century."
             },
-             {
+            {
                 name: "TTD Gardens",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Tirumala_Park.jpg",
+                image:"https://content.jdmagicbox.com/comp/tirupati/j8/9999px877.x877.141218185212.u5j8/catalogue/ttd-gardens-tirupathi-ho-tirupati-parks-0080cml.jpg",
                 description: "Ornamental, landscape and flower gardens supplying flowers to the temples."
             }
         ]
@@ -236,7 +237,7 @@ export const destinations = [
             },
             {
                 name: "Solang Valley",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Solang_Valley_Manali.jpg",
+                image:"https://upload.wikimedia.org/wikipedia/commons/f/f1/Solang_Valley_%2CManali%2C_Himachal_Pardes%2C_India.JPG",
                 description: "Famous for adventure sports like parachuting, paragliding, skating and zorbing."
             },
             {
@@ -272,7 +273,7 @@ export const destinations = [
             },
             {
                 name: "Mall Road",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/The_Mall_Shimla.jpg",
+                 image:"https://discoverkullumanali.in/wp-content/uploads/2020/01/Aerial-view-of-mall-road-of-Manali-town.jpg",
                 description: "The main street in Shimla, constructed during British colonial rule."
             },
             {
@@ -280,9 +281,9 @@ export const destinations = [
                 image: "https://upload.wikimedia.org/wikipedia/commons/5/50/Jakhu_Temple_Shimla.jpg",
                 description: "An ancient temple in Shimla, dedicated to the Hindu deity Hanuman."
             },
-             {
+            {
                 name: "Kalka-Shimla Railway",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Kalka_Shimla_Railway.jpg",
+               image:"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/fe/c9/77/photo0jpg.jpg?w=1200&h=-1&s=1",
                 description: "A UNESCO World Heritage Site, this toy train offers a scenic journey."
             },
             {
@@ -298,17 +299,17 @@ export const destinations = [
         country: "India",
         category: "mountain",
         description: "A region in Indian Himalayas, known for its stark landscapes and Buddhist monasteries.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Pangong_Tso_Lake_Ladakh.jpg",
+       image:"https://i0.wp.com/lahimalaya.com/wp-content/uploads/2019/08/Ladakh-trip.jpg?fit=960%2C640&ssl=1",
         price: "₹30,000",
         placesToVisit: [
             {
                 name: "Pangong Lake",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Pangong_Tso_Lake_Ladakh.jpg",
+                image:"https://static.toiimg.com/photo/msid-79549873,width-96,height-65.cms",
                 description: "A high grassland lake, famous for its changing colors."
             },
             {
                 name: "Nubra Valley",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Nubra_Valley_View.jpg",
+                 image:"https://endeavorladakh.com/wp-content/uploads/2025/08/Nubra-Valley-Ladakh.jpg",
                 description: "Known for its orchards, scenic vistas, Bactrian camels and monasteries."
             },
             {
@@ -318,12 +319,12 @@ export const destinations = [
             },
             {
                 name: "Magnetic Hill",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Magnetic_Hill_Leh.jpg",
+                 image:"https://goldenwheels.in/wp-content/uploads/2024/11/magnetic-hill_leh_golden_wheels-1.png",
                 description: "A gravity hill located near Leh."
             },
-             {
+            {
                 name: "Shanti Stupa",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Shanti_Stupa_Leh.jpg",
+                image:"https://s7ap1.scene7.com/is/image/incredibleindia/shanti-stupa-leh-ladakh-1-attr-hero?qlt=82&ts=1726667857753",
                 description: "A Buddhist white-domed stupa on a hilltop in Chanspa."
             }
         ]
@@ -336,22 +337,22 @@ export const destinations = [
         country: "India",
         category: "beach",
         description: "Famous for its pristine beaches, vibrant nightlife, and Portuguese heritage.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Baga_Beach_Goa.jpg",
+        image:"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/33/fc/f0/goa.jpg?w=1200&h=700&s=1",
         price: "₹15,000",
         placesToVisit: [
             {
                 name: "Baga Beach",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Baga_Beach_Goa.jpg",
+               image:"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/3e/36/95/baga-sea-beach.jpg?w=800&h=-1&s=1",
                 description: "One of the most popular beaches in North Goa, known for water sports and nightlife."
             },
             {
                 name: "Fort Aguada",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Fort_Aguada_Lighthouse.jpg",
+               image:"https://www.fabhotels.com/blog/wp-content/uploads/2019/06/Aguada-Fort_600.jpg",
                 description: "A 17th-century Portuguese fort and lighthouse overlooking the Arabian Sea."
             },
             {
                 name: "Dudhsagar Falls",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Dudhsagar_Falls_Goa.jpg",
+                image:"https://res.klook.com/images/w_1200,h_630,c_fill,q_65/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/p0vxsq830pa8famawc4f/Dudhsagar:WaterfallJeepSafariDayTrip-KlookIndia.jpg",
                 description: "A majestic four-tiered waterfall located on the Mandovi River."
             },
             {
@@ -361,7 +362,7 @@ export const destinations = [
             },
             {
                 name: "Calangute Beach",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Calangute_Beach_Goa.jpg",
+               image:"https://s7ap1.scene7.com/is/image/incredibleindia/calangute-beach-goa-7-musthead-hero?qlt=82&ts=1742168166188",
                 description: "Known as the 'Queen of Beaches', it's the largest beach in North Goa."
             }
         ]
@@ -382,7 +383,7 @@ export const destinations = [
             },
             {
                 name: "Cellular Jail",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Cellular_Jail_Port_Blair.jpg",
+                 image:"https://images.assettype.com/nationalherald/2020-08/dbcc7f7f-e8cf-49f6-a932-a648c12376fd/cellular_jail.jpg",
                 description: "A colonial prison in the Andaman and Nicobar Islands, now a national memorial monument."
             },
             {
@@ -392,12 +393,12 @@ export const destinations = [
             },
             {
                 name: "Elephant Beach",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Elephant_Beach_Havelock.jpg",
+              image:"https://www.havelockislandbeachresort.com/storage/havelock-island-1-1.png",
                 description: "Famous for coral reefs and water sports activities like snorkeling."
             },
             {
                 name: "Baratang Island",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Mud_Volcano_Baratang.jpg",
+               image:"https://www.industraveller.com/wp-content/uploads/2019/05/honeymoon-packages-havelock-island.jpg",
                 description: "Known for the mud volcanoes and limestone caves."
             }
         ]
@@ -418,22 +419,22 @@ export const destinations = [
             },
             {
                 name: "Mahabaleshwar Temple",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Mahabaleshwar_Temple_Gokarna.jpg",
+              image:"https://hblimg.mmtcdn.com/content/hubble/img/Mahabaleshwar/mmt/activities/m_activities_mahabaleshwar_temple_l_556_832.jpg",
                 description: "A 4th-century CE Hindu temple dedicated to Lord Shiva."
             },
-             {
+            {
                 name: "Kudle Beach",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Kudle_Beach_Gokarna.jpg",
+                image:"https://gokarnatourism.co.in/images/places-to-visit/header/kudle-beach-gokarna-indian-tourism-entry-fee-timings-holidays-reviews-header.jpg",
                 description: "One of the most popular beaches in Gokarna, perfect for swimming."
             },
             {
                 name: "Paradise Beach",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Paradise_Beach_Gokarna.jpg",
+               image:"https://simbaseatrips.com/wp-content/uploads/2023/07/paradise-beach-featured.jpg",
                 description: "A secluded beach accessible only by boat or hiking."
             },
             {
                 name: "Half Moon Beach",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Half_Moon_Beach_Gokarna.jpg",
+                image:"https://kalavadyfarmstay.com/wp-content/uploads/2023/02/Half_Moon_Beach.jpg",
                 description: "A small, beautiful beach shaped like a half-moon."
             }
         ]
@@ -459,7 +460,7 @@ export const destinations = [
                 image: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Munnar_Tea_Plantations.jpg",
                 description: "A hill station famous for its tea plantations and misty mountains."
             },
-             {
+            {
                 name: "Periyar National Park",
                 image: "https://upload.wikimedia.org/wikipedia/commons/6/68/Periyar_National_Park.jpg",
                 description: "A protected area known for its elephants and scenic lake."
@@ -505,14 +506,14 @@ export const destinations = [
                 image: "https://commons.wikimedia.org/wiki/Special:FilePath/Garjiya_Devi_Temple.jpg",
                 description: "A famous Devi temple located in the Garjiya village near Ramnagar."
             },
-             {
+            {
                 name: "Corbett Museum",
                 image: "https://commons.wikimedia.org/wiki/Special:FilePath/Corbett_Museum.jpg",
                 description: "A heritage bungalow of Edward James Jim Corbett."
             }
         ]
     },
-     {
+    {
         id: "kaziranga",
         name: "Kaziranga",
         country: "India",
@@ -567,7 +568,8 @@ export const destinations = [
             },
             {
                 name: "Louvre Museum",
-                image: "https://upload.wikimedia.org/wikipedia/commons/6/66/Louvre_Museum_Wikimedia_Commons.jpg",
+                // image: "https://upload.wikimedia.org/wikipedia/commons/6/66/Louvre_Museum_Wikimedia_Commons.jpg",
+                image:"https://www.franceguide.info/wp-content/uploads/sites/18/paris-louvre-pyramid-hd.jpg",
                 description: "The world's largest art museum and a historic monument in Paris."
             },
             {
@@ -577,7 +579,7 @@ export const destinations = [
             },
             {
                 name: "Notre-Dame Cathedral",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Notre_Dame_de_Paris_2013-05-31.jpg",
+              image:"https://www.frasershospitality.com/en/locations/france/paris/fraser-suites-le-claridge-champs-elysees-paris/city-guide/notre-dame-cathedral-a-symbol-of-resilience-and-rebirth/_jcr_content/root/container/column_controller/column-1-wrapper/image_201548793_copy.coreimg.jpeg/1734451807962/notre-dame-being-rebuilt.jpeg",
                 description: "A medieval Catholic cathedral on the Île de la Cité."
             },
             {
@@ -598,17 +600,17 @@ export const destinations = [
         placesToVisit: [
             {
                 name: "Senso-ji Temple",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Kaminarimon_Sensoji.jpg",
+                image:"https://cdn.cheapoguides.com/wp-content/uploads/sites/2/2020/05/sensoji-temple-iStock-1083328636-1024x600.jpg",
                 description: "Tokyo's oldest temple, located in Asakusa."
             },
             {
                 name: "Shibuya Crossing",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Shibuya_Crossing_Tokyo.jpg",
+               image:"https://as1.ftcdn.net/v2/jpg/01/27/56/66/1000_F_127566600_Am95Uk2KSH51ykzk5syVYr43kt725BZ5.jpg",
                 description: "The world's busiest pedestrian crossing."
             },
             {
                 name: "Tokyo Skytree",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Tokyo_Skytree_2014.jpg",
+                 image:"https://upload.wikimedia.org/wikipedia/commons/8/84/Tokyo_Skytree_2014_%E2%85%A2.jpg",
                 description: "A broadcasting and observation tower, creating the skyline of Tokyo."
             },
             {
@@ -616,7 +618,7 @@ export const destinations = [
                 image: "https://upload.wikimedia.org/wikipedia/commons/0/05/Meiji_Jingu_Shrine.jpg",
                 description: "Shinto shrine dedicated to Emperor Meiji and his wife."
             },
-             {
+            {
                 name: "Akihabara",
                 image: "https://upload.wikimedia.org/wikipedia/commons/9/97/Akihabara_Electric_Town.jpg",
                 description: "Famous for its many electronics shops and anime culture."
@@ -634,17 +636,17 @@ export const destinations = [
         placesToVisit: [
             {
                 name: "Uluwatu Temple",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Uluwatu_Temple_Bali.jpg",
+                image:"https://yachtsourcing.com/wp-content/uploads/DJI_0377_1300.jpg",
                 description: "A Balinese sea temple perched on a steep cliff."
             },
             {
                 name: "Ubud Monkey Forest",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Monkey_Forest_Ubud.jpg",
+           image:"https://monkeyforestubud.com/wp-content/uploads/2023/09/banner-4-1.jpg?x16351",
                 description: "A sanctuary and natural habitat of the Balinese long-tailed monkey."
             },
             {
                 name: "Tegalalang Rice Terrace",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Tegalalang_Rice_Terrace.jpg",
+                 image:"https://cdn.prod.website-files.com/66fab24d6dde4d79b3b50865/67de721a9834260c076e97be_Tegallalang%20Rice%20Terraces.webp",
                 description: "Famous for its beautiful scenes of rice paddies involving the subak system."
             },
             {
@@ -652,9 +654,9 @@ export const destinations = [
                 image: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Tanah_Lot_Bali.jpg",
                 description: "A rock formation home to the ancient Hindu pilgrimage temple Pura Tanah Lot."
             },
-             {
+            {
                 name: "Seminyak Beach",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Seminyak_Beach_Bali.jpg",
+                image:"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/4b/11/f0/the-seminyak-beach-resort.jpg?w=900&h=500&s=1",
                 description: "A mixed tourist residential area on the west coast of Bali."
             }
         ]
@@ -665,7 +667,8 @@ export const destinations = [
         country: "International",
         category: "city",
         description: "Known for luxury shopping, ultramodern architecture and lively nightlife.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Dubai_Skylines_at_night_%28Pexels_3787839%29.jpg",
+        // image: "https://commons.wikimedia.org/wiki/Special:FilePath/Dubai_Skylines_at_night_%28Pexels_3787839%29.jpg",
+        image:"https://dubai-immo.com/wp-content/uploads/2025/04/dubai-safe.webp",
         price: "₹80,000",
         placesToVisit: [
             {
@@ -701,7 +704,8 @@ export const destinations = [
         country: "International",
         category: "beach",
         description: "Famous for its whitewashed houses, blue domes, and stunning sunsets.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Santorini_Oia_Sunset.jpg",
+        // image: "https://commons.wikimedia.org/wiki/Special:FilePath/Santorini_Oia_Sunset.jpg",
+        image:"https://media.cntraveller.com/photos/611be9bb69410e829d87e0c2/16:9/w_2560%2Cc_limit/Blue-domed-church-along-caldera-edge-in-Oia-Santorini-greece-conde-nast-traveller-11aug17-iStock.jpg",
         price: "₹1,40,000",
         placesToVisit: [
             {
