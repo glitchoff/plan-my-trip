@@ -29,7 +29,9 @@ export default function RootLayout({ children }) {
         <LanguageProvider>
           <AuthProvider>
             <Navbar />
-            {children}
+            <main className="pt-16">
+              {children}
+            </main>
           </AuthProvider>
         </LanguageProvider>
       </body>
