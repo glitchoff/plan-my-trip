@@ -61,7 +61,7 @@ export async function GET(request) {
         }
 
         // Transform the data to match our internal schema
-        const buses = (data.serviceDetailsList || []).map(transformBusData);
+        const buses = (data.serviceDetailsList || []).map((service, index) => transformBusData(service, index));
 
         return NextResponse.json({
             success: true,
@@ -128,9 +128,10 @@ function parseDateToISO(dateStr) {
 /**
  * Transform AbhiBus service object to our standard Bus object
  */
-function transformBusData(service) {
+function transformBusData(service, index) {
     return {
-        id: service.serviceKey,
+        id: `${service.serviceKey}-${index}`, // Make key unique for UI
+        serviceKey: service.serviceKey, // Preserve original ID
         operatorName: service.travelerAgentName,
         busType: service.busTypeName,
         departure: {
