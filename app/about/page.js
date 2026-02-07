@@ -78,12 +78,12 @@ export default function About() {
                         { name: 'Transparency', description: 'No hidden fees, no surprise charges. What you see is what you pay.', icon: '🔍' },
                         { name: 'Innovation', description: 'We constantly push boundaries to bring you the best travel tech.', icon: '💡' },
                     ].map((value) => (
-                        <div key={value.name} className="relative pl-9">
-                            <dt className="inline font-semibold text-gray-900">
-                                <span className="absolute left-1 top-1 h-5 w-5 text-indigo-600">{value.icon}</span>
+                        <div key={value.name} className="relative pl-16 bg-gray-50 p-6 rounded-2xl hover:bg-gray-100 transition-colors">
+                            <dt className="text-lg font-bold text-gray-900">
+                                <span className="absolute left-6 top-6 h-8 w-8 text-2xl">{value.icon}</span>
                                 {value.name}
                             </dt>
-                            <dd className="inline">{`: ${value.description}`}</dd>
+                            <dd className="mt-2 text-base leading-7 text-gray-600">{value.description}</dd>
                         </div>
                     ))}
                 </div>

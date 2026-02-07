@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
         <LanguageProvider>
           <AuthProvider>
             <Navbar />
-            <main className="relative z-10">
+            <main className="relative z-10 pt-16">
               {children}
             </main>
           </AuthProvider>

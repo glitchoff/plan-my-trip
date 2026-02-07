@@ -3,36 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import BackgroundSlider from "./components/BackgroundSlider";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "./context/LanguageContext";
-
-// Mock Data
-const TRANSPORT_MODES = [
-  { id: "flight", name: "Flight", icon: "✈️", baseRate: 12, speed: 800 }, // ₹/km, km/h
-  { id: "train", name: "Train", icon: "🚆", baseRate: 2, speed: 120 },
-  { id: "bus", name: "Bus", icon: "🚌", baseRate: 1.5, speed: 80 },
-  { id: "cab", name: "Cab", icon: "🚖", baseRate: 10, speed: 60 },
-];
-
-const MOCK_HOTELS = {
-  best: {
-    name: "Grand Luxury Plaza",
-    rating: 4.8,
-    price: 15000,
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1000",
-  },
-  cheapest: {
-    name: "Cozy Budget Inn",
-    rating: 4.2,
-    price: 2500,
-    image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&q=80&w=1000",
-  },
-};
 
 export default function Home() {
   const { t } = useLanguage();
+  const router = useRouter();
   const [source, setSource] = useState("");
   const [destination, setDestination] = useState("");
-  const [results, setResults] = useState(null);
+  const [travelDate, setTravelDate] = useState(new Date().toISOString().split('T')[0]);
+  const [duration, setDuration] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const handlePlanTrip = (e) => {
@@ -40,39 +20,17 @@ export default function Home() {
     if (!source || !destination) return;
 
     setLoading(true);
-    // Simulate API call/processing
-    setTimeout(() => {
-      // Mock distance calculation (random for demo)
-      const distance = Math.floor(Math.random() * 500) + 100; // 100-600km
 
-      const tripCosts = TRANSPORT_MODES.map((mode) => ({
-        ...mode,
-        cost: Math.round(distance * mode.baseRate),
-        duration: Math.round((distance / mode.speed) * 60), // minutes
-      }));
+    // Construct query params
+    const params = new URLSearchParams({
+      source,
+      destination,
+      date: travelDate,
+      duration: duration.toString(),
+    });
 
-      setResults({
-        distance,
-        costs: tripCosts,
-        hotels: MOCK_HOTELS,
-      });
-      setLoading(false);
-    }, 1500);
-  };
-
-  // Discount Logic
-  const [profession, setProfession] = useState("none");
-  const calculateDiscount = (price) => {
-    switch (profession) {
-      case "student": return Math.round(price * 0.85); // 15% off
-      case "military": return Math.round(price * 0.80); // 20% off
-      case "senior": return Math.round(price * 0.90); // 10% off
-      default: return price;
-    }
-  };
-
-  const addToWishlist = (item) => {
-    alert(`Added ${item.name} to wishlist!`);
+    // Navigate to results page
+    router.push(`/results?${params.toString()}`);
   };
 
   return (
@@ -95,41 +53,76 @@ export default function Home() {
           </p>
 
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 p-2 md:p-4">
-            <form onSubmit={handlePlanTrip} className="flex flex-col md:flex-row gap-4 items-center">
-              <div className="relative flex-1 w-full">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  📍
+            <form onSubmit={handlePlanTrip} className="flex flex-col gap-6">
+              {/* Row 1: Locations */}
+              <div className="flex flex-col md:flex-row gap-4 items-center">
+                <div className="relative flex-1 w-full">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    📍
+                  </div>
+                  <input
+                    type="text"
+                    className="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all"
+                    placeholder={t('whereFrom')}
+                    value={source}
+                    onChange={(e) => setSource(e.target.value)}
+                    required
+                  />
                 </div>
-                <input
-                  type="text"
-                  className="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all"
-                  placeholder={t('whereFrom')}
-                  value={source}
-                  onChange={(e) => setSource(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="hidden md:block text-gray-300">➜</div>
-              <div className="relative flex-1 w-full">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  🗺️
+                <div className="hidden md:block text-gray-300">➜</div>
+                <div className="relative flex-1 w-full">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    🗺️
+                  </div>
+                  <input
+                    type="text"
+                    className="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all"
+                    placeholder={t('whereTo')}
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    required
+                  />
                 </div>
-                <input
-                  type="text"
-                  className="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all"
-                  placeholder={t('whereTo')}
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  required
-                />
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-xl hover-lift hover-glow transition-all shadow-lg hover:shadow-blue-500/30 disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {loading ? t('planning') : t('planTrip')}
-              </button>
+
+              {/* Row 2: Date, Duration, Submit */}
+              <div className="flex flex-col md:flex-row gap-4 items-center">
+                <div className="relative flex-1 w-full" onClick={() => document.getElementById('dateInput').showPicker()}>
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    📅
+                  </div>
+                  <input
+                    id="dateInput"
+                    type="date"
+                    className="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+                    value={travelDate}
+                    min={new Date().toISOString().split('T')[0]}
+                    onChange={(e) => setTravelDate(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="relative w-full md:w-32">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    ⏳
+                  </div>
+                  <input
+                    type="number"
+                    min="1"
+                    className="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all"
+                    placeholder="Days"
+                    value={duration}
+                    onChange={(e) => setDuration(parseInt(e.target.value) || 1)}
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-xl hover-lift hover-glow transition-all shadow-lg hover:shadow-blue-500/30 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {loading ? t('planning') : t('planTrip')}
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -291,7 +284,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
       {/* Footer */}
       <footer className="bg-white/80 backdrop-blur-md border-t border-gray-100 pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -321,4 +313,5 @@ export default function Home() {
     </div>
   );
 }
+
 

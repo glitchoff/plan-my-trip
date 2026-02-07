@@ -1,14 +1,30 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import LanguageSelector from "./LanguageSelector";
 import { useLanguage } from "../context/LanguageContext";
+import { supabase } from "../lib/supabaseClient";
+import ProfileDrop from "./ProfileDrop";
 
 export default function Navbar() {
     const { t } = useLanguage();
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+    };
 
     return (
-        <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100">
+        <nav className="fixed w-full z-50 bg-white/60 backdrop-blur-xl shadow-sm border-b border-white/20 supports-[backdrop-filter]:bg-white/60">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex-shrink-0 flex items-center">
@@ -35,11 +51,15 @@ export default function Navbar() {
 
                         <div className="flex items-center gap-4">
                             <LanguageSelector />
-                            <Link href="/login">
-                                <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30">
-                                    {t('signIn')}
-                                </button>
-                            </Link>
+                            {user ? (
+                                <ProfileDrop user={user} />
+                            ) : (
+                                <Link href="/login">
+                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30">
+                                        {t('signIn')}
+                                    </button>
+                                </Link>
+                            )}
                         </div>
                     </div>
 
