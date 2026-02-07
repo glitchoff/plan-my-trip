@@ -112,7 +112,7 @@ export default function TripPlannerForm() {
         });
 
         // Navigate to results page
-        router.push(`/results?${params.toString()}`);
+        router.push(`/results/bus?${params.toString()}`);
     };
 
     return (
