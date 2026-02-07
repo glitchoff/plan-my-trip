@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { Bus, Train, Map, MessageCircle, Plane, ArrowRight } from "lucide-react";
+import { Bus, Train, Map, MessageCircle, Plane, ArrowRight, Calendar } from "lucide-react";
+
 
 function ResultsTabs() {
     const pathname = usePathname();
@@ -17,6 +18,7 @@ function ResultsTabs() {
     const tabs = [
         { name: "Bus", path: "/results/bus", icon: Bus },
         { name: "Trains", path: "/results/trains", icon: Train },
+        { name: "Itinerary", path: "/results/itinerary", icon: Calendar },
         { name: "Best Route", path: "/results/best-route", icon: Map },
         { name: "AI Chat", path: "/results/ai-chat", icon: MessageCircle },
         { name: "Flight", path: "/results/flight", icon: Plane },
@@ -89,6 +91,7 @@ function ResultsTabs() {
 export default function ResultsLayout({ children }) {
     const pathname = usePathname();
     const isAIChat = pathname?.includes("/results/ai-chat");
+
 
     return (
         <div className={`min-h-screen bg-base-200 ${isAIChat ? "" : ""}`}>

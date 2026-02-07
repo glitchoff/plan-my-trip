@@ -2,6 +2,8 @@ export const destinations = [
     // India - Historical & Heritage
     {
         id: "jaipur",
+        latitude: 26.9124,
+        longitude: 75.7873,
         name: "Jaipur",
         country: "India",
         category: "historical",
@@ -39,6 +41,8 @@ export const destinations = [
     },
     {
         id: "agra",
+        latitude: 27.1767,
+        longitude: 78.0081,
         name: "Agra",
         country: "India",
         category: "historical",
@@ -75,6 +79,8 @@ export const destinations = [
     },
     {
         id: "hampi",
+        latitude: 15.3350,
+        longitude: 76.4600,
         name: "Hampi",
         country: "India",
         category: "historical",
@@ -113,6 +119,8 @@ export const destinations = [
     // India - Religious & Spiritual
     {
         id: "varanasi",
+        latitude: 25.3176,
+        longitude: 82.9739,
         name: "Varanasi",
         country: "India",
         category: "religious",
@@ -149,6 +157,8 @@ export const destinations = [
     },
     {
         id: "amritsar",
+        latitude: 31.6340,
+        longitude: 74.8723,
         name: "Amritsar",
         country: "India",
         category: "religious",
@@ -185,6 +195,8 @@ export const destinations = [
     },
     {
         id: "tirupati",
+        latitude: 13.6288,
+        longitude: 79.4192,
         name: "Tirupati",
         country: "India",
         category: "religious",
@@ -223,6 +235,8 @@ export const destinations = [
     // India - Hill Stations & Mountains
     {
         id: "manali",
+        latitude: 32.2432,
+        longitude: 77.1892,
         name: "Manali",
         country: "India",
         category: "mountain",
@@ -259,6 +273,8 @@ export const destinations = [
     },
     {
         id: "shimla",
+        latitude: 31.1048,
+        longitude: 77.1734,
         name: "Shimla",
         country: "India",
         category: "mountain",
@@ -295,6 +311,8 @@ export const destinations = [
     },
     {
         id: "ladakh",
+        latitude: 34.1526,
+        longitude: 77.5770,
         name: "Ladakh",
         country: "India",
         category: "mountain",
@@ -333,6 +351,8 @@ export const destinations = [
     // India - Beaches & Coastal
     {
         id: "goa",
+        latitude: 15.4909,
+        longitude: 73.8278,
         name: "Goa",
         country: "India",
         category: "beach",
@@ -369,6 +389,8 @@ export const destinations = [
     },
     {
         id: "andaman",
+        latitude: 11.6234,
+        longitude: 92.7265,
         name: "Andaman Islands",
         country: "India",
         category: "beach",
@@ -405,6 +427,8 @@ export const destinations = [
     },
     {
         id: "gokarna",
+        latitude: 14.5479,
+        longitude: 74.3188,
         name: "Gokarna",
         country: "India",
         category: "beach",
@@ -443,6 +467,8 @@ export const destinations = [
     // India - Nature & Wildlife
     {
         id: "kerala",
+        latitude: 9.4981,
+        longitude: 76.3388,
         name: "Kerala",
         country: "India",
         category: "nature",
@@ -479,6 +505,8 @@ export const destinations = [
     },
     {
         id: "jim-corbett",
+        latitude: 29.3919,
+        longitude: 79.1318,
         name: "Jim Corbett",
         country: "India",
         category: "nature",
@@ -515,6 +543,8 @@ export const destinations = [
     },
     {
         id: "kaziranga",
+        latitude: 26.5775,
+        longitude: 93.1711,
         name: "Kaziranga",
         country: "India",
         category: "nature",
@@ -554,6 +584,8 @@ export const destinations = [
     // International
     {
         id: "paris",
+        latitude: 48.8566,
+        longitude: 2.3522,
         name: "Paris",
         country: "International",
         category: "city",
@@ -591,6 +623,8 @@ export const destinations = [
     },
     {
         id: "tokyo",
+        latitude: 35.6762,
+        longitude: 139.6503,
         name: "Tokyo",
         country: "International",
         category: "city",
@@ -627,6 +661,8 @@ export const destinations = [
     },
     {
         id: "bali",
+        latitude: -8.4095,
+        longitude: 115.1889,
         name: "Bali",
         country: "International",
         category: "beach",
@@ -658,80 +694,6 @@ export const destinations = [
                 name: "Seminyak Beach",
                 image:"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/4b/11/f0/the-seminyak-beach-resort.jpg?w=900&h=500&s=1",
                 description: "A mixed tourist residential area on the west coast of Bali."
-            }
-        ]
-    },
-    {
-        id: "dubai",
-        name: "Dubai",
-        country: "International",
-        category: "city",
-        description: "Known for luxury shopping, ultramodern architecture and lively nightlife.",
-        // image: "https://commons.wikimedia.org/wiki/Special:FilePath/Dubai_Skylines_at_night_%28Pexels_3787839%29.jpg",
-        image:"https://dubai-immo.com/wp-content/uploads/2025/04/dubai-safe.webp",
-        price: "₹80,000",
-        placesToVisit: [
-            {
-                name: "Burj Khalifa",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Burj_Khalifa.jpg",
-                description: "The tallest building in the world, dominating the skyscraper-filled skyline."
-            },
-            {
-                name: "The Dubai Mall",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/The_Dubai_Mall.jpg",
-                description: "The world's largest destination for shopping, entertainment and leisure."
-            },
-            {
-                name: "Palm Jumeirah",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Palm_Jumeirah_Dubai.jpg",
-                description: "An artificial archipelago known for its glitzy hotels, posh apartment towers and upmarket global restaurants."
-            },
-            {
-                name: "Dubai Creek",
-                image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Dubai_Creek.jpg",
-                description: "A saltwater creek that separates the city into two main sections: Deira and Bur Dubai."
-            },
-            {
-                name: "Dubai Fountain",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Dubai_Fountain_Show.jpg",
-                description: "The world's largest choreographed fountain system."
-            }
-        ]
-    },
-    {
-        id: "santorini",
-        name: "Santorini",
-        country: "International",
-        category: "beach",
-        description: "Famous for its whitewashed houses, blue domes, and stunning sunsets.",
-        // image: "https://commons.wikimedia.org/wiki/Special:FilePath/Santorini_Oia_Sunset.jpg",
-        image:"https://media.cntraveller.com/photos/611be9bb69410e829d87e0c2/16:9/w_2560%2Cc_limit/Blue-domed-church-along-caldera-edge-in-Oia-Santorini-greece-conde-nast-traveller-11aug17-iStock.jpg",
-        price: "₹1,40,000",
-        placesToVisit: [
-            {
-                name: "Oia",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Santorini_Oia_Sunset.jpg",
-                description: "Coastal town famous for its whitewashed houses carved into the rugged clifftops."
-            },
-            {
-                name: "Fira",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Fira_Santorini.jpg",
-                description: "The capital of Santorini, perched on the edge of the caldera."
-            },
-            {
-                name: "Red Beach",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Red_Beach_Santorini.jpg",
-                description: "A volcanic sand beach famous for its unique red color."
-            },
-            {
-                name: "Akrotiri",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Akrotiri_Archaeological_Site.jpg",
-                description: "A Minoan Bronze Age settlement preserved in volcanic ash."
-            },
-            {
-                name: "Kamari Beach",
-                image: "https://commons.wikimedia.org/wiki/Special:FilePath/Kamari_Beach_Santorini.jpg",
-                description: "An upscale beach resort famous for its black sand beach."
             }
         ]
     }
