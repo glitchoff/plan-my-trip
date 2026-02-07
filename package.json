@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ai-sdk/openai-compatible": "^2.0.28",
+    "@ai-sdk/react": "^3.0.79",
     "@supabase/supabase-js": "^2.95.3",
+    "ai": "^6.0.77",
     "cheerio": "^1.2.0",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
@@ -19,7 +22,8 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-leaflet": "^5.0.0",
-    "user-agents": "^1.1.669"
+    "user-agents": "^1.1.669",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
