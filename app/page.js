@@ -12,12 +12,12 @@ export default function Home() {
   return (
     <div className="min-h-screen text-base-content font-sans">
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden shadow-2xl">
+      <section className="relative pt-8 pb-20 lg:pt-12 lg:pb-28 overflow-hidden shadow-2xl">
         <BackgroundSlider />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           {session?.user && (
-            <p className="text-lg text-white/80 mb-4 font-medium">
-              👋 Hello, <span className="text-primary font-bold">{session.user.name?.split(' ')[0] || 'Traveler'}</span>!
+            <p className="text-3xl md:text-4xl text-white/90 mb-4" style={{ fontFamily: 'var(--font-pacifico), cursive' }}>
+              Hello, <span className="text-primary capitalize">{session.user.name?.split(' ')[0] || 'Traveler'}</span>!
             </p>
           )}
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6">

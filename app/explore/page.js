@@ -15,7 +15,6 @@ export default function Explore() {
         { id: "religious", name: "Religious & Spiritual" },
         { id: "mountain", name: "Hill Stations & Mountains" },
         { id: "beach", name: "Beaches & Coastal" },
-        { id: "nature", name: "Nature & Wildlife" },
     ];
 
     const filteredIndiaPlaces = destinations.filter(d => d.country === "India" && d.category === activeTab);
