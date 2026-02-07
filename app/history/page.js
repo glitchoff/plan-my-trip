@@ -23,8 +23,7 @@ export default function History() {
     ];
 
     return (
-        <div className="min-h-screen pt-20">
-            <BackgroundSlider />
+        <div className="min-h-screen pt-20 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg mt-4">
                 <h1 className="text-3xl font-bold text-gray-900 mb-8">My Past Trips</h1>
 
