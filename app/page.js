@@ -14,6 +14,24 @@ export default function Home() {
   const [travelDate, setTravelDate] = useState(new Date().toISOString().split('T')[0]);
   const [duration, setDuration] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [profession, setProfession] = useState("none");
+  const [results, setResults] = useState(null);
+
+  const calculateDiscount = (price) => {
+    if (profession === "none") return price;
+    const discountMap = {
+      student: 0.15,
+      military: 0.20,
+      senior: 0.10,
+    };
+    return Math.floor(price * (1 - (discountMap[profession] || 0)));
+  };
+
+  const addToWishlist = (hotel) => {
+    // Implement wishlist functionality or use context
+    console.log("Added to wishlist:", hotel);
+    // You might want to show a toast or notification here
+  };
 
   const handlePlanTrip = (e) => {
     e.preventDefault();
