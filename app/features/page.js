@@ -37,10 +37,10 @@ export default function Features() {
     ];
 
     return (
-        <div className="min-h-screen bg-base-200 pt-32 pb-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-base-200 pt-32 pb-20 relative overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl font-extrabold text-base-content sm:text-5xl mb-4">
+                    <h1 className="text-4xl font-extrabold sm:text-5xl mb-4 text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
                         Features
                     </h1>
                     <p className="text-xl text-base-content/70">
@@ -50,16 +50,19 @@ export default function Features() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {features.map((feature, index) => (
-                        <div key={index} className="card bg-base-100 shadow-xl border border-base-300 hover:border-primary transition-colors">
+                        <div key={index} className="card bg-base-100 shadow-xl border border-base-300 hover:border-primary transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                             <div className="card-body items-center text-center">
-                                <div className="text-4xl mb-4">{feature.icon}</div>
-                                <h2 className="card-title text-2xl font-bold mb-2">{feature.title}</h2>
-                                <p>{feature.description}</p>
+                                <div className="text-5xl mb-4 drop-shadow-sm">{feature.icon}</div>
+                                <h2 className="card-title text-2xl font-bold mb-2 text-primary">{feature.title}</h2>
+                                <p className="text-base-content/80">{feature.description}</p>
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
+            {/* Decorative background elements */}
+            <div className="absolute top-0 left-0 -ml-20 -mt-20 w-80 h-80 rounded-full bg-primary/10 blur-3xl opacity-50 pointer-events-none"></div>
+            <div className="absolute bottom-0 right-0 -mr-20 -mb-20 w-96 h-96 rounded-full bg-secondary/10 blur-3xl opacity-50 pointer-events-none"></div>
         </div>
     );
 }
