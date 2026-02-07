@@ -71,9 +71,6 @@ export default function Explore() {
                                         fill
                                         className="object-cover group-hover:scale-110 transition-transform duration-500"
                                     />
-                                    <div className="absolute top-3 right-3 z-20 bg-base-100/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-base-content shadow-sm">
-                                        {place.price}
-                                    </div>
                                 </div>
                                 <div className="p-5 flex-1 flex flex-col justify-between">
                                     <div>
@@ -108,9 +105,6 @@ export default function Explore() {
                                         fill
                                         className="object-cover group-hover:scale-110 transition-transform duration-500"
                                     />
-                                     <div className="absolute top-3 right-3 z-20 bg-base-100/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-base-content shadow-sm">
-                                        {place.price}
-                                    </div>
                                 </div>
                                 <div className="p-5 flex-1 flex flex-col justify-between">
                                     <div>
