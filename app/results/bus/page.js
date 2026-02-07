@@ -27,6 +27,8 @@ function BusContent() {
     const [selectedTo, setSelectedTo] = useState(null);
     const [isSearchingFrom, setIsSearchingFrom] = useState(false);
     const [isSearchingTo, setIsSearchingTo] = useState(false);
+    const [showFromDropdown, setShowFromDropdown] = useState(false);
+    const [showToDropdown, setShowToDropdown] = useState(false);
 
     // Results State
     const [loading, setLoading] = useState(false);
@@ -46,8 +48,8 @@ function BusContent() {
         };
     };
 
-    // City Search API
-    const searchCities = async (query, setOptions, setIsSearching) => {
+    // City Search API with optional auto-select callback
+    const searchCities = async (query, setOptions, setIsSearching, autoSelectCallback = null) => {
         if (!query || query.length < 2) {
             setOptions([]);
             return;
@@ -58,6 +60,10 @@ function BusContent() {
             const data = await res.json();
             if (data.success && Array.isArray(data.results)) {
                 setOptions(data.results);
+                // Auto-select the first result if callback provided
+                if (autoSelectCallback && data.results.length > 0) {
+                    autoSelectCallback(data.results[0]);
+                }
             } else {
                 setOptions([]);
             }
@@ -76,6 +82,7 @@ function BusContent() {
         const val = e.target.value;
         setFromQuery(val);
         setSelectedFrom(null);
+        setShowFromDropdown(true);
         debouncedFromSearch(val);
     };
 
@@ -83,19 +90,38 @@ function BusContent() {
         const val = e.target.value;
         setToQuery(val);
         setSelectedTo(null);
+        setShowToDropdown(true);
         debouncedToSearch(val);
+    };
+
+    const handleFromFocus = () => {
+        setShowFromDropdown(true);
+        // If there's already a query but no options, trigger search
+        if (fromQuery.length >= 2 && fromOptions.length === 0) {
+            searchCities(fromQuery, setFromOptions, setIsSearchingFrom);
+        }
+    };
+
+    const handleToFocus = () => {
+        setShowToDropdown(true);
+        // If there's already a query but no options, trigger search
+        if (toQuery.length >= 2 && toOptions.length === 0) {
+            searchCities(toQuery, setToOptions, setIsSearchingTo);
+        }
     };
 
     const selectFrom = (city) => {
         setSelectedFrom(city);
         setFromQuery(city.name);
         setFromOptions([]);
+        setShowFromDropdown(false);
     };
 
     const selectTo = (city) => {
         setSelectedTo(city);
         setToQuery(city.name);
         setToOptions([]);
+        setShowToDropdown(false);
     };
 
     // Swap Inputs
@@ -147,7 +173,7 @@ function BusContent() {
         }
     };
 
-    // Auto-search from URL params (optional, implemented for consistency)
+    // Auto-search from URL params and auto-select top suggestion
     useEffect(() => {
         const sParam = searchParams.get("source");
         const dParam = searchParams.get("destination");
@@ -158,11 +184,19 @@ function BusContent() {
 
         if (cleanFrom && !selectedFrom) {
             setFromQuery(cleanFrom);
-            searchCities(cleanFrom, setFromOptions, setIsSearchingFrom);
+            // Auto-select the first result when loading from URL
+            searchCities(cleanFrom, setFromOptions, setIsSearchingFrom, (city) => {
+                setSelectedFrom(city);
+                setFromQuery(city.name);
+            });
         }
         if (cleanTo && !selectedTo) {
             setToQuery(cleanTo);
-            searchCities(cleanTo, setToOptions, setIsSearchingTo);
+            // Auto-select the first result when loading from URL
+            searchCities(cleanTo, setToOptions, setIsSearchingTo, (city) => {
+                setSelectedTo(city);
+                setToQuery(city.name);
+            });
         }
     }, []);
 
@@ -175,10 +209,10 @@ function BusContent() {
 
             {/* Search Interface */}
             <div className="card bg-base-100 shadow-xl border border-base-200 p-6 z-20 overflow-visible">
-                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto] gap-4 items-end relative">
+                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto] gap-4 items-start relative">
 
                     {/* From Input */}
-                    <div className="form-control relative w-full">
+                    <div className="form-control relative w-full" style={{ minHeight: '120px' }}>
                         <label className="label">
                             <span className="label-text font-semibold">From</span>
                         </label>
@@ -187,6 +221,8 @@ function BusContent() {
                                 type="text"
                                 value={fromQuery}
                                 onChange={handleFromChange}
+                                onFocus={handleFromFocus}
+                                onBlur={() => setTimeout(() => setShowFromDropdown(false), 200)}
                                 placeholder="Enter City (e.g. Hyderabad)"
                                 className="input input-bordered w-full pl-10 focus:input-primary"
                             />
@@ -195,12 +231,13 @@ function BusContent() {
                         </div>
 
                         <AnimatePresence>
-                            {fromOptions.length > 0 && !selectedFrom && (
+                            {fromOptions.length > 0 && showFromDropdown && (
                                 <motion.div
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
                                     className="absolute top-full left-0 right-0 mt-2 p-2 bg-base-100 rounded-xl shadow-2xl border border-base-200 max-h-60 overflow-y-auto z-50 grid gap-1"
+                                    style={{ top: '80px' }}
                                 >
                                     {fromOptions.map((city) => (
                                         <button
@@ -217,17 +254,38 @@ function BusContent() {
                                 </motion.div>
                             )}
                         </AnimatePresence>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSelectedFrom(null);
+                                setFromQuery("");
+                                setFromOptions([]);
+                                setShowFromDropdown(true);
+                            }}
+                            className="btn btn-sm btn-info text-white mt-2 gap-1"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                            Change Source
+                        </button>
                     </div>
 
                     {/* Swap Button */}
-                    <div className="flex justify-center pb-2">
-                        <button onClick={handleSwap} className="btn btn-circle btn-ghost btn-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 rotate-90 md:rotate-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                    <div className="hidden md:flex items-center justify-center self-center mt-[-22px]" style={{ paddingTop: '-20px' }}>
+                        <button onClick={handleSwap} className="btn btn-circle btn-primary btn-sm shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                        </button>
+                    </div>
+                    {/* Mobile Swap Button */}
+                    <div className="flex md:hidden items-center justify-center w-full">
+                        <button onClick={handleSwap} className="btn btn-circle btn-primary btn-sm shadow-lg rotate-90">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
                         </button>
                     </div>
 
                     {/* To Input */}
-                    <div className="form-control relative w-full">
+                    <div className="form-control relative w-full" style={{ minHeight: '120px' }}>
                         <label className="label">
                             <span className="label-text font-semibold">To</span>
                         </label>
@@ -236,6 +294,8 @@ function BusContent() {
                                 type="text"
                                 value={toQuery}
                                 onChange={handleToChange}
+                                onFocus={handleToFocus}
+                                onBlur={() => setTimeout(() => setShowToDropdown(false), 200)}
                                 placeholder="Enter City (e.g. Bangalore)"
                                 className="input input-bordered w-full pl-10 focus:input-primary"
                             />
@@ -244,12 +304,13 @@ function BusContent() {
                         </div>
 
                         <AnimatePresence>
-                            {toOptions.length > 0 && !selectedTo && (
+                            {toOptions.length > 0 && showToDropdown && (
                                 <motion.div
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
                                     className="absolute top-full left-0 right-0 mt-2 p-2 bg-base-100 rounded-xl shadow-2xl border border-base-200 max-h-60 overflow-y-auto z-50 grid gap-1"
+                                    style={{ top: '80px' }}
                                 >
                                     {toOptions.map((city) => (
                                         <button
@@ -266,6 +327,21 @@ function BusContent() {
                                 </motion.div>
                             )}
                         </AnimatePresence>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSelectedTo(null);
+                                setToQuery("");
+                                setToOptions([]);
+                                setShowToDropdown(true);
+                            }}
+                            className="btn btn-sm btn-info text-white mt-2 gap-1"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                            Change Destination
+                        </button>
                     </div>
 
                     {/* Date Input */}
