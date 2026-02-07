@@ -16,17 +16,17 @@ export default function Home() {
         <BackgroundSlider />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           {session?.user && (
-            <p className="text-3xl md:text-4xl text-white/90 mb-4" style={{ fontFamily: 'var(--font-pacifico), cursive' }}>
+            <p className="text-3xl md:text-4xl text-white/90 mb-4 hover:scale-105 transition-transform duration-200 cursor-default inline-block" style={{ fontFamily: 'var(--font-pacifico), cursive' }}>
               Hello, <span className="text-primary capitalize">{session.user.name?.split(' ')[0] || 'Traveler'}</span>!
             </p>
           )}
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 hover:scale-105 transition-transform duration-200 cursor-default">
             {t('heroTitle').split("Starts")[0]} <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
               {t('heroTitle').split("Starts")[1] || "Starts Here"}
             </span>
           </h1>
-          <p className="mt-4 max-w-2xl mx-auto text-xl text-white drop-shadow-md font-medium mb-10">
+          <p className="mt-4 max-w-2xl mx-auto text-xl text-white drop-shadow-md font-medium mb-10 hover:scale-105 transition-transform duration-200 cursor-default">
             {t('heroSubtitle')}
           </p>
 
