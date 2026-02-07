@@ -1,7 +1,6 @@
 import { Space_Grotesk, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import ClientLayout from "./components/ClientLayout";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 
@@ -30,11 +29,9 @@ export default function RootLayout({ children }) {
       >
         <LanguageProvider>
           <AuthProvider>
-            <Navbar />
-            <main className="relative z-10 pt-16">
+            <ClientLayout>
               {children}
-            </main>
-            <Footer />
+            </ClientLayout>
           </AuthProvider>
         </LanguageProvider>
       </body>
