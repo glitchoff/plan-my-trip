@@ -42,7 +42,7 @@ export default function RouteMap({ source, destination }) {
     ] : null;
 
     return (
-        <div className="h-64 w-full rounded-xl overflow-hidden shadow-lg border border-base-200 mt-4 relative z-0">
+        <div className="h-full w-full relative z-0">
             <MapContainer
                 center={defaultCenter}
                 zoom={defaultZoom}
