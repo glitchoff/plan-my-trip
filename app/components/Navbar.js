@@ -3,7 +3,6 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import LanguageSelector from "./LanguageSelector";
 import { useLanguage } from "../context/LanguageContext";
 import ProfileDrop from "./ProfileDrop";
 import { ThemePicker } from "./themes/ThemeController";
@@ -17,7 +16,7 @@ export default function Navbar() {
     const isActive = (path) => pathname === path;
 
     return (
-        <nav className="fixed w-full z-50 bg-base-100/60 backdrop-blur-xl shadow-sm border-b border-base-content/10 supports-[backdrop-filter]:bg-base-100/60">
+        <nav className="fixed w-full z-50 bg-base-200/80 backdrop-blur-xl shadow-sm border-b border-base-content/10 supports-[backdrop-filter]:bg-base-200/60">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex-shrink-0 flex items-center">
@@ -46,7 +45,6 @@ export default function Navbar() {
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <LanguageSelector />
                             {user ? (
                                 <ProfileDrop user={user} />
                             ) : (

@@ -27,16 +27,22 @@ export async function GET(request) {
 
         // Transform the data to a simpler format
         // The API returns an array of objects
-        const formattedResults = Array.isArray(data)
-            ? data.map(item => ({
-                id: item.id,
-                name: item.label, // "Hyderabad"
-                subtext: item.display_subtext, // "Telangana"
-                type: item.alias_type, // "City"
-                // If needed, we can include boarding points or other details
-                // boardingPoints: item.boarding_points
-            }))
-            : [];
+        const uniqueResults = new Map();
+
+        if (Array.isArray(data)) {
+            data.forEach((item) => {
+                if (item.id && !uniqueResults.has(item.id)) {
+                    uniqueResults.set(item.id, {
+                        id: item.id,
+                        name: item.label,
+                        subtext: item.display_subtext,
+                        type: item.alias_type,
+                    });
+                }
+            });
+        }
+
+        const formattedResults = Array.from(uniqueResults.values());
 
         return NextResponse.json({
             success: true,
