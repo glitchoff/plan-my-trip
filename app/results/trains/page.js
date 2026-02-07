@@ -1,294 +1,323 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLanguage } from "../../context/LanguageContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 function TrainsContent() {
     const { t } = useLanguage();
     const searchParams = useSearchParams();
-    const [loading, setLoading] = useState(true);
 
-    // Core Data
-    const source = searchParams.get("source");
-    const destination = searchParams.get("destination");
-    const travelDate = searchParams.get("date");
-    const duration = parseInt(searchParams.get("duration") || "1");
+    // Search State
+    const [sourceQuery, setSourceQuery] = useState("");
+    const [destQuery, setDestQuery] = useState("");
+    const [sourceOptions, setSourceOptions] = useState([]);
+    const [destOptions, setDestOptions] = useState([]);
+    const [selectedSource, setSelectedSource] = useState(null);
+    const [selectedDest, setSelectedDest] = useState(null);
+    const [isSearchingSource, setIsSearchingSource] = useState(false);
+    const [isSearchingDest, setIsSearchingDest] = useState(false);
 
-    // Coordinates might be passed, but we might need to re-fetch if they aren't
-    const [destCoords, setDestCoords] = useState({ lat: searchParams.get("toLat"), lon: searchParams.get("toLon") });
+    // Results State
+    const [loading, setLoading] = useState(false);
+    const [trains, setTrains] = useState([]);
+    const [hasSearched, setHasSearched] = useState(false);
+    const [error, setError] = useState(null);
 
-    // Results State - ONLY Real Data
-    const [hotels, setHotels] = useState({ best: null, cheapest: null });
-    const [trains, setTrains] = useState([]); // List of real trains
-
-    // Initial Load
-    useEffect(() => {
-        if (!source || !destination) return;
-
-        const init = async () => {
-            setLoading(true);
-            setTrains([]); // Reset
-
-            // 1. Fetch Real Train Data using Dynamic Search
-            const sCity = source.split(',')[0].trim();
-            const dCity = destination.split(',')[0].trim();
-
-            try {
-                // Fetch station codes for Source and Destination
-                const [sRes, dRes] = await Promise.all([
-                    fetch(`/api/railradar/search/stations?query=${encodeURIComponent(sCity)}`).then(r => r.json()),
-                    fetch(`/api/railradar/search/stations?query=${encodeURIComponent(dCity)}`).then(r => r.json())
-                ]);
-
-                const sStations = sRes.stations || [];
-                const dStations = dRes.stations || [];
-
-                if (sStations.length > 0 && dStations.length > 0) {
-                    console.log(`Found ${sStations.length} source stations and ${dStations.length} dest stations`);
-
-                    let foundTrains = false;
-
-                    // Smart Search: Try the top 3 source stations against top 2 destination stations
-                    // effectively 3x2 = 6 checks max. This covers "Mumbai" -> "BCT", "BDTS", "LTT" etc.
-                    const sourcesToTry = sStations.slice(0, 3);
-                    const destsToTry = dStations.slice(0, 2);
-
-                    for (const sStation of sourcesToTry) {
-                        if (foundTrains) break;
-                        for (const dStation of destsToTry) {
-                            if (foundTrains) break;
-
-                            const sCode = sStation.code;
-                            const dCode = dStation.code;
-
-                            console.log(`Checking trains from ${sStation.name} (${sCode}) to ${dStation.name} (${dCode})...`);
-
-                            try {
-                                const trainRes = await fetch(`/api/train?action=betweenStations&from=${sCode}&to=${dCode}`);
-                                const trainData = await trainRes.json();
-
-                                if (trainData.success && Array.isArray(trainData.data) && trainData.data.length > 0) {
-                                    console.log(`FOUND TRAINS! ${trainData.data.length} trains found.`);
-
-                                    const realTrains = trainData.data.map(item => {
-                                        const t = item.train_base;
-                                        return {
-                                            id: t.train_no,
-                                            name: t.train_name,
-                                            number: t.train_no,
-                                            from: t.from_stn_code,
-                                            to: t.to_stn_code,
-                                            dep: t.from_time,
-                                            arr: t.to_time,
-                                            duration: t.travel_time,
-                                            days: t.running_days,
-                                            icon: "🚆"
-                                        };
-                                    });
-                                    setTrains(realTrains);
-                                    foundTrains = true;
-                                }
-                            } catch (err) {
-                                console.warn(`Failed check for ${sCode}->${dCode}`, err);
-                            }
-                        }
-                    }
-
-                    if (!foundTrains) {
-                        console.log("No trains found after checking top station combinations.");
-                    }
-                } else {
-                    console.log("Could not find stations for", sCity, "or", dCity);
-                }
-            } catch (e) {
-                console.error("Train Search Error:", e);
-            }
-
-            // 2. Fetch Hotels (Real API)
-            // If we don't have coords from params, we need to geocode the destination first
-            let lat = destCoords.lat;
-            let lon = destCoords.lon;
-
-            if (!lat || !lon) {
-                // Quick geocode for destination if missing
-                const geoRes = await fetch(`/api/geocode?q=${encodeURIComponent(destination)}`);
-                const geoData = await geoRes.json();
-                if (geoData.features && geoData.features.length > 0) {
-                    lat = geoData.features[0].properties.lat;
-                    lon = geoData.features[0].properties.lon;
-                    setDestCoords({ lat, lon });
-                }
-            }
-
-            if (lat && lon) {
-                try {
-                    // Search for hotels within 10km radius
-                    const hotelsRes = await fetch(`/api/places?categories=accommodation.hotel&filter=circle:${lon},${lat},10000&limit=10`);
-                    const hotelsData = await hotelsRes.json();
-
-                    if (hotelsData.features && hotelsData.features.length > 0) {
-                        // Transform and sort
-                        const processedHotels = hotelsData.features.map(f => ({
-                            name: f.properties.name || "Unknown Hotel",
-                            address: f.properties.formatted,
-                            // Verify properties needed for UI
-                            rating: parseFloat((Math.random() * 2 + 3).toFixed(1)), // Mock rating 3-5 (API doesn't usually give this)
-                            price: Math.floor(Math.random() * 10000) + 2000,
-                            image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1000", // Placeholder
-                            ...f.properties
-                        }));
-
-                        processedHotels.sort((a, b) => b.rating - a.rating);
-                        const best = processedHotels[0];
-
-                        processedHotels.sort((a, b) => a.price - b.price);
-                        const cheapest = processedHotels[0];
-
-                        setHotels({ best, cheapest });
-                    }
-                } catch (e) {
-                    console.error("Failed to fetch hotels", e);
-                }
-            }
-
-            setLoading(false);
+    // Debounce Utility
+    const debounce = (func, wait) => {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
         };
-
-        init();
-    }, [source, destination, destCoords.lat, destCoords.lon]);
-
-    const addToWishlist = (item) => {
-        alert(`Added ${item.name} to wishlist!`);
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-[50vh] flex flex-col items-center justify-center">
-                <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-                <h2 className="text-2xl font-bold text-base-content">Finding the best trains...</h2>
-                <p className="text-base-content/60">Searching real-time availability...</p>
-            </div>
-        );
-    }
+    // Station Search API
+    const searchStations = async (query, setOptions, setIsSearching) => {
+        if (!query || query.length < 2) {
+            setOptions([]);
+            return;
+        }
+        setIsSearching(true);
+        try {
+            const res = await fetch(`/api/railradar/search/stations?query=${encodeURIComponent(query)}`);
+            const data = await res.json();
+            if (data.stations) {
+                setOptions(data.stations);
+            }
+        } catch (err) {
+            console.error("Station search failed", err);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    // Debounced Search Functions
+    const debouncedSourceSearch = useCallback(debounce((q) => searchStations(q, setSourceOptions, setIsSearchingSource), 300), []);
+    const debouncedDestSearch = useCallback(debounce((q) => searchStations(q, setDestOptions, setIsSearchingDest), 300), []);
+
+    // Handle Input Changes
+    const handleSourceChange = (e) => {
+        const val = e.target.value;
+        setSourceQuery(val);
+        setSelectedSource(null); // Reset selection on edit
+        debouncedSourceSearch(val);
+    };
+
+    const handleDestChange = (e) => {
+        const val = e.target.value;
+        setDestQuery(val);
+        setSelectedDest(null); // Reset selection on edit
+        debouncedDestSearch(val);
+    };
+
+    // Select Station
+    const selectSource = (station) => {
+        setSelectedSource(station);
+        setSourceQuery(`${station.name} (${station.code})`);
+        setSourceOptions([]);
+    };
+
+    const selectDest = (station) => {
+        setSelectedDest(station);
+        setDestQuery(`${station.name} (${station.code})`);
+        setDestOptions([]);
+    };
+
+    // Main Train Search
+    const handleSearch = async () => {
+        if (!selectedSource || !selectedDest) return;
+
+        setLoading(true);
+        setTrains([]);
+        setError(null);
+        setHasSearched(true);
+
+        try {
+            const res = await fetch(`/api/train?action=betweenStations&from=${selectedSource.code}&to=${selectedDest.code}`);
+            const data = await res.json();
+
+            if (data.success && Array.isArray(data.data)) {
+                const realTrains = data.data.map(item => {
+                    const t = item.train_base;
+                    return {
+                        id: t.train_no,
+                        name: t.train_name,
+                        number: t.train_no,
+                        from: t.from_stn_code,
+                        to: t.to_stn_code,
+                        dep: t.from_time,
+                        arr: t.to_time,
+                        duration: t.travel_time,
+                        days: t.running_days,
+                        icon: "🚆"
+                    };
+                });
+                setTrains(realTrains);
+            } else {
+                setTrains([]);
+            }
+        } catch (err) {
+            console.error("Train search error", err);
+            setError("Failed to fetch train details. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Initialize from URL params if available
+    useEffect(() => {
+        const sParam = searchParams.get("source");
+        const dParam = searchParams.get("destination");
+
+        const sanitize = (str) => str ? str.split(',')[0].trim() : "";
+
+        const cleanSource = sanitize(sParam);
+        const cleanDest = sanitize(dParam);
+
+        if (cleanSource && !selectedSource) {
+            setSourceQuery(cleanSource);
+            searchStations(cleanSource, setSourceOptions, setIsSearchingSource);
+        }
+        if (cleanDest && !selectedDest) {
+            setDestQuery(cleanDest);
+            searchStations(cleanDest, setDestOptions, setIsSearchingDest);
+        }
+    }, []);
+
+    // Auto-search when both stations are selected
+    useEffect(() => {
+        if (selectedSource && selectedDest) {
+            handleSearch();
+        }
+    }, [selectedSource, selectedDest]);
 
     return (
-        <div className="space-y-8 animate-fade-in">
-            {/* Real Trains Section - Only show if we found trains */}
-            {trains.length > 0 ? (
-                <div className="mb-20">
-                    <h3 className="text-2xl font-bold text-base-content mb-8">Available Trains</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                        {trains.map((train) => (
-                            <div key={train.id} className="card bg-base-100 rounded-2xl p-6 border border-base-200 hover:border-primary hover-lift shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-                                <div className="flex items-center gap-6 w-full md:w-auto">
-                                    <div className="text-4xl text-base-content">
-                                        {train.icon}
-                                    </div>
-                                    <div>
-                                        <h4 className="text-xl font-bold text-base-content">{train.name} <span className="text-sm font-normal text-base-content/60">({train.number})</span></h4>
-                                        <div className="flex flex-wrap items-center gap-4 text-sm text-base-content/70 mt-1">
-                                            <span>{train.dep}</span>
-                                            <span>➜</span>
-                                            <span>{train.arr}</span>
-                                            <span className="badge badge-ghost">{train.duration}</span>
-                                            <span className="text-xs">Runs: {train.days}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button className="btn btn-primary btn-sm w-full md:w-auto">
-                                    Check Availability
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ) : (
-                <div className="mb-20 p-12 text-center bg-base-100 rounded-2xl border border-dashed border-base-300">
-                    <div className="text-5xl mb-4">🚆</div>
-                    <h3 className="text-xl font-bold mb-2">No direct trains found</h3>
-                    <p className="text-base-content/60">We couldn't find any direct trains for this route. Try changing the date or checking for connecting trains.</p>
-                </div>
-            )}
+        <div className="space-y-8 max-w-4xl mx-auto px-4 py-8 min-h-screen">
+            <div className="text-center mb-8">
+                <h1 className="text-4xl font-bold mb-2">Find Your Train</h1>
+                <p className="text-base-content/60">Search for trains between any two stations in India</p>
+            </div>
 
-            {/* Hotel Recommendations */}
-            {hotels.best && (
-                <div>
-                    <h3 className="text-2xl font-bold text-base-content mb-8">Where to Stay</h3>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Best Hotel */}
-                        <div className="relative card-zoom shadow-2xl group hover-lift rounded-2xl overflow-hidden h-96">
-                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors z-10"></div>
-                            <img
-                                src={hotels.best.image}
-                                alt={hotels.best.name}
-                                className="absolute inset-0 w-full h-full object-cover"
+            {/* Search Interface */}
+            <div className="card bg-base-100 shadow-xl border border-base-200 p-6 z-20 overflow-visible">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+
+                    {/* Source Input */}
+                    <div className="form-control relative">
+                        <label className="label">
+                            <span className="label-text font-semibold">From Station</span>
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                value={sourceQuery}
+                                onChange={handleSourceChange}
+                                placeholder="Type city or station (e.g., Mumbai)"
+                                className="input input-bordered w-full pl-10 focus:input-primary"
                             />
-                            <div className="relative z-20 p-8 h-full flex flex-col justify-end text-white">
-                                <div className="inline-block bg-warning text-warning-content text-xs font-bold px-3 py-1 rounded-full mb-3 self-start shadow-lg">
-                                    {t('topRated')}
-                                </div>
-                                <div className="flex justify-between items-start">
-                                    <h4 className="text-3xl font-bold mb-2">{hotels.best.name}</h4>
-                                    <button onClick={() => addToWishlist(hotels.best)} className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-md transition-colors">
-                                        ❤️
-                                    </button>
-                                </div>
-
-                                <p className="text-white/70 mb-4 flex items-center gap-2">
-                                    <span className="text-warning">★★★★★</span> {hotels.best.rating}/5
-                                </p>
-                                <div className="flex items-center justify-between mt-auto">
-                                    <div>
-                                        <span className="block text-sm text-white/70">Starting from</span>
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-2xl font-bold">₹{hotels.best.price}<span className="text-base font-normal text-white/70">/night</span></span>
-                                        </div>
-                                    </div>
-                                    <button className="btn btn-neutral px-6 py-3 rounded-xl font-bold">
-                                        View Details
-                                    </button>
-                                </div>
-                            </div>
+                            <span className="absolute left-3 top-3 text-xl">🚉</span>
+                            {isSearchingSource && <span className="loading loading-spinner loading-xs absolute right-3 top-3 text-primary"></span>}
                         </div>
 
-                        {/* Cheapest Hotel */}
-                        {hotels.cheapest && (
-                            <div className="relative card-zoom shadow-2xl group hover-lift rounded-2xl overflow-hidden h-96">
-                                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors z-10"></div>
-                                <img
-                                    src={hotels.cheapest.image}
-                                    alt={hotels.cheapest.name}
-                                    className="absolute inset-0 w-full h-full object-cover"
-                                />
-                                <div className="relative z-20 p-8 h-full flex flex-col justify-end text-white">
-                                    <div className="inline-block bg-success text-success-content text-xs font-bold px-3 py-1 rounded-full mb-3 self-start shadow-lg">
-                                        {t('bestValue')}
-                                    </div>
-                                    <div className="flex justify-between items-start">
-                                        <h4 className="text-3xl font-bold mb-2">{hotels.cheapest.name}</h4>
-                                        <button onClick={() => addToWishlist(hotels.cheapest)} className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-md transition-colors">
-                                            ❤️
+                        {/* Source Suggestions */}
+                        <AnimatePresence>
+                            {sourceOptions.length > 0 && !selectedSource && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="absolute top-full left-0 right-0 mt-2 p-2 bg-base-100 rounded-xl shadow-2xl border border-base-200 max-h-60 overflow-y-auto z-50 grid gap-1"
+                                >
+                                    {sourceOptions.map((stn) => (
+                                        <button
+                                            key={stn.code}
+                                            onClick={() => selectSource(stn)}
+                                            className="btn btn-ghost btn-sm justify-start font-normal h-auto py-2"
+                                        >
+                                            <span className="badge badge-primary badge-outline mr-2 w-16 shrink-0">{stn.code}</span>
+                                            {stn.name}
                                         </button>
-                                    </div>
-                                    <p className="text-white/70 mb-4 flex items-center gap-2">
-                                        <span className="text-warning">★★★★☆</span> {hotels.cheapest.rating}/5
-                                    </p>
-                                    <div className="flex items-center justify-between mt-auto">
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Destination Input */}
+                    <div className="form-control relative">
+                        <label className="label">
+                            <span className="label-text font-semibold">To Station</span>
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                value={destQuery}
+                                onChange={handleDestChange}
+                                placeholder="Type city or station (e.g., Delhi)"
+                                className="input input-bordered w-full pl-10 focus:input-primary"
+                            />
+                            <span className="absolute left-3 top-3 text-xl">🏁</span>
+                            {isSearchingDest && <span className="loading loading-spinner loading-xs absolute right-3 top-3 text-primary"></span>}
+                        </div>
+
+                        {/* Dest Suggestions */}
+                        <AnimatePresence>
+                            {destOptions.length > 0 && !selectedDest && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="absolute top-full left-0 right-0 mt-2 p-2 bg-base-100 rounded-xl shadow-2xl border border-base-200 max-h-60 overflow-y-auto z-50 grid gap-1"
+                                >
+                                    {destOptions.map((stn) => (
+                                        <button
+                                            key={stn.code}
+                                            onClick={() => selectDest(stn)}
+                                            className="btn btn-ghost btn-sm justify-start font-normal h-auto py-2"
+                                        >
+                                            <span className="badge badge-secondary badge-outline mr-2 w-16 shrink-0">{stn.code}</span>
+                                            {stn.name}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                    <button
+                        onClick={handleSearch}
+                        disabled={!selectedSource || !selectedDest || loading}
+                        className="btn btn-primary px-8"
+                    >
+                        {loading ? <span className="loading loading-dots"></span> : "Search Trains ➜"}
+                    </button>
+                </div>
+            </div>
+
+            {/* Results Section */}
+            {hasSearched && (
+                <div className="space-y-4">
+                    <div className="divider">Results</div>
+
+                    {trains.length > 0 ? (
+                        <div className="grid grid-cols-1 gap-4">
+                            {trains.map((train) => (
+                                <div key={train.id} className="card bg-base-100 rounded-2xl p-6 border border-base-200 hover:border-primary hover-lift shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 transition-all">
+                                    <div className="flex items-center gap-6 w-full md:w-auto">
+                                        <div className="text-4xl text-base-content bg-base-200 p-3 rounded-xl">
+                                            {train.icon}
+                                        </div>
                                         <div>
-                                            <span className="block text-sm text-white/70">Starting from</span>
-                                            <div className="flex items-baseline gap-2">
-                                                <span className="text-2xl font-bold">₹{hotels.cheapest.price}<span className="text-base font-normal text-white/70">/night</span></span>
+                                            <h4 className="text-xl font-bold text-base-content flex items-center gap-2">
+                                                {train.name}
+                                                <span className="badge badge-neutral text-xs">{train.number}</span>
+                                            </h4>
+                                            <div className="flex flex-wrap items-center gap-4 text-sm text-base-content/70 mt-2">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="font-semibold">{train.dep}</span>
+                                                    <span className="text-xs">{train.from}</span>
+                                                </div>
+                                                <span className="text-base-content/30">➜</span>
+                                                <div className="flex items-center gap-1">
+                                                    <span className="font-semibold">{train.arr}</span>
+                                                    <span className="text-xs">{train.to}</span>
+                                                </div>
+                                                <div className="badge badge-ghost gap-1">
+                                                    ⏱ {train.duration}
+                                                </div>
+                                                <div className="text-xs opacity-60">
+                                                    Runs: {train.days}
+                                                </div>
                                             </div>
                                         </div>
-                                        <button className="btn btn-neutral px-6 py-3 rounded-xl font-bold">
-                                            View Details
-                                        </button>
                                     </div>
                                 </div>
+                            ))}
+                        </div>
+                    ) : (
+                        !loading && (
+                            <div className="text-center py-12 bg-base-100 rounded-2xl border border-dashed border-base-300">
+                                <div className="text-6xl mb-4">🚄</div>
+                                <h3 className="text-xl font-bold">No direct trains found</h3>
+                                <p className="text-base-content/60 max-w-md mx-auto mt-2">
+                                    We couldn't find any direct trains between <span className="font-semibold">{selectedSource?.name}</span> and <span className="font-semibold">{selectedDest?.name}</span>.
+                                </p>
                             </div>
-                        )}
-                    </div>
+                        )
+                    )}
+
+                    {error && (
+                        <div className="alert alert-error">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span>{error}</span>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
@@ -297,7 +326,7 @@ function TrainsContent() {
 
 export default function TrainsPage() {
     return (
-        <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center"><div className="loading loading-spinner loading-lg"></div></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="loading loading-spinner loading-lg text-primary"></div></div>}>
             <TrainsContent />
         </Suspense>
     );
