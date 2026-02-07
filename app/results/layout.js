@@ -24,13 +24,29 @@ function ResultsTabs() {
     const source = searchParams.get("source") || "Origin";
     const destination = searchParams.get("destination") || "Destination";
     const date = searchParams.get("date");
+    const isAIChat = pathname?.includes("/results/ai-chat");
+
+    if (isAIChat) {
+        return (
+            <div className="bg-base-100 shadow-sm border-b border-base-content/10 sticky top-0 z-30">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+                    <Link
+                        href={`/results/best-route${createQueryString()}`}
+                        className="btn btn-ghost gap-2 text-base-content hover:bg-base-200"
+                    >
+                        <span>←</span> Back to Results
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-base-100 shadow-sm border-b border-base-200 sticky top-16 z-30">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Quick Trip Info */}
                 <div className="py-4 flex flex-wrap items-center justify-between gap-4 border-b border-base-200/50">
-                    <div className="flex items-center gap-2 text-lg font-bold">
+                    <div className="flex items-center gap-2 text-lg font-bold text-base-content">
                         <span>{source.split(',')[0]}</span>
                         <span className="text-base-content/40">➜</span>
                         <span>{destination.split(',')[0]}</span>
@@ -63,8 +79,18 @@ function ResultsTabs() {
 }
 
 export default function ResultsLayout({ children }) {
+    // We need to access pathname here too to conditionally remove pt-16
+    // Since ResultsTabs is used inside, we can just check children or use a wrapper? 
+    // Wait, usePathname hook is available here since "use client" is at top.
+    // Actually, createQueryString etc are inside ResultsTabs. usePathname is imported at top.
+    
+    // BUT ResultsLayout function itself doesn't use hooks currently.
+    // Let's make sure it does.
+    const pathname = usePathname();
+    const isAIChat = pathname?.includes("/results/ai-chat");
+
     return (
-        <div className="min-h-screen bg-base-200 pt-16">
+        <div className={`min-h-screen bg-base-200 ${isAIChat ? "pt-0" : "pt-16"}`}>
             <Suspense fallback={<div className="h-32 bg-base-100 animate-pulse"></div>}>
                 <ResultsTabs />
             </Suspense>
