@@ -115,31 +115,6 @@ export default function About() {
                     </button>
                 </div>
             </div>
-            <footer className="bg-base-200/90 backdrop-blur-md border-t border-base-300 pt-16 pb-8 text-base-content">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-                        <div>
-                            <h5 className="font-bold text-lg mb-4">Company</h5>
-                            <ul className="space-y-2 text-base-content/60">
-                                <li><a href="#" className="hover:text-primary">About</a></li>
-                                <li><a href="#" className="hover:text-primary">Careers</a></li>
-                                <li><a href="#" className="hover:text-primary">Press</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h5 className="font-bold text-lg mb-4">Support</h5>
-                            <ul className="space-y-2 text-base-content/60">
-                                <li><a href="#" className="hover:text-primary">Help Center</a></li>
-                                <li><a href="#" className="hover:text-primary">Terms of Service</a></li>
-                                <li><a href="#" className="hover:text-primary">Privacy Policy</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div className="pt-8 border-t border-base-300 text-center text-base-content/50">
-                        &copy; {new Date().getFullYear()} PlanMyTrip. All rights reserved.
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 }
