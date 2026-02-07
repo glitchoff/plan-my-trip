@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import PlacesToVisit from "../../components/PlacesToVisit";
+
 import { Sparkles } from "lucide-react";
 
 export default function BestRouteResults() {
@@ -34,14 +34,7 @@ export default function BestRouteResults() {
                 </div>
             </div>
 
-            {/* Places to Visit Section */}
-            <div className="bg-base-100 rounded-2xl p-6 shadow-sm border border-base-200">
-                <PlacesToVisit 
-                    destinationLat={toLat} 
-                    destinationLon={toLon} 
-                    destinationName={destinationCity}
-                />
-            </div>
+
         </div>
     );
 }
