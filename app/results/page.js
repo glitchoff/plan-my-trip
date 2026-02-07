@@ -32,7 +32,6 @@ function ResultsContent() {
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(true);
     const [results, setResults] = useState(null);
-    const [profession, setProfession] = useState(searchParams.get("profession") || "none");
 
     const source = searchParams.get("source");
     const destination = searchParams.get("destination");
@@ -63,14 +62,7 @@ function ResultsContent() {
         return () => clearTimeout(timer);
     }, [source, destination]);
 
-    const calculateDiscount = (price) => {
-        switch (profession) {
-            case "student": return Math.round(price * 0.85);
-            case "military": return Math.round(price * 0.80);
-            case "senior": return Math.round(price * 0.90);
-            default: return price;
-        }
-    };
+
 
     const addToWishlist = (item) => {
         alert(`Added ${item.name} to wishlist!`);
@@ -95,7 +87,7 @@ function ResultsContent() {
                 {/* Header Summary */}
                 <div className="bg-base-100 rounded-2xl shadow-sm p-8 mb-8 border border-base-200">
                     <div className="text-center">
-                        <h2 className="text-3xl font-extrabold text-base-content sm:text-4xl">
+                        <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
                             Trip Options: {source} to {destination}
                         </h2>
                         <p className="mt-4 text-lg text-base-content/60">
@@ -108,29 +100,6 @@ function ResultsContent() {
                     </div>
                 </div>
 
-                {/* Discount Toggle */}
-                <section className="mb-12 text-center">
-                    <h2 className="text-xl font-bold text-base-content mb-4">{t('discounts')}</h2>
-                    <div className="flex justify-center gap-4 flex-wrap">
-                        {["none", "student", "military", "senior"].map((p) => (
-                            <button
-                                key={p}
-                                onClick={() => setProfession(p)}
-                                className={`px-6 py-2 rounded-full capitalize font-semibold hover-lift transition-all ${profession === p
-                                    ? "btn btn-primary shadow-lg"
-                                    : "btn btn-ghost bg-base-100 text-base-content hover:bg-base-200"
-                                    }`}
-                            >
-                                {t(p === "none" ? "generalPublic" : p)}
-                            </button>
-                        ))}
-                    </div>
-                    {profession !== "none" && (
-                        <p className="mt-4 text-success font-medium animate-bounce">
-                            {t('unlockDiscount')}
-                        </p>
-                    )}
-                </section>
 
                 {/* Transport Costs */}
                 <div className="mb-20">
@@ -189,10 +158,7 @@ function ResultsContent() {
                                     <div>
                                         <span className="block text-sm text-white/70">Starting from</span>
                                         <div className="flex items-baseline gap-2">
-                                            {profession !== "none" && (
-                                                <span className="text-lg text-white/50 line-through">₹{results.hotels.best.price}</span>
-                                            )}
-                                            <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.best.price)}<span className="text-base font-normal text-white/70">/night</span></span>
+                                            <span className="text-2xl font-bold">₹{results.hotels.best.price}<span className="text-base font-normal text-white/70">/night</span></span>
                                         </div>
                                     </div>
                                     <button className="btn btn-neutral px-6 py-3 rounded-xl font-bold">
@@ -227,10 +193,7 @@ function ResultsContent() {
                                     <div>
                                         <span className="block text-sm text-white/70">Starting from</span>
                                         <div className="flex items-baseline gap-2">
-                                            {profession !== "none" && (
-                                                <span className="text-lg text-white/50 line-through">₹{results.hotels.cheapest.price}</span>
-                                            )}
-                                            <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.cheapest.price)}<span className="text-base font-normal text-white/70">/night</span></span>
+                                            <span className="text-2xl font-bold">₹{results.hotels.cheapest.price}<span className="text-base font-normal text-white/70">/night</span></span>
                                         </div>
                                     </div>
                                     <button className="btn btn-neutral px-6 py-3 rounded-xl font-bold">
