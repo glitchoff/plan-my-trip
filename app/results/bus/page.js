@@ -269,9 +269,14 @@ function BusContent() {
     }, []);
 
     const BookLink = ({ from, to, date }) => {
-        if (!from || !to) return <button className="btn btn-sm btn-disabled w-full">Select Details</button>;
+        if (!from || !to || !date) return <button className="btn btn-sm btn-disabled w-full">Select Details</button>;
 
-        const url = `https://www.abhibus.com/bus-tickets/${from.name.replace(/\s+/g, '-')}-to-${to.name.replace(/\s+/g, '-')}-bus-tickets/${date}`;
+        // Format date to DD-MM-YYYY for AbhiBus URL
+        const [year, month, day] = date.split('-');
+        const formattedDate = `${day}-${month}-${year}`;
+
+        const url = `https://www.abhibus.com/bus_search/${from.name}/${from.id}/${to.name}/${to.id}/${formattedDate}/O`;
+
         return (
             <a
                 href={url}
