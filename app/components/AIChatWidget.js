@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { MessageCircle, Bot, Globe } from "lucide-react";
 
 export default function AIChatWidget() {
     const [isHovered, setIsHovered] = useState(false);
@@ -14,8 +15,9 @@ export default function AIChatWidget() {
                     isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
                 }`}
             >
-                <div className="bg-base-100 text-base-content px-4 py-3 rounded-2xl shadow-xl border border-primary/20 whitespace-nowrap">
-                    <p className="text-sm font-medium">Need any assistance for your trip? 🌍</p>
+                <div className="bg-base-100 text-base-content px-4 py-3 rounded-2xl shadow-xl border border-primary/20 whitespace-nowrap flex items-center gap-2">
+                    <p className="text-sm font-medium">Need any assistance for your trip?</p>
+                    <Globe className="w-4 h-4 text-primary" />
                 </div>
                 {/* Triangle pointer */}
                 <div className="absolute -bottom-2 right-6 w-4 h-4 bg-base-100 border-r border-b border-primary/20 transform rotate-45"></div>
@@ -28,7 +30,7 @@ export default function AIChatWidget() {
                 onMouseLeave={() => setIsHovered(false)}
                 className="flex items-center gap-3 bg-gradient-to-r from-primary to-secondary text-primary-content px-5 py-3 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
             >
-                <span className="text-2xl">🤖</span>
+                <Bot className="w-6 h-6" />
                 <span className="font-semibold">AI Chat</span>
             </Link>
         </div>
