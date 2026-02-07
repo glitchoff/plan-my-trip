@@ -1,7 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./globals.css";
+import "./globals.css";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 
@@ -32,6 +34,7 @@ export default function RootLayout({ children }) {
             <main className="relative z-10 pt-16">
               {children}
             </main>
+            <Footer />
           </AuthProvider>
         </LanguageProvider>
       </body>

@@ -32,7 +32,6 @@ function ResultsContent() {
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(true);
     const [results, setResults] = useState(null);
-    const [profession, setProfession] = useState(searchParams.get("profession") || "none");
 
     const source = searchParams.get("source");
     const destination = searchParams.get("destination");
@@ -63,14 +62,7 @@ function ResultsContent() {
         return () => clearTimeout(timer);
     }, [source, destination]);
 
-    const calculateDiscount = (price) => {
-        switch (profession) {
-            case "student": return Math.round(price * 0.85);
-            case "military": return Math.round(price * 0.80);
-            case "senior": return Math.round(price * 0.90);
-            default: return price;
-        }
-    };
+
 
     const addToWishlist = (item) => {
         alert(`Added ${item.name} to wishlist!`);
@@ -107,30 +99,6 @@ function ResultsContent() {
                         </p>
                     </div>
                 </div>
-
-                {/* Discount Toggle */}
-                <section className="mb-12 text-center">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">{t('discounts')}</h2>
-                    <div className="flex justify-center gap-4 flex-wrap">
-                        {["none", "student", "military", "senior"].map((p) => (
-                            <button
-                                key={p}
-                                onClick={() => setProfession(p)}
-                                className={`px-6 py-2 rounded-full capitalize font-semibold hover-lift transition-all ${profession === p
-                                    ? "bg-blue-600 text-white shadow-lg hover-glow"
-                                    : "bg-white text-gray-700 hover:bg-gray-100"
-                                    }`}
-                            >
-                                {t(p === "none" ? "generalPublic" : p)}
-                            </button>
-                        ))}
-                    </div>
-                    {profession !== "none" && (
-                        <p className="mt-4 text-green-600 font-medium animate-bounce">
-                            {t('unlockDiscount')}
-                        </p>
-                    )}
-                </section>
 
                 {/* Transport Costs */}
                 <div className="mb-20">
@@ -189,10 +157,7 @@ function ResultsContent() {
                                     <div>
                                         <span className="block text-sm text-gray-300">Starting from</span>
                                         <div className="flex items-baseline gap-2">
-                                            {profession !== "none" && (
-                                                <span className="text-lg text-gray-400 line-through">₹{results.hotels.best.price}</span>
-                                            )}
-                                            <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.best.price)}<span className="text-base font-normal text-gray-300">/night</span></span>
+                                            <span className="text-2xl font-bold">₹{results.hotels.best.price}<span className="text-base font-normal text-gray-300">/night</span></span>
                                         </div>
                                     </div>
                                     <button className="bg-white text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors">
@@ -227,10 +192,7 @@ function ResultsContent() {
                                     <div>
                                         <span className="block text-sm text-gray-300">Starting from</span>
                                         <div className="flex items-baseline gap-2">
-                                            {profession !== "none" && (
-                                                <span className="text-lg text-gray-400 line-through">₹{results.hotels.cheapest.price}</span>
-                                            )}
-                                            <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.cheapest.price)}<span className="text-base font-normal text-gray-300">/night</span></span>
+                                            <span className="text-2xl font-bold">₹{results.hotels.cheapest.price}<span className="text-base font-normal text-gray-300">/night</span></span>
                                         </div>
                                     </div>
                                     <button className="bg-white text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors">
