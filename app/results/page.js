@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ResultsRedirect() {
+function ResultsRedirectContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -14,7 +14,15 @@ export default function ResultsRedirect() {
 
     return (
         <div className="min-h-screen flex items-center justify-center">
-            <div className="loading loading-spinner loading-lg text-primary"></div>
+            <span className="loading loading-spinner loading-lg text-primary"></span>
         </div>
+    );
+}
+
+export default function ResultsRedirect() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><span className="loading loading-spinner loading-lg text-primary"></span></div>}>
+            <ResultsRedirectContent />
+        </Suspense>
     );
 }
