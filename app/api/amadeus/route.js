@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 
-const CLIENT_ID = process.env.AMADEUS_CLIENT_ID;
-const CLIENT_SECRET = process.env.AMADEUS_CLIENT_SECRET;
+// Support both naming conventions to be robust
+const CLIENT_ID = process.env.AMADEUS_CLIENT_ID || process.env.AMADEUS_KEY;
+const CLIENT_SECRET = process.env.AMADEUS_CLIENT_SECRET || process.env.AMADEUS_SECRET;
 const BASE_URL = 'https://test.api.amadeus.com'; // Use test environment for free tier
 
 // Simple in-memory cache for token (Note: This resets on server restart/re-deploy)
@@ -12,6 +13,11 @@ async function getAccessToken() {
     const now = Date.now();
     if (cachedToken && now < tokenExpiry) {
         return cachedToken;
+    }
+
+    // Check if keys are present
+    if (!CLIENT_ID || !CLIENT_SECRET) {
+        throw new Error('Amadeus API keys are missing. Please check .env.local');
     }
 
     try {
@@ -31,7 +37,8 @@ async function getAccessToken() {
             tokenExpiry = now + (data.expires_in * 1000) - 300000;
             return cachedToken;
         } else {
-            throw new Error('Failed to retrieve access token');
+            console.error('Amadeus Token Error Response:', data);
+            throw new Error(`Failed to retrieve access token: ${data.error_description || data.error || 'Unknown error'}`);
         }
     } catch (error) {
         console.error('Amadeus Auth Error:', error);
@@ -69,12 +76,18 @@ export async function GET(request) {
             }
 
             // https://developers.amadeus.com/self-service/category/air/api-doc/flight-offers-search/api-reference
-            const url = `${BASE_URL}/v2/shopping/flight-offers?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${date}&adults=1&nonStop=false&max=20`;
+            const url = `${BASE_URL}/v2/shopping/flight-offers?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${date}&adults=1&nonStop=false&max=20&currencyCode=INR`;
 
             const res = await fetch(url, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
+
+            // Check for API errors in the data response
+            if (data.errors) {
+                console.error("Amadeus API Logic Error:", data.errors);
+            }
+
             return NextResponse.json(data);
         }
 

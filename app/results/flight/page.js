@@ -9,10 +9,18 @@ function FlightContent() {
     const { t } = useLanguage();
     const searchParams = useSearchParams();
 
+    // Helper to get local date string YYYY-MM-DD
+    const getLocalDate = () => {
+        const d = new Date();
+        const offset = d.getTimezoneOffset();
+        const local = new Date(d.getTime() - (offset * 60 * 1000));
+        return local.toISOString().split('T')[0];
+    };
+
     // Search State
     const [sourceQuery, setSourceQuery] = useState("");
     const [destQuery, setDestQuery] = useState("");
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]); // Default to today
+    const [date, setDate] = useState(getLocalDate()); // Default to today local time
     const [sourceOptions, setSourceOptions] = useState([]);
     const [destOptions, setDestOptions] = useState([]);
     const [selectedSource, setSelectedSource] = useState(null);
@@ -126,6 +134,9 @@ function FlightContent() {
                         stops: itinerary.segments.length - 1
                     };
                 });
+
+                // Sort by stops (ascending)
+                mappedFlights.sort((a, b) => a.stops - b.stops);
 
                 setFlights(mappedFlights);
             } else if (data.errors) {
@@ -281,7 +292,7 @@ function FlightContent() {
                             type="date"
                             className="input input-bordered w-full"
                             value={date}
-                            min={new Date().toISOString().split('T')[0]}
+                            min={getLocalDate()}
                             onChange={(e) => setDate(e.target.value)}
                         />
                     </div>
