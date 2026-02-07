@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, useCallback, useMemo } from "react";
+import { useState, useEffect, Suspense, useCallback, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bus, MapPin, ArrowRight, AlertCircle } from "lucide-react";
@@ -20,6 +20,13 @@ function BusContent() {
     const [fromQuery, setFromQuery] = useState("");
     const [toQuery, setToQuery] = useState("");
     const [date, setDate] = useState(getLocalDate());
+
+    // Cache
+    const resultsCache = useRef({});
+
+    // Alternatives State
+    const [fromAlternatives, setFromAlternatives] = useState([]);
+    const [toAlternatives, setToAlternatives] = useState([]);
 
     // Autocomplete State
     const [fromOptions, setFromOptions] = useState([]);
@@ -124,6 +131,10 @@ function BusContent() {
     };
 
     const selectFrom = (city) => {
+        // Save other options as alternatives
+        const alts = fromOptions.filter(o => o.id !== city.id);
+        setFromAlternatives(alts);
+
         setSelectedFrom(city);
         setFromQuery(city.name);
         setFromOptions([]);
@@ -131,27 +142,71 @@ function BusContent() {
     };
 
     const selectTo = (city) => {
+        // Save other options as alternatives
+        const alts = toOptions.filter(o => o.id !== city.id);
+        setToAlternatives(alts);
+
         setSelectedTo(city);
         setToQuery(city.name);
         setToOptions([]);
         setShowToDropdown(false);
     };
 
+    const selectFromAlternative = (city) => {
+        console.log("Selecting alternative:", city);
+        // Add current selected to alternatives list if it exists
+        let newAlts = [...fromAlternatives];
+        if (selectedFrom) {
+            newAlts = [...newAlts, selectedFrom];
+        }
+        // Remove new selected from alternatives
+        newAlts = newAlts.filter(c => c.id !== city.id);
+
+        setFromAlternatives(newAlts);
+        setSelectedFrom(city);
+        setFromQuery(city.name);
+    }
+
+    const selectToAlternative = (city) => {
+        let newAlts = [...toAlternatives];
+        if (selectedTo) {
+            newAlts = [...newAlts, selectedTo];
+        }
+        newAlts = newAlts.filter(c => c.id !== city.id);
+
+        setToAlternatives(newAlts);
+        setSelectedTo(city);
+        setToQuery(city.name);
+    }
+
+
     // Swap Inputs
     const handleSwap = () => {
         const tempQuery = fromQuery;
         const tempSelected = selectedFrom;
+        const tempAlts = fromAlternatives;
 
         setFromQuery(toQuery);
         setSelectedFrom(selectedTo);
+        setFromAlternatives(toAlternatives);
 
         setToQuery(tempQuery);
         setSelectedTo(tempSelected);
+        setToAlternatives(tempAlts);
     };
 
     // Main Bus Search
-    const handleSearch = async () => {
+    const handleSearch = useCallback(async () => {
         if (!selectedFrom || !selectedTo || !date) return;
+
+        const cacheKey = `${selectedFrom.id}-${selectedTo.id}-${date}`;
+
+        // Instant load from cache
+        if (resultsCache.current[cacheKey]) {
+            setBuses(resultsCache.current[cacheKey]);
+            setHasSearched(true);
+            return;
+        }
 
         setLoading(true);
         setBuses([]);
@@ -165,7 +220,7 @@ function BusContent() {
 
             if (data.success && Array.isArray(data.buses)) {
                 let results = data.buses;
-
+                resultsCache.current[cacheKey] = results;
                 setBuses(results);
             } else {
                 setError(data.error || "No buses found");
@@ -176,7 +231,15 @@ function BusContent() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [selectedFrom, selectedTo, date]);
+
+    // Auto-Search Effect
+    useEffect(() => {
+        if (selectedFrom && selectedTo && date) {
+            handleSearch();
+        }
+    }, [selectedFrom, selectedTo, date, handleSearch]);
+
 
     // Auto-search from URL params and auto-select top suggestion
     useEffect(() => {
@@ -204,6 +267,22 @@ function BusContent() {
             });
         }
     }, []);
+
+    const BookLink = ({ from, to, date }) => {
+        if (!from || !to) return <button className="btn btn-sm btn-disabled w-full">Select Details</button>;
+
+        const url = `https://www.abhibus.com/bus-tickets/${from.name.replace(/\s+/g, '-')}-to-${to.name.replace(/\s+/g, '-')}-bus-tickets/${date}`;
+        return (
+            <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-sm btn-primary w-full"
+            >
+                Book Now
+            </a>
+        );
+    };
 
     return (
         <div className="bg-base-200 min-h-screen text-base-content">
@@ -238,6 +317,22 @@ function BusContent() {
                                 {isSearchingFrom && <span className="loading loading-spinner loading-xs absolute right-3 top-3 text-primary"></span>}
                             </div>
 
+                            {/* Alternatives Chips */}
+                            {fromAlternatives.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {fromAlternatives.slice(0, 3).map((alt) => (
+                                        <button
+                                            key={alt.id}
+                                            onClick={() => selectFromAlternative(alt)}
+                                            className="badge badge-outline badge-sm hover:badge-primary cursor-pointer transition-colors"
+                                        >
+                                            {alt.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+
                             <AnimatePresence>
                                 {fromOptions.length > 0 && showFromDropdown && (
                                     <motion.div
@@ -259,24 +354,24 @@ function BusContent() {
                                                 </div>
                                             </button>
                                         ))}
-
                                     </motion.div>
                                 )}
                             </AnimatePresence>
                             <button
                                 type="button"
                                 onClick={() => {
-                                    setSelectedFrom(null);
-                                    setFromQuery("");
-                                    setFromOptions([]);
+                                    // Don't fully clear, just re-trigger dropdown to show options?
+                                    // Or just let them type.
+                                    // User said "choose alternative source".
+                                    // Let's make it just focus the input.
+                                    setSelectedFrom(null); // Clear selection to allow typing
+                                    // But keep query?
+                                    // setFromQuery(""); // clearing query makes sense if they want to change
                                     setShowFromDropdown(true);
                                 }}
-                                className="btn btn-sm btn-info text-white mt-2 gap-1"
+                                className="btn btn-sm btn-link text-info no-underline hover:underline p-0 h-auto min-h-0 mt-2 self-start"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                </svg>
-                                Change Source
+                                Choose alternative source
                             </button>
                         </div>
 
@@ -314,6 +409,21 @@ function BusContent() {
                                 {isSearchingTo && <span className="loading loading-spinner loading-xs absolute right-3 top-3 text-primary"></span>}
                             </div>
 
+                            {/* Alternatives Chips */}
+                            {toAlternatives.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {toAlternatives.slice(0, 3).map((alt) => (
+                                        <button
+                                            key={alt.id}
+                                            onClick={() => selectToAlternative(alt)}
+                                            className="badge badge-outline badge-sm hover:badge-primary cursor-pointer transition-colors"
+                                        >
+                                            {alt.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
                             <AnimatePresence>
                                 {toOptions.length > 0 && showToDropdown && (
                                     <motion.div
@@ -342,16 +452,12 @@ function BusContent() {
                                 type="button"
                                 onClick={() => {
                                     setSelectedTo(null);
-                                    setToQuery("");
-                                    setToOptions([]);
+                                    // setToQuery(""); 
                                     setShowToDropdown(true);
                                 }}
-                                className="btn btn-sm btn-info text-white mt-2 gap-1"
+                                className="btn btn-sm btn-link text-info no-underline hover:underline p-0 h-auto min-h-0 mt-2 self-start"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                </svg>
-                                Change Destination
+                                Choose alternative destination
                             </button>
                         </div>
 
@@ -370,16 +476,7 @@ function BusContent() {
                         </div>
 
                     </div>
-
-                    <div className="mt-6 flex justify-end">
-                        <button
-                            onClick={handleSearch}
-                            disabled={!selectedFrom || !selectedTo || loading}
-                            className="btn btn-primary px-8 w-full md:w-auto"
-                        >
-                            {loading ? <span className="loading loading-dots"></span> : "Search Buses ➜"}
-                        </button>
-                    </div>
+                    {/* Search Button Removed */}
                 </div>
 
                 {/* Results Section */}
@@ -440,14 +537,7 @@ function BusContent() {
                                                 )}
                                             </div>
                                             <div className="text-xs text-success">{bus.availableSeats} Seats Left</div>
-                                            <a
-                                                href={`https://www.abhibus.com/bus-tickets/${selectedFrom.name.replace(/\s+/g, '-')}-to-${selectedTo.name.replace(/\s+/g, '-')}-bus-tickets/${date}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="btn btn-sm btn-primary w-full"
-                                            >
-                                                Book Now
-                                            </a>
+                                            <BookLink from={selectedFrom} to={selectedTo} date={date} />
                                         </div>
                                     </div>
                                 ))}
@@ -460,7 +550,7 @@ function BusContent() {
                                     </div>
                                     <h3 className="text-xl font-bold">No buses found</h3>
                                     <p className="text-base-content/60 max-w-md mx-auto mt-2">
-                                        We couldn't find any buses between these cities for the selected date. Try changing the date or route.
+                                        {loading ? "Searching..." : "We couldn't find any buses between these cities for the selected date. Try changing the date or route."}
                                     </p>
                                 </div>
                             )
