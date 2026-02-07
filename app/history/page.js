@@ -23,35 +23,35 @@ export default function History() {
     ];
 
     return (
-        <div className="min-h-screen pt-20 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg mt-4">
-                <h1 className="text-3xl font-bold text-gray-900 mb-8">My Past Trips</h1>
+        <div className="min-h-screen pt-20 bg-base-100">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-base-100/80 backdrop-blur-md rounded-2xl shadow-lg mt-4">
+                <h1 className="text-3xl font-bold text-base-content mb-8">My Past Trips</h1>
 
                 <div className="space-y-6">
                     {pastTrips.map((trip) => (
-                        <div key={trip.id} className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col md:flex-row hover:shadow-md transition-shadow">
+                        <div key={trip.id} className="bg-base-100 rounded-2xl shadow-sm overflow-hidden flex flex-col md:flex-row hover:shadow-md transition-shadow">
                             <div className="md:w-64 h-48 md:h-auto relative">
                                 <img src={trip.image} alt={trip.destination} className="w-full h-full object-cover" />
                             </div>
                             <div className="p-6 flex-1 flex flex-col justify-between">
                                 <div>
                                     <div className="flex justify-between items-start mb-2">
-                                        <h3 className="text-2xl font-bold text-gray-900">{trip.destination}</h3>
-                                        <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                                        <h3 className="text-2xl font-bold text-base-content">{trip.destination}</h3>
+                                        <span className="bg-success/20 text-success text-xs font-semibold px-2.5 py-0.5 rounded-full">
                                             {trip.status}
                                         </span>
                                     </div>
-                                    <p className="text-gray-500 mb-1">📅 {trip.date}</p>
-                                    <p className="text-gray-500">💰 Total Cost: ${trip.totalCost}</p>
+                                    <p className="text-base-content/60 mb-1">📅 {trip.date}</p>
+                                    <p className="text-base-content/60">💰 Total Cost: ${trip.totalCost}</p>
                                 </div>
                                 <div className="mt-4 flex justify-end gap-4">
                                     <button
                                         onClick={() => alert("Review feature coming soon!")}
-                                        className="text-gray-600 font-semibold hover:text-gray-900 text-sm"
+                                        className="text-base-content/70 font-semibold hover:text-base-content text-sm"
                                     >
                                         Leave Review ✍️
                                     </button>
-                                    <button className="text-blue-600 font-semibold hover:text-blue-800 text-sm">
+                                    <button className="text-primary font-semibold hover:text-primary/80 text-sm">
                                         View Itinerary &rarr;
                                     </button>
                                 </div>

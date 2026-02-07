@@ -78,10 +78,10 @@ function ResultsContent() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+            <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center">
                 <div className="animate-spin text-4xl mb-4">🌍</div>
-                <h2 className="text-2xl font-bold text-gray-700">Finding the best deals for you...</h2>
-                <p className="text-gray-500">Searching flights, trains, and hotels</p>
+                <h2 className="text-2xl font-bold text-base-content">Finding the best deals for you...</h2>
+                <p className="text-base-content/60">Searching flights, trains, and hotels</p>
             </div>
         );
     }
@@ -89,36 +89,36 @@ function ResultsContent() {
     if (!results) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-20 pb-20">
+        <div className="min-h-screen bg-base-200 pt-20 pb-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Header Summary */}
-                <div className="bg-white rounded-2xl shadow-sm p-8 mb-8 border border-gray-100">
+                <div className="bg-base-100 rounded-2xl shadow-sm p-8 mb-8 border border-base-200">
                     <div className="text-center">
-                        <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                        <h2 className="text-3xl font-extrabold text-base-content sm:text-4xl">
                             Trip Options: {source} to {destination}
                         </h2>
-                        <p className="mt-4 text-lg text-gray-500">
-                            Estimated distance: <span className="font-semibold text-blue-600">{results.distance} km</span>
+                        <p className="mt-4 text-lg text-base-content/60">
+                            Estimated distance: <span className="font-semibold text-primary">{results.distance} km</span>
                             <span className="mx-2">•</span>
-                            Date: <span className="font-semibold text-blue-600">{travelDate}</span>
+                            Date: <span className="font-semibold text-primary">{travelDate}</span>
                             <span className="mx-2">•</span>
-                            Duration: <span className="font-semibold text-blue-600">{duration} Day{duration > 1 ? 's' : ''}</span>
+                            Duration: <span className="font-semibold text-primary">{duration} Day{duration > 1 ? 's' : ''}</span>
                         </p>
                     </div>
                 </div>
 
                 {/* Discount Toggle */}
                 <section className="mb-12 text-center">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">{t('discounts')}</h2>
+                    <h2 className="text-xl font-bold text-base-content mb-4">{t('discounts')}</h2>
                     <div className="flex justify-center gap-4 flex-wrap">
                         {["none", "student", "military", "senior"].map((p) => (
                             <button
                                 key={p}
                                 onClick={() => setProfession(p)}
                                 className={`px-6 py-2 rounded-full capitalize font-semibold hover-lift transition-all ${profession === p
-                                    ? "bg-blue-600 text-white shadow-lg hover-glow"
-                                    : "bg-white text-gray-700 hover:bg-gray-100"
+                                    ? "btn btn-primary shadow-lg"
+                                    : "btn btn-ghost bg-base-100 text-base-content hover:bg-base-200"
                                     }`}
                             >
                                 {t(p === "none" ? "generalPublic" : p)}
@@ -126,7 +126,7 @@ function ResultsContent() {
                         ))}
                     </div>
                     {profession !== "none" && (
-                        <p className="mt-4 text-green-600 font-medium animate-bounce">
+                        <p className="mt-4 text-success font-medium animate-bounce">
                             {t('unlockDiscount')}
                         </p>
                     )}
@@ -134,23 +134,23 @@ function ResultsContent() {
 
                 {/* Transport Costs */}
                 <div className="mb-20">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-8">Traveling There</h3>
+                    <h3 className="text-2xl font-bold text-base-content mb-8">Traveling There</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {results.costs.map((mode) => (
-                            <div key={mode.id} className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-blue-200 hover-lift group cursor-pointer shadow-sm">
+                            <div key={mode.id} className="card bg-base-100 rounded-2xl p-6 border border-base-200 hover:border-primary hover-lift shadow-sm">
                                 <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300 transform origin-left">
                                     {mode.icon}
                                 </div>
-                                <h4 className="text-xl font-bold text-gray-900">{mode.name}</h4>
-                                <p className="text-gray-500 text-sm mb-4">
+                                <h4 className="text-xl font-bold text-base-content">{mode.name}</h4>
+                                <p className="text-base-content/60 text-sm mb-4">
                                     Approx. {Math.floor(mode.duration / 60)}h {mode.duration % 60}m
                                 </p>
                                 <div className="flex items-end justify-between">
                                     <div>
-                                        <span className="text-xs text-gray-400 uppercase font-semibold">Estimate</span>
-                                        <div className="text-2xl font-bold text-blue-600">₹{mode.cost}</div>
+                                        <span className="text-xs text-base-content/50 uppercase font-semibold">Estimate</span>
+                                        <div className="text-2xl font-bold text-primary">₹{mode.cost}</div>
                                     </div>
-                                    <button className="text-sm font-semibold text-blue-600 hover:text-blue-800">
+                                    <button className="btn btn-link btn-sm text-primary no-underline hover:underline">
                                         Book &rarr;
                                     </button>
                                 </div>
@@ -161,7 +161,7 @@ function ResultsContent() {
 
                 {/* Hotel Recommendations */}
                 <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-8">Where to Stay</h3>
+                    <h3 className="text-2xl font-bold text-base-content mb-8">Where to Stay</h3>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Best Hotel */}
                         <div className="relative card-zoom shadow-2xl group hover-lift rounded-2xl overflow-hidden">
@@ -172,7 +172,7 @@ function ResultsContent() {
                                 className="absolute inset-0 w-full h-full object-cover"
                             />
                             <div className="relative z-20 p-8 h-full flex flex-col justify-end text-white">
-                                <div className="inline-block bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full mb-3 self-start shadow-lg">
+                                <div className="inline-block bg-warning text-warning-content text-xs font-bold px-3 py-1 rounded-full mb-3 self-start shadow-lg">
                                     {t('topRated')}
                                 </div>
                                 <div className="flex justify-between items-start">
@@ -182,20 +182,20 @@ function ResultsContent() {
                                     </button>
                                 </div>
 
-                                <p className="text-gray-200 mb-4 flex items-center gap-2">
-                                    <span className="text-yellow-400">★★★★★</span> {results.hotels.best.rating}/5 (1,234 reviews)
+                                <p className="text-white/70 mb-4 flex items-center gap-2">
+                                    <span className="text-warning">★★★★★</span> {results.hotels.best.rating}/5 (1,234 reviews)
                                 </p>
                                 <div className="flex items-center justify-between mt-auto">
                                     <div>
-                                        <span className="block text-sm text-gray-300">Starting from</span>
+                                        <span className="block text-sm text-white/70">Starting from</span>
                                         <div className="flex items-baseline gap-2">
                                             {profession !== "none" && (
-                                                <span className="text-lg text-gray-400 line-through">₹{results.hotels.best.price}</span>
+                                                <span className="text-lg text-white/50 line-through">₹{results.hotels.best.price}</span>
                                             )}
-                                            <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.best.price)}<span className="text-base font-normal text-gray-300">/night</span></span>
+                                            <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.best.price)}<span className="text-base font-normal text-white/70">/night</span></span>
                                         </div>
                                     </div>
-                                    <button className="bg-white text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors">
+                                    <button className="btn btn-neutral px-6 py-3 rounded-xl font-bold">
                                         View Details
                                     </button>
                                 </div>
@@ -211,7 +211,7 @@ function ResultsContent() {
                                 className="absolute inset-0 w-full h-full object-cover"
                             />
                             <div className="relative z-20 p-8 h-full flex flex-col justify-end text-white">
-                                <div className="inline-block bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-3 self-start shadow-lg">
+                                <div className="inline-block bg-success text-success-content text-xs font-bold px-3 py-1 rounded-full mb-3 self-start shadow-lg">
                                     {t('bestValue')}
                                 </div>
                                 <div className="flex justify-between items-start">
@@ -220,20 +220,20 @@ function ResultsContent() {
                                         ❤️
                                     </button>
                                 </div>
-                                <p className="text-gray-200 mb-4 flex items-center gap-2">
-                                    <span className="text-yellow-400">★★★★☆</span> {results.hotels.cheapest.rating}/5 (856 reviews)
+                                <p className="text-white/70 mb-4 flex items-center gap-2">
+                                    <span className="text-warning">★★★★☆</span> {results.hotels.cheapest.rating}/5 (856 reviews)
                                 </p>
                                 <div className="flex items-center justify-between mt-auto">
                                     <div>
-                                        <span className="block text-sm text-gray-300">Starting from</span>
+                                        <span className="block text-sm text-white/70">Starting from</span>
                                         <div className="flex items-baseline gap-2">
                                             {profession !== "none" && (
-                                                <span className="text-lg text-gray-400 line-through">₹{results.hotels.cheapest.price}</span>
+                                                <span className="text-lg text-white/50 line-through">₹{results.hotels.cheapest.price}</span>
                                             )}
-                                            <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.cheapest.price)}<span className="text-base font-normal text-gray-300">/night</span></span>
+                                            <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.cheapest.price)}<span className="text-base font-normal text-white/70">/night</span></span>
                                         </div>
                                     </div>
-                                    <button className="bg-white text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors">
+                                    <button className="btn btn-neutral px-6 py-3 rounded-xl font-bold">
                                         View Details
                                     </button>
                                 </div>

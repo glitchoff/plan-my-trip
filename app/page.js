@@ -5,9 +5,11 @@ import Image from "next/image";
 import BackgroundSlider from "./components/BackgroundSlider";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "./context/LanguageContext";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
   const { t } = useLanguage();
+  const { data: session } = useSession();
   const router = useRouter();
   const [source, setSource] = useState("");
   const [destination, setDestination] = useState("");
@@ -52,17 +54,22 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen text-gray-900 font-sans relative">
-      <BackgroundSlider />
+    <div className="min-h-screen text-base-content font-sans">
       {/* Navbar */}
 
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden shadow-2xl">
+        <BackgroundSlider />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 mb-6">
+          {session?.user && (
+            <p className="text-lg text-white/80 mb-4 font-medium">
+              👋 Hello, <span className="text-primary font-bold">{session.user.name?.split(' ')[0] || 'Traveler'}</span>!
+            </p>
+          )}
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6">
             {t('heroTitle').split("Starts")[0]} <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
               {t('heroTitle').split("Starts")[1] || "Starts Here"}
             </span>
           </h1>
@@ -70,7 +77,7 @@ export default function Home() {
             {t('heroSubtitle')}
           </p>
 
-          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 p-2 md:p-4">
+          <div className="max-w-4xl mx-auto bg-base-100 rounded-2xl shadow-xl border border-base-200 p-2 md:p-4">
             <form onSubmit={handlePlanTrip} className="flex flex-col gap-6">
               {/* Row 1: Locations */}
               <div className="flex flex-col md:flex-row gap-4 items-center">
@@ -80,21 +87,21 @@ export default function Home() {
                   </div>
                   <input
                     type="text"
-                    className="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all"
+                    className="input input-bordered w-full pl-10 h-14 bg-base-200 focus:bg-base-100 transition-all"
                     placeholder={t('whereFrom')}
                     value={source}
                     onChange={(e) => setSource(e.target.value)}
                     required
                   />
                 </div>
-                <div className="hidden md:block text-gray-300">➜</div>
+                <div className="hidden md:block text-base-content/30">➜</div>
                 <div className="relative flex-1 w-full">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     🗺️
                   </div>
                   <input
                     type="text"
-                    className="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all"
+                    className="input input-bordered w-full pl-10 h-14 bg-base-200 focus:bg-base-100 transition-all"
                     placeholder={t('whereTo')}
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
@@ -112,7 +119,7 @@ export default function Home() {
                   <input
                     id="dateInput"
                     type="date"
-                    className="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+                    className="input input-bordered w-full pl-10 h-14 bg-base-200 focus:bg-base-100 transition-all cursor-pointer"
                     value={travelDate}
                     min={new Date().toISOString().split('T')[0]}
                     onChange={(e) => setTravelDate(e.target.value)}
@@ -126,7 +133,7 @@ export default function Home() {
                   <input
                     type="number"
                     min="1"
-                    className="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all"
+                    className="input input-bordered w-full pl-10 h-14 bg-base-200 focus:bg-base-100 transition-all"
                     placeholder="Days"
                     value={duration}
                     onChange={(e) => setDuration(parseInt(e.target.value) || 1)}
@@ -136,7 +143,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-xl hover-lift hover-glow transition-all shadow-lg hover:shadow-blue-500/30 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="btn btn-primary w-full md:w-auto px-8 h-14 rounded-xl hover-lift shadow-lg"
                 >
                   {loading ? t('planning') : t('planTrip')}
                 </button>
@@ -146,22 +153,22 @@ export default function Home() {
         </div>
 
         {/* Decorative background elements */}
-        <div className="absolute top-0 left-0 -ml-20 -mt-20 w-80 h-80 rounded-full bg-blue-50 blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 right-0 -mr-20 -mb-20 w-96 h-96 rounded-full bg-teal-50 blur-3xl opacity-50"></div>
+        <div className="absolute top-0 left-0 -ml-20 -mt-20 w-80 h-80 rounded-full bg-primary/10 blur-3xl opacity-50"></div>
+        <div className="absolute bottom-0 right-0 -mr-20 -mb-20 w-96 h-96 rounded-full bg-secondary/10 blur-3xl opacity-50"></div>
       </section>
 
       {/* Discount Section */}
-      <section className="py-10 bg-blue-50/80 backdrop-blur-md">
+      <section className="py-10 bg-base-200/50 backdrop-blur-md border-y border-base-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('discounts')}</h2>
+          <h2 className="text-2xl font-bold text-base-content mb-4">{t('discounts')}</h2>
           <div className="flex justify-center gap-4 flex-wrap">
             {["none", "student", "military", "senior"].map((p) => (
               <button
                 key={p}
                 onClick={() => setProfession(p)}
                 className={`px-6 py-2 rounded-full capitalize font-semibold hover-lift transition-all ${profession === p
-                  ? "bg-blue-600 text-white shadow-lg hover-glow"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
+                  ? "btn btn-primary shadow-lg"
+                  : "btn btn-ghost bg-base-100 text-base-content hover:bg-base-200"
                   }`}
               >
                 {t(p === "none" ? "generalPublic" : p)}
@@ -169,7 +176,7 @@ export default function Home() {
             ))}
           </div>
           {profession !== "none" && (
-            <p className="mt-4 text-green-600 font-medium animate-bounce">
+            <p className="mt-4 text-success font-medium animate-bounce">
               {t('unlockDiscount')}
             </p>
           )}
@@ -178,36 +185,36 @@ export default function Home() {
 
       {/* Results Section */}
       {results && (
-        <section id="results" className="py-20 bg-white/80 backdrop-blur-md">
+        <section id="results" className="py-20 bg-base-100/80 backdrop-blur-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              <h2 className="text-3xl font-extrabold text-base-content sm:text-4xl">
                 Trip Options: {source} to {destination}
               </h2>
-              <p className="mt-4 text-lg text-gray-500">
-                Estimated distance: <span className="font-semibold text-blue-600">{results.distance} km</span>
+              <p className="mt-4 text-lg text-base-content/70">
+                Estimated distance: <span className="font-semibold text-primary">{results.distance} km</span>
               </p>
             </div>
 
             {/* Transport Costs */}
             <div className="mb-20">
-              <h3 className="text-2xl font-bold text-gray-900 mb-8">Traveling There</h3>
+              <h3 className="text-2xl font-bold text-base-content mb-8">Traveling There</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {results.costs.map((mode) => (
-                  <div key={mode.id} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-blue-200 hover-lift group cursor-pointer bg-white shadow-sm">
+                  <div key={mode.id} className="card bg-base-100 border border-base-200 hover:border-primary hover-lift shadow-sm p-6">
                     <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300 transform origin-left">
                       {mode.icon}
                     </div>
-                    <h4 className="text-xl font-bold text-gray-900">{mode.name}</h4>
-                    <p className="text-gray-500 text-sm mb-4">
+                    <h4 className="text-xl font-bold text-base-content">{mode.name}</h4>
+                    <p className="text-base-content/60 text-sm mb-4">
                       Approx. {Math.floor(mode.duration / 60)}h {mode.duration % 60}m
                     </p>
                     <div className="flex items-end justify-between">
                       <div>
-                        <span className="text-xs text-gray-400 uppercase font-semibold">Estimate</span>
-                        <div className="text-2xl font-bold text-blue-600">₹{mode.cost}</div>
+                        <span className="text-xs text-base-content/50 uppercase font-semibold">Estimate</span>
+                        <div className="text-2xl font-bold text-primary">₹{mode.cost}</div>
                       </div>
-                      <button className="text-sm font-semibold text-blue-600 hover:text-blue-800">
+                      <button className="btn btn-link btn-sm text-primary no-underline hover:underline">
                         Book &rarr;
                       </button>
                     </div>
@@ -218,7 +225,7 @@ export default function Home() {
 
             {/* Hotel Recommendations */}
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-8">Where to Stay</h3>
+              <h3 className="text-2xl font-bold text-base-content mb-8">Where to Stay</h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Best Hotel */}
                 <div className="relative card-zoom shadow-2xl group hover-lift">
@@ -229,7 +236,7 @@ export default function Home() {
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                   <div className="relative z-20 p-8 h-full flex flex-col justify-end text-white">
-                    <div className="inline-block bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full mb-3 self-start shadow-lg">
+                    <div className="inline-block bg-warning text-warning-content text-xs font-bold px-3 py-1 rounded-full mb-3 self-start shadow-lg">
                       {t('topRated')}
                     </div>
                     <div className="flex justify-between items-start">
@@ -239,20 +246,20 @@ export default function Home() {
                       </button>
                     </div>
 
-                    <p className="text-gray-200 mb-4 flex items-center gap-2">
-                      <span className="text-yellow-400">★★★★★</span> {results.hotels.best.rating}/5 (1,234 reviews)
+                    <p className="text-white/70 mb-4 flex items-center gap-2">
+                      <span className="text-warning">★★★★★</span> {results.hotels.best.rating}/5 (1,234 reviews)
                     </p>
                     <div className="flex items-center justify-between mt-auto">
                       <div>
-                        <span className="block text-sm text-gray-300">Starting from</span>
+                        <span className="block text-sm text-white/70">Starting from</span>
                         <div className="flex items-baseline gap-2">
                           {profession !== "none" && (
-                            <span className="text-lg text-gray-400 line-through">₹{results.hotels.best.price}</span>
+                            <span className="text-lg text-white/50 line-through">₹{results.hotels.best.price}</span>
                           )}
-                          <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.best.price)}<span className="text-base font-normal text-gray-300">/night</span></span>
+                          <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.best.price)}<span className="text-base font-normal text-white/70">/night</span></span>
                         </div>
                       </div>
-                      <button className="bg-white text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors">
+                      <button className="btn btn-neutral px-6 py-3 rounded-xl font-bold">
                         View Details
                       </button>
                     </div>
@@ -268,7 +275,7 @@ export default function Home() {
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                   <div className="relative z-20 p-8 h-full flex flex-col justify-end text-white">
-                    <div className="inline-block bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-3 self-start shadow-lg">
+                    <div className="inline-block bg-success text-success-content text-xs font-bold px-3 py-1 rounded-full mb-3 self-start shadow-lg">
                       {t('bestValue')}
                     </div>
                     <div className="flex justify-between items-start">
@@ -277,20 +284,20 @@ export default function Home() {
                         ❤️
                       </button>
                     </div>
-                    <p className="text-gray-200 mb-4 flex items-center gap-2">
-                      <span className="text-yellow-400">★★★★☆</span> {results.hotels.cheapest.rating}/5 (856 reviews)
+                    <p className="text-white/70 mb-4 flex items-center gap-2">
+                      <span className="text-warning">★★★★☆</span> {results.hotels.cheapest.rating}/5 (856 reviews)
                     </p>
                     <div className="flex items-center justify-between mt-auto">
                       <div>
-                        <span className="block text-sm text-gray-300">Starting from</span>
+                        <span className="block text-sm text-white/70">Starting from</span>
                         <div className="flex items-baseline gap-2">
                           {profession !== "none" && (
-                            <span className="text-lg text-gray-400 line-through">₹{results.hotels.cheapest.price}</span>
+                            <span className="text-lg text-white/50 line-through">₹{results.hotels.cheapest.price}</span>
                           )}
-                          <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.cheapest.price)}<span className="text-base font-normal text-gray-300">/night</span></span>
+                          <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.cheapest.price)}<span className="text-base font-normal text-white/70">/night</span></span>
                         </div>
                       </div>
-                      <button className="bg-white text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors">
+                      <button className="btn btn-neutral px-6 py-3 rounded-xl font-bold">
                         View Details
                       </button>
                     </div>
@@ -303,27 +310,27 @@ export default function Home() {
         </section>
       )}
       {/* Footer */}
-      <footer className="bg-white/80 backdrop-blur-md border-t border-gray-100 pt-16 pb-8">
+      <footer className="bg-base-200/80 backdrop-blur-md border-t border-base-300 pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div>
-              <h5 className="font-bold text-gray-900 mb-4">Company</h5>
-              <ul className="space-y-2 text-gray-500">
-                <li><a href="#" className="hover:text-blue-600">{t('about')}</a></li>
-                <li><a href="#" className="hover:text-blue-600">Careers</a></li>
-                <li><a href="#" className="hover:text-blue-600">Press</a></li>
+              <h5 className="font-bold text-base-content mb-4">Company</h5>
+              <ul className="space-y-2 text-base-content/70">
+                <li><a href="#" className="hover:text-primary">{t('about')}</a></li>
+                <li><a href="#" className="hover:text-primary">Careers</a></li>
+                <li><a href="#" className="hover:text-primary">Press</a></li>
               </ul>
             </div>
             <div>
-              <h5 className="font-bold text-gray-900 mb-4">{t('support')}</h5>
-              <ul className="space-y-2 text-gray-500">
-                <li><a href="#" className="hover:text-blue-600">Help Center</a></li>
-                <li><a href="#" className="hover:text-blue-600">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-blue-600">Privacy Policy</a></li>
+              <h5 className="font-bold text-base-content mb-4">{t('support')}</h5>
+              <ul className="space-y-2 text-base-content/70">
+                <li><a href="#" className="hover:text-primary">Help Center</a></li>
+                <li><a href="#" className="hover:text-primary">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-primary">Privacy Policy</a></li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-gray-100 text-center text-gray-400">
+          <div className="pt-8 border-t border-base-300 text-center text-base-content/50">
             &copy; {new Date().getFullYear()} PlanMyTrip. All rights reserved.
           </div>
         </div>
