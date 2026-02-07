@@ -31,6 +31,9 @@ export default function Navbar() {
                             <Link href="/" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
                                 {t('home')}
                             </Link>
+                            <Link href="/explore" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/explore') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
+                                Explore
+                            </Link>
                             <Link href="/about" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/about') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
                                 {t('about')}
                             </Link>
