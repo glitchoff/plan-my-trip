@@ -95,7 +95,7 @@ function ResultsContent() {
                 {/* Header Summary */}
                 <div className="bg-white rounded-2xl shadow-sm p-8 mb-8 border border-gray-100">
                     <div className="text-center">
-                        <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                        <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl text-black">
                             Trip Options: {source} to {destination}
                         </h2>
                         <p className="mt-4 text-lg text-gray-500">
