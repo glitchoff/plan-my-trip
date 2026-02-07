@@ -1,27 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import LanguageSelector from "./LanguageSelector";
 import { useLanguage } from "../context/LanguageContext";
-import { supabase } from "../lib/supabaseClient";
 import ProfileDrop from "./ProfileDrop";
 
 export default function Navbar() {
     const { t } = useLanguage();
-    const [user, setUser] = useState(null);
-
-    useEffect(() => {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            setUser(session?.user ?? null);
-        });
-
-        return () => subscription.unsubscribe();
-    }, []);
-
-    const handleSignOut = async () => {
-        await supabase.auth.signOut();
-    };
+    const { data: session } = useSession();
+    const user = session?.user;
 
     return (
         <nav className="fixed w-full z-50 bg-white/60 backdrop-blur-xl shadow-sm border-b border-white/20 supports-[backdrop-filter]:bg-white/60">
