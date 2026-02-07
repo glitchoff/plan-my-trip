@@ -79,7 +79,7 @@ export default function Page() {
     }, [input, sendMessage]);
 
     return (
-        <div className="flex flex-col h-screen pt-12 pb-4 px-4">
+        <div className="flex flex-col h-full pb-4 px-4">
             <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-6 bg-base-100/60 backdrop-blur-sm">
                 {messages.length === 0 && (
                     <div className="text-center text-base-content/60 mt-20">

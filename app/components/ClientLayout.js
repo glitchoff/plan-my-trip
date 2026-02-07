@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import AIChatWidget from "./AIChatWidget";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
@@ -16,6 +17,8 @@ export default function ClientLayout({ children }) {
         {children}
       </main>
       {!isResultsPage && <Footer />}
+      {/* Floating AI Chat Widget - shows on all pages except AI Chat */}
+      {!isAIChat && <AIChatWidget />}
     </>
   );
 }
