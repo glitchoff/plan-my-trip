@@ -1,55 +1,149 @@
+"use client";
+
+import Image from "next/image";
+
 export default function About() {
+    const stats = [
+        { label: 'Happy Travelers', value: '50k+' },
+        { label: 'Destinations', value: '100+' },
+        { label: 'Hotel Partners', value: '1,000+' },
+        { label: 'Support', value: '24/7' },
+    ];
+
+    const team = [
+        {
+            name: 'Adarsh Gupta',
+            role: 'Founder & CEO',
+            image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+        },
+        {
+            name: 'Sarah Chen',
+            role: 'Head of Product',
+            image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+        },
+        {
+            name: 'Michael Foster',
+            role: 'CTO',
+            image: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+        },
+    ];
+
     return (
-        <div className="min-h-screen bg-gray-50 pt-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="text-center mb-16">
-                    <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl mb-4">
-                        About PlanMyTrip
-                    </h1>
-                    <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-                        We are dedicated to making your travel planning experience seamless, affordable, and enjoyable.
-                    </p>
+        <div className="bg-white min-h-screen">
+            {/* Hero Section */}
+            <div className="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32">
+                <Image
+                    src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2021&q=80"
+                    alt="Travel background"
+                    fill
+                    className="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center opacity-20"
+                />
+                <div className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]" aria-hidden="true">
+                    <div className="relative left-1/2 -z-10 aspect-[1155/678] w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]" style={{ clipPath: "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" }}></div>
                 </div>
 
-                {/* Why Choose Us */}
-                <section className="mb-20">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Why Plan With Us?</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                            <div className="text-4xl mb-4">🛡️</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Best Price Guarantee</h3>
-                            <p className="text-gray-500">We compare prices across hundreds of providers to ensure you get the best deal.</p>
+                <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+                    <div className="mx-auto max-w-2xl lg:mx-0">
+                        <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl animate-fade-in-up">About PlanMyTrip</h2>
+                        <p className="mt-6 text-lg leading-8 text-gray-300 animate-fade-in-up delay-100">
+                            We're on a mission to help people experience the world easier and cheaper. From humble beginnings to a global platform, our journey is all about your journey.
+                        </p>
+                    </div>
+                    <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
+                        <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
+                            {stats.map((stat, index) => (
+                                <div key={stat.label} className="flex flex-col-reverse hover:scale-105 transition-transform duration-300">
+                                    <dt className="text-base leading-7 text-gray-300">{stat.label}</dt>
+                                    <dd className="text-3xl font-bold leading-9 tracking-tight text-white">{stat.value}</dd>
+                                </div>
+                            ))}
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            {/* Values Section */}
+            <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8 mb-32">
+                <div className="mx-auto max-w-2xl lg:mx-0">
+                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Our Values</h2>
+                    <p className="mt-6 text-lg leading-8 text-gray-600">
+                        We prioritize the traveler's experience above all else. Every feature we build is designed to make travel more accessible, affordable, and enjoyable.
+                    </p>
+                </div>
+                <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 text-base leading-7 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                    {[
+                        { name: 'Customer First', description: 'Our users are at the heart of every decision we make.', icon: '❤️' },
+                        { name: 'Transparency', description: 'No hidden fees, no surprise charges. What you see is what you pay.', icon: '🔍' },
+                        { name: 'Innovation', description: 'We constantly push boundaries to bring you the best travel tech.', icon: '💡' },
+                    ].map((value) => (
+                        <div key={value.name} className="relative pl-9">
+                            <dt className="inline font-semibold text-gray-900">
+                                <span className="absolute left-1 top-1 h-5 w-5 text-indigo-600">{value.icon}</span>
+                                {value.name}
+                            </dt>
+                            <dd className="inline">{`: ${value.description}`}</dd>
                         </div>
-                        <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                            <div className="text-4xl mb-4">🌍</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Global Reach</h3>
-                            <p className="text-gray-500">Access to hotels and transport options in over 190 countries worldwide.</p>
+                    ))}
+                </div>
+            </div>
+
+            {/* Team Section */}
+            <div className="bg-gray-50 py-24 sm:py-32 rounded-3xl mx-4 mb-20">
+                <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div className="mx-auto max-w-2xl lg:mx-0">
+                        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Meet the Team</h2>
+                        <p className="mt-6 text-lg leading-8 text-gray-600">
+                            We’re a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.
+                        </p>
+                    </div>
+                    <ul role="list" className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                        {team.map((person) => (
+                            <li key={person.name} className="group">
+                                <div className="aspect-[3/2] w-full rounded-2xl overflow-hidden shadow-lg">
+                                    <img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src={person.image} alt={person.name} />
+                                </div>
+                                <h3 className="mt-6 text-lg font-semibold leading-8 tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors">{person.name}</h3>
+                                <p className="text-base leading-7 text-gray-600">{person.role}</p>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+
+            {/* CTA Section */}
+            <div className="bg-blue-600 text-white py-16">
+                <div className="max-w-7xl mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold mb-6">Ready to start your journey?</h2>
+                    <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors shadow-lg">
+                        Plan a Trip Now
+                    </button>
+                </div>
+            </div>
+            <footer className="bg-gray-900 border-t border-gray-800 pt-16 pb-8 text-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                        <div>
+                            <h5 className="font-bold text-lg mb-4">Company</h5>
+                            <ul className="space-y-2 text-gray-400">
+                                <li><a href="#" className="hover:text-blue-400">About</a></li>
+                                <li><a href="#" className="hover:text-blue-400">Careers</a></li>
+                                <li><a href="#" className="hover:text-blue-400">Press</a></li>
+                            </ul>
                         </div>
-                        <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                            <div className="text-4xl mb-4">🎧</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">24/7 Support</h3>
-                            <p className="text-gray-500">Our dedicated customer care team is always here to help you, anytime, anywhere.</p>
+                        <div>
+                            <h5 className="font-bold text-lg mb-4">Support</h5>
+                            <ul className="space-y-2 text-gray-400">
+                                <li><a href="#" className="hover:text-blue-400">Help Center</a></li>
+                                <li><a href="#" className="hover:text-blue-400">Terms of Service</a></li>
+                                <li><a href="#" className="hover:text-blue-400">Privacy Policy</a></li>
+                            </ul>
                         </div>
                     </div>
-                </section>
-
-                {/* Vision Section */}
-                <section className="bg-blue-600 rounded-3xl p-8 md:p-16 text-white text-center mb-20">
-                    <h2 className="text-3xl font-bold mb-4">Our Vision</h2>
-                    <p className="text-lg md:text-xl max-w-3xl mx-auto opacity-90">
-                        "To empower every traveler to explore the world with confidence, ease, and within their budget."
-                    </p>
-                </section>
-
-                {/* Customer Care */}
-                <section className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-8">Need Help?</h2>
-                    <p className="text-gray-500 mb-8">Our support team is just a click away.</p>
-                    <button className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-blue-500/30">
-                        Contact Customer Care
-                    </button>
-                </section>
-            </div>
+                    <div className="pt-8 border-t border-gray-800 text-center text-gray-400">
+                        &copy; {new Date().getFullYear()} PlanMyTrip. All rights reserved.
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }

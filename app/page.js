@@ -6,23 +6,23 @@ import { useLanguage } from "./context/LanguageContext";
 
 // Mock Data
 const TRANSPORT_MODES = [
-  { id: "flight", name: "Flight", icon: "✈️", baseRate: 0.15, speed: 800 }, // $/km, km/h
-  { id: "train", name: "Train", icon: "🚆", baseRate: 0.05, speed: 120 },
-  { id: "bus", name: "Bus", icon: "🚌", baseRate: 0.03, speed: 80 },
-  { id: "cab", name: "Cab", icon: "🚖", baseRate: 0.1, speed: 60 },
+  { id: "flight", name: "Flight", icon: "✈️", baseRate: 12, speed: 800 }, // ₹/km, km/h
+  { id: "train", name: "Train", icon: "🚆", baseRate: 2, speed: 120 },
+  { id: "bus", name: "Bus", icon: "🚌", baseRate: 1.5, speed: 80 },
+  { id: "cab", name: "Cab", icon: "🚖", baseRate: 10, speed: 60 },
 ];
 
 const MOCK_HOTELS = {
   best: {
     name: "Grand Luxury Plaza",
     rating: 4.8,
-    price: 350,
+    price: 15000,
     image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1000",
   },
   cheapest: {
     name: "Cozy Budget Inn",
     rating: 4.2,
-    price: 45,
+    price: 2500,
     image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&q=80&w=1000",
   },
 };
@@ -192,7 +192,7 @@ export default function Home() {
                     <div className="flex items-end justify-between">
                       <div>
                         <span className="text-xs text-gray-400 uppercase font-semibold">Estimate</span>
-                        <div className="text-2xl font-bold text-blue-600">${mode.cost}</div>
+                        <div className="text-2xl font-bold text-blue-600">₹{mode.cost}</div>
                       </div>
                       <button className="text-sm font-semibold text-blue-600 hover:text-blue-800">
                         Book &rarr;
@@ -234,9 +234,9 @@ export default function Home() {
                         <span className="block text-sm text-gray-300">Starting from</span>
                         <div className="flex items-baseline gap-2">
                           {profession !== "none" && (
-                            <span className="text-lg text-gray-400 line-through">${results.hotels.best.price}</span>
+                            <span className="text-lg text-gray-400 line-through">₹{results.hotels.best.price}</span>
                           )}
-                          <span className="text-2xl font-bold">${calculateDiscount(results.hotels.best.price)}<span className="text-base font-normal text-gray-300">/night</span></span>
+                          <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.best.price)}<span className="text-base font-normal text-gray-300">/night</span></span>
                         </div>
                       </div>
                       <button className="bg-white text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors">
@@ -272,9 +272,9 @@ export default function Home() {
                         <span className="block text-sm text-gray-300">Starting from</span>
                         <div className="flex items-baseline gap-2">
                           {profession !== "none" && (
-                            <span className="text-lg text-gray-400 line-through">${results.hotels.cheapest.price}</span>
+                            <span className="text-lg text-gray-400 line-through">₹{results.hotels.cheapest.price}</span>
                           )}
-                          <span className="text-2xl font-bold">${calculateDiscount(results.hotels.cheapest.price)}<span className="text-base font-normal text-gray-300">/night</span></span>
+                          <span className="text-2xl font-bold">₹{calculateDiscount(results.hotels.cheapest.price)}<span className="text-base font-normal text-gray-300">/night</span></span>
                         </div>
                       </div>
                       <button className="bg-white text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors">
