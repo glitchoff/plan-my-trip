@@ -52,7 +52,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen text-gray-900 font-sans">
+    <div className="min-h-screen text-gray-900 font-sans relative">
       <BackgroundSlider />
       {/* Navbar */}
 

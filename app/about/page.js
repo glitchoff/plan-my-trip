@@ -31,7 +31,6 @@ export default function About() {
 
     return (
         <div className="min-h-screen">
-            <BackgroundSlider />
             {/* Hero Section */}
             <div className="relative isolate overflow-hidden py-24 sm:py-32">
                 
