@@ -1,8 +1,11 @@
 "use client";
 import BackgroundSlider from "../components/BackgroundSlider";
 import { useState, useEffect } from "react";
+import { useAuthProtection } from "../hooks/useAuthProtection";
 
 export default function History() {
+    const { isAuthenticated, isLoading } = useAuthProtection();
+
     // Initial Mock Data
     const initialTrips = [
         {
@@ -96,6 +99,18 @@ export default function History() {
         }, {});
         localStorage.setItem("myTripsReviews", JSON.stringify(reviewsToSave));
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen pt-20 bg-base-100 flex items-center justify-center">
+                <span className="loading loading-spinner loading-lg text-primary"></span>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return null; // Will redirect
+    }
 
     return (
         <div className="min-h-screen pt-20 bg-base-100">
