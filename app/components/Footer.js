@@ -14,16 +14,15 @@ export default function Footer() {
                         <h5 className="font-bold text-base-content mb-4">Company</h5>
                         <ul className="space-y-2 text-base-content/70">
                             <li><a href="/about" className="hover:text-primary transition-colors">{t('about')}</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Careers</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Press</a></li>
+                            <li><a href="/announcements" className="hover:text-primary transition-colors">Announcements</a></li>
                         </ul>
                     </div>
                     <div>
                         <h5 className="font-bold text-base-content mb-4">{t('support')}</h5>
                         <ul className="space-y-2 text-base-content/70">
-                            <li><a href="#" className="hover:text-primary transition-colors">Help Center</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
+                            <li><a href="/help" className="hover:text-primary transition-colors">Help Center</a></li>
+                            <li><a href="/terms" className="hover:text-primary transition-colors">Terms of Service</a></li>
+                            <li><a href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</a></li>
                         </ul>
                     </div>
                     <div>
@@ -37,9 +36,9 @@ export default function Footer() {
                     <div>
                         <h5 className="font-bold text-base-content mb-4">Product</h5>
                         <ul className="space-y-2 text-base-content/70">
-                            <li><a href="#" className="hover:text-primary transition-colors">Features</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Pricing</a></li>
-                            <li><a href="#" className="hover:text-primary transition-colors">Enterprise</a></li>
+                            <li><a href="/features" className="hover:text-primary transition-colors">Features</a></li>
+                            <li><a href="/pricing" className="hover:text-primary transition-colors">Pricing</a></li>
+                            <li><a href="/enterprise" className="hover:text-primary transition-colors">Enterprise</a></li>
                         </ul>
                     </div>
                 </div>
