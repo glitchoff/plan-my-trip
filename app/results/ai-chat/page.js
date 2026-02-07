@@ -2,24 +2,85 @@
 
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
-import { useState } from 'react';
+import { useState, memo, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
-// Added Spinner component (DaisyUI)
-const Spinner = () => <span className="loading loading-spinner loading-md"></span>;
+// Memoized markdown renderer to prevent re-parsing on every render
+const MarkdownContent = memo(function MarkdownContent({ text }) {
+    return (
+        <div className="prose prose-sm max-w-none prose-headings:text-base-content prose-p:text-base-content prose-li:text-base-content prose-strong:text-base-content prose-code:text-primary prose-code:bg-base-300 prose-code:px-1 prose-code:rounded prose-table:text-base-content prose-th:text-base-content prose-td:text-base-content [&_th]:border [&_th]:border-base-content/20 [&_th]:px-3 [&_th]:py-2 [&_td]:border [&_td]:border-base-content/20 [&_td]:px-3 [&_td]:py-2">
+            <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                components={{
+                    table: ({ children }) => (
+                        <div className="overflow-x-auto -mx-2 px-2">
+                            <table className="border border-base-content/20 min-w-full">
+                                {children}
+                            </table>
+                        </div>
+                    ),
+                }}
+            >
+                {text}
+            </ReactMarkdown>
+        </div>
+    );
+});
+
+// Memoized message component to prevent unnecessary re-renders
+const ChatMessage = memo(function ChatMessage({ message }) {
+    const isUser = message.role === 'user';
+    
+    return (
+        <div className={`chat ${isUser ? 'chat-end' : 'chat-start'}`}>
+            <div className="chat-header text-xs mb-1 opacity-70 text-base-content">
+                {isUser ? 'You' : 'AI Assistant'}
+            </div>
+            <div className={`chat-bubble shadow-md ${
+                isUser 
+                ? 'chat-bubble-primary text-primary-content' 
+                : 'bg-base-200 text-base-content'
+            }`}>
+                {message.parts.map((part, index) =>
+                    part.type === 'text' ? (
+                        isUser ? (
+                            <span key={index}>{part.text}</span>
+                        ) : (
+                            <MarkdownContent key={index} text={part.text} />
+                        )
+                    ) : null,
+                )}
+            </div>
+        </div>
+    );
+});
 
 export default function Page() {
     const { messages, sendMessage, status, stop } = useChat({
-        // transport is optional in standard useChat, but respecting user's snippet
-        // If this fails, standard usage is just `api: '/api/chat'`
         transport: new DefaultChatTransport({
             api: '/api/ai/chat',
         }),
     });
     const [input, setInput] = useState('');
 
+    // No auto-scroll - user has full control over scrolling
+
+    const handleInputChange = useCallback((e) => {
+        setInput(e.target.value);
+    }, []);
+
+    const handleSubmit = useCallback((e) => {
+        e.preventDefault();
+        if (input.trim()) {
+            sendMessage({ text: input });
+            setInput('');
+        }
+    }, [input, sendMessage]);
+
     return (
-        <div className="flex flex-col h-screen pt-20 pb-4 px-4 max-w-3xl mx-auto">
-            <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-6 rounded-2xl bg-base-100/80 backdrop-blur-md border border-base-content/10 shadow-lg">
+        <div className="flex flex-col h-screen pt-12 pb-4 px-4">
+            <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-6 bg-base-100/60 backdrop-blur-sm">
                 {messages.length === 0 && (
                     <div className="text-center text-base-content/60 mt-20">
                         <div className="text-6xl mb-4">💬</div>
@@ -29,20 +90,7 @@ export default function Page() {
                 )}
 
                 {messages.map(message => (
-                    <div key={message.id} className={`chat ${message.role === 'user' ? 'chat-end' : 'chat-start'}`}>
-                        <div className="chat-header text-xs mb-1 opacity-70 text-base-content">
-                            {message.role === 'user' ? 'You' : 'AI Assistant'}
-                        </div>
-                        <div className={`chat-bubble shadow-md ${
-                            message.role === 'user' 
-                            ? 'chat-bubble-primary text-primary-content' 
-                            : 'bg-base-200 text-base-content'
-                        }`}>
-                            {message.parts.map((part, index) =>
-                                part.type === 'text' ? <span key={index}>{part.text}</span> : null,
-                            )}
-                        </div>
-                    </div>
+                    <ChatMessage key={message.id} message={message} />
                 ))}
 
                 {(status === 'submitted' || status === 'streaming') && (
@@ -55,18 +103,12 @@ export default function Page() {
 
             <form
                 className="flex gap-2 bg-base-100/90 backdrop-blur-md p-3 rounded-2xl border border-base-content/10 shadow-lg"
-                onSubmit={e => {
-                    e.preventDefault();
-                    if (input.trim()) {
-                        sendMessage({ text: input }); // Keep existing logic for now
-                        setInput('');
-                    }
-                }}
+                onSubmit={handleSubmit}
             >
                 <input
                     className="input input-bordered flex-1 bg-transparent focus:outline-none text-base-content placeholder:text-base-content/50"
                     value={input}
-                    onChange={e => setInput(e.target.value)}
+                    onChange={handleInputChange}
                     disabled={status !== 'ready'}
                     placeholder="Ask about destinations, flights, or hotels..."
                     autoFocus
