@@ -105,7 +105,7 @@ export default function History() {
                 <div className="space-y-4">
                     {trips.map((trip) => (
                         <div key={trip.id} className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col md:flex-row hover:shadow-md transition-shadow">
-                            <div className="md:w-64 h-48 md:h-auto relative min-h-[12rem]">
+                            <div className="md:w-72 h-48 md:h-64 relative shrink-0">
                                 <img src={trip.image} alt={trip.destination} className="w-full h-full object-cover" />
                             </div>
                             <div className="p-4 flex-1 flex flex-col justify-between">
