@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import BackgroundSlider from "../components/BackgroundSlider";
 import LoginForm from "../components/LoginForm";
 
@@ -13,7 +14,9 @@ export default function Login() {
           <p className="text-accent">Plan your next adventure with us.</p>
         </div>
 
-        <LoginForm />
+        <Suspense fallback={<div className="text-center p-4">Loading login...</div>}>
+          <LoginForm />
+        </Suspense>
 
         <p className="mt-8 text-center text-sm text-base-content/70">
           Don't have an account?{" "}
