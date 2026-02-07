@@ -40,7 +40,7 @@ export default function About() {
 
                 <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
                     <div className="mx-auto max-w-2xl lg:mx-0">
-                        <h2 className="text-4xl font-bold tracking-tight text-base-content sm:text-6xl animate-fade-in-up">About PlanMyTrip</h2>
+                        <h2 className="text-4xl font-bold tracking-tight text-base-content sm:text-6xl animate-fade-in-up hover:scale-105 transition-transform duration-200 cursor-default">About PlanMyTrip</h2>
                         <p className="mt-6 text-lg leading-8 text-base-content/70 animate-fade-in-up delay-100">
                             We're on a mission to help people experience the world easier and cheaper. From humble beginnings to a global platform, our journey is all about your journey.
                         </p>

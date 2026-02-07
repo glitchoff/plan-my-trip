@@ -28,19 +28,19 @@ export default function Navbar() {
 
                     <div className="hidden md:flex items-center space-x-8">
                         <div className="flex items-baseline space-x-4">
-                            <Link href="/" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
+                            <Link href="/" className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-110 ${isActive('/') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
                                 {t('home')}
                             </Link>
-                            <Link href="/explore" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/explore') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
+                            <Link href="/explore" className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-110 ${isActive('/explore') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
                                 Explore
                             </Link>
-                            <Link href="/about" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/about') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
+                            <Link href="/about" className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-110 ${isActive('/about') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
                                 {t('about')}
                             </Link>
-                            <Link href="/wishlist" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/wishlist') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
+                            <Link href="/wishlist" className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-110 ${isActive('/wishlist') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
                                 {t('wishlist')}
                             </Link>
-                            <Link href="/history" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/history') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
+                            <Link href="/history" className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-110 ${isActive('/history') ? 'text-primary font-semibold bg-primary/10' : 'text-base-content/70 hover:text-primary'}`}>
                                 {t('myTrips')}
                             </Link>
                         </div>

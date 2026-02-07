@@ -113,11 +113,19 @@ export default function History() {
     }
 
     return (
-        <div className="min-h-screen pt-20 bg-base-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-base-100/80 backdrop-blur-md rounded-2xl shadow-lg mt-4">
-                <h1 className="text-3xl font-bold text-base-content mb-8">My Past Trips</h1>
+        <div className="min-h-screen pt-20 pb-16 bg-base-100">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-16">
+                    <h1 className="text-4xl font-bold tracking-tight text-base-content sm:text-6xl animate-fade-in-up hover:scale-105 transition-transform duration-200 cursor-default">
+                        My Past Trips
+                    </h1>
+                    <p className="mt-6 text-lg leading-8 text-base-content/70 animate-fade-in-up delay-100 hover:scale-105 transition-transform duration-200 cursor-default">
+                        Relive your travel memories and adventures.
+                    </p>
+                </div>
 
-                <div className="space-y-4">
+                <div className="bg-base-100/80 backdrop-blur-md rounded-2xl shadow-lg p-8">
+                    <div className="space-y-4">
                     {trips.map((trip) => (
                         <div key={trip.id} className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col md:flex-row hover:shadow-md transition-shadow">
                             <div className="md:w-72 h-48 md:h-64 relative shrink-0">
@@ -185,6 +193,7 @@ export default function History() {
                             </div>
                         </div>
                     ))}
+                    </div>
                 </div>
             </div>
         </div>

@@ -121,12 +121,20 @@ export default function Wishlist() {
     }
 
     return (
-        <div className="min-h-screen pt-20 bg-base-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-base-100/80 backdrop-blur-md rounded-2xl shadow-lg mt-4">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                    <h1 className="text-3xl font-bold text-base-content">My Wishlist</h1>
-                    
+        <div className="min-h-screen pt-20 pb-16 bg-base-100">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-16">
+                    <h1 className="text-4xl font-bold tracking-tight text-base-content sm:text-6xl animate-fade-in-up hover:scale-105 transition-transform duration-200 cursor-default">
+                        My Wishlist
+                    </h1>
+                    <p className="mt-6 text-lg leading-8 text-base-content/70 animate-fade-in-up delay-100 hover:scale-105 transition-transform duration-200 cursor-default">
+                        Your dream destinations saved in one place.
+                    </p>
+                </div>
+
+                <div className="bg-base-100/80 backdrop-blur-md rounded-2xl shadow-lg p-8">
                     {/* Search Bar */}
+                    <div className="flex justify-center mb-8">
                     <div className="relative w-full md:w-96 z-50">
                         <input
                             type="text"
@@ -208,6 +216,7 @@ export default function Wishlist() {
                         ))}
                     </div>
                 )}
+                </div>
             </div>
         </div>
     );

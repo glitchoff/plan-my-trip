@@ -24,10 +24,10 @@ export default function Explore() {
         <div className="min-h-screen bg-base-100 pt-20 pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl font-bold tracking-tight text-base-content sm:text-6xl animate-fade-in-up">
+                    <h1 className="text-4xl font-bold tracking-tight text-base-content sm:text-6xl animate-fade-in-up hover:scale-105 transition-transform duration-200 cursor-default">
                         Explore India & Beyond
                     </h1>
-                    <p className="mt-6 text-lg leading-8 text-base-content/70 animate-fade-in-up delay-100">
+                    <p className="mt-6 text-lg leading-8 text-base-content/70 animate-fade-in-up delay-100 hover:scale-105 transition-transform duration-200 cursor-default">
                         Discover top trending destinations categorized by your interest.
                     </p>
                 </div>
