@@ -84,26 +84,24 @@ export default function About() {
             </div>
 
             {/* Team Section */}
-            <div className="bg-base-100/80 backdrop-blur-md py-24 sm:py-32 rounded-3xl mx-4 mb-20 shadow-sm">
-                <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="mx-auto max-w-2xl lg:mx-0">
-                        <h2 className="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">Meet the Team</h2>
-                        <p className="mt-6 text-lg leading-8 text-base-content/70">
-                            We’re a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.
-                        </p>
-                    </div>
-                    <ul role="list" className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-                        {team.map((person) => (
-                            <li key={person.name} className="group">
-                                <div className="aspect-[3/2] w-full rounded-2xl overflow-hidden shadow-lg">
-                                    <img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src={person.image} alt={person.name} />
-                                </div>
-                                <h3 className="mt-6 text-lg font-semibold leading-8 tracking-tight text-base-content group-hover:text-primary transition-colors">{person.name}</h3>
-                                <p className="text-base leading-7 text-base-content/70">{person.role}</p>
-                            </li>
-                        ))}
-                    </ul>
+            <div className="mx-auto mt-12 max-w-7xl px-6 sm:mt-16 lg:px-8 mb-12 bg-neutral text-neutral-content dark:bg-primary dark:text-primary-content backdrop-blur-md rounded-3xl p-8 shadow-sm">
+                <div className="mx-auto max-w-2xl lg:mx-0">
+                    <h2 className="text-3xl font-bold tracking-tight text-inherit sm:text-4xl">Meet the Team</h2>
+                    <p className="mt-6 text-lg leading-8 text-inherit/80">
+                        We’re a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.
+                    </p>
                 </div>
+                <ul role="list" className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                    {team.map((person) => (
+                        <li key={person.name} className="group bg-base-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all">
+                            <div className="aspect-[3/2] w-full rounded-xl overflow-hidden mb-6">
+                                <img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src={person.image} alt={person.name} />
+                            </div>
+                            <h3 className="text-lg font-semibold leading-8 tracking-tight text-base-content group-hover:text-primary transition-colors">{person.name}</h3>
+                            <p className="text-base leading-7 text-base-content/70">{person.role}</p>
+                        </li>
+                    ))}
+                </ul>
             </div>
 
             {/* CTA Section */}
