@@ -1,60 +1,81 @@
 import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
 
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
 
     // Extract query parameters
-    const fromCityName = searchParams.get("fromCityName") || "Delhi";
-    const fromCityId = searchParams.get("fromCityId") || "67062";
-    const toCityName = searchParams.get("toCityName") || "Una";
-    const toCityId = searchParams.get("toCityId") || "95380";
-    const date = searchParams.get("date") || formatDate(new Date());
-    const busType = searchParams.get("busType") || "Any";
+    const fromCityName = searchParams.get("fromCityName");
+    const fromCityId = searchParams.get("fromCityId");
+    const toCityName = searchParams.get("toCityName");
+    const toCityId = searchParams.get("toCityId");
+    const dateParam = searchParams.get("date"); // Expecting DD-MMM-YYYY or YYYY-MM-DD
+
+    if (!fromCityId || !toCityId || !dateParam) {
+        return NextResponse.json(
+            { success: false, error: "Missing required parameters: fromCityId, toCityId, date" },
+            { status: 400 }
+        );
+    }
 
     try {
-        // Build the RedBus search URL
-        const redBusUrl = buildRedBusUrl({
-            fromCityName,
-            fromCityId,
-            toCityName,
-            toCityId,
-            date,
-            busType,
-        });
+        // Format date to YYYY-MM-DD for AbhiBus
+        const formattedDate = parseDateToISO(dateParam);
 
-        // Fetch the page HTML
-        const response = await fetch(redBusUrl, {
+        const payload = {
+            source: fromCityName || "Unknown",
+            sourceid: parseInt(fromCityId),
+            destination: toCityName || "Unknown",
+            destinationid: parseInt(toCityId),
+            jdate: formattedDate,
+            prd: "mobile",
+            filters: 1,
+            isReturnJourney: "0",
+            api_exp: {
+                exp_feat_getbuslist: "v1",
+                exp_ixigo_payment: "B",
+                exp_service_cards: "1",
+                exp_srp_outlier: "yes",
+                exp_srp_sort_weighted: "A",
+            },
+            clevertapID: "",
+        };
+
+        const response = await fetch("https://www.abhibus.com/buslist/v1/services", {
+            method: "POST",
             headers: {
+                "Content-Type": "application/json",
                 "User-Agent":
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                Accept:
-                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                "Accept-Language": "en-US,en;q=0.5",
-                "Cache-Control": "no-cache",
             },
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to fetch RedBus page: ${response.status}`);
+            throw new Error(`AbhiBus API error: ${response.status}`);
         }
 
-        const html = await response.text();
-        const buses = parseRedBusHTML(html);
+        const data = await response.json();
+
+        if (data.status !== "success") {
+            throw new Error(data.message || "Failed to fetch bus list");
+        }
+
+        // Transform the data to match our internal schema
+        const buses = (data.serviceDetailsList || []).map(transformBusData);
 
         return NextResponse.json({
             success: true,
             route: {
                 from: fromCityName,
                 to: toCityName,
-                date: date,
+                date: formattedDate,
             },
             totalBuses: buses.length,
             buses: buses,
             scrapedAt: new Date().toISOString(),
         });
     } catch (error) {
-        console.error("RedBus scraper error:", error);
+        console.error("Bus search error:", error);
         return NextResponse.json(
             {
                 success: false,
@@ -62,7 +83,7 @@ export async function GET(request) {
                 route: {
                     from: fromCityName,
                     to: toCityName,
-                    date: date,
+                    date: dateParam,
                 },
             },
             { status: 500 }
@@ -71,167 +92,79 @@ export async function GET(request) {
 }
 
 /**
- * Build the RedBus search URL with given parameters
+ * Convert date string (DD-MMM-YYYY or YYYY-MM-DD) to YYYY-MM-DD
  */
-function buildRedBusUrl({ fromCityName, fromCityId, toCityName, toCityId, date, busType }) {
-    const encodedFromCity = encodeURIComponent(fromCityName);
-    const encodedToCity = encodeURIComponent(toCityName);
+function parseDateToISO(dateStr) {
+    // If already YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        return dateStr;
+    }
 
-    return `https://www.redbus.in/search?fromCityName=${encodedFromCity}&fromCityId=${fromCityId}&toCityName=${encodedToCity}&toCityId=${toCityId}&busType=${busType}&onward=${date}`;
-}
+    // Handle DD-MMM-YYYY (e.g., 08-Feb-2026)
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+        const months = {
+            Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
+            Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12"
+        };
+        const day = parts[0].padStart(2, "0");
+        const month = months[parts[1]];
+        const year = parts[2];
 
-/**
- * Format date to DD-MMM-YYYY format (e.g., 08-Feb-2026)
- */
-function formatDate(date) {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-}
-
-/**
- * Parse RedBus HTML and extract bus information
- */
-function parseRedBusHTML(html) {
-    const $ = cheerio.load(html);
-    const buses = [];
-
-    // Select each bus tuple/listing
-    $("li.tupleWrapper___d5a78a").each((index, element) => {
-        const $bus = $(element);
-
-        // Skip carousel items (duplicates)
-        if ($bus.hasClass("carouselTuple__ind-search-styles-module-scss-BcFv2")) {
-            return;
+        if (month) {
+            return `${year}-${month}-${day}`;
         }
+    }
 
-        try {
-            const bus = extractBusInfo($, $bus);
-            if (bus.operatorName) {
-                buses.push(bus);
-            }
-        } catch (err) {
-            console.error("Error parsing bus element:", err);
-        }
-    });
+    // Fallback: try parsing as date object
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+        return d.toISOString().split("T")[0];
+    }
 
-    return buses;
+    return dateStr; // Return as is if all fails
 }
 
 /**
- * Extract bus information from a single bus element
+ * Transform AbhiBus service object to our standard Bus object
  */
-function extractBusInfo($, $bus) {
-    // Get bus ID from the element
-    const busId = $bus.attr("id") || "";
-
-    // Operator name
-    const operatorName = $bus.find(".travelsName___3da91c").text().trim();
-
-    // Bus type
-    const busType = $bus.find(".busType___e916fc").text().trim();
-
-    // Departure time
-    const departureTime = $bus.find(".boardingTime___8cd3ac").text().trim();
-
-    // Arrival time
-    const arrivalTime = $bus.find(".droppingTime___ac8c6a").text().trim();
-
-    // Duration
-    const duration = $bus.find(".duration___3da8b4").text().trim();
-
-    // Available seats
-    const seatsText = $bus.find(".totalSeats___4cda5d").text().trim();
-    const availableSeats = parseInt(seatsText) || 0;
-
-    // Price - original (strike-off) price
-    const originalPriceText = $bus.find(".strikeOffFare___28c5c9").text().trim();
-    const originalPrice = parsePrice(originalPriceText);
-
-    // Price - final/discounted price
-    const finalPriceText = $bus.find(".finalFare___0b90fc").text().trim();
-    const finalPrice = parsePrice(finalPriceText);
-
-    // Rating
-    const ratingText = $bus.find(".rating___082aa7").text().trim();
-    const rating = parseFloat(ratingText) || null;
-
-    // Review count
-    const reviewCountText = $bus.find(".ratingCount___5c5c15").text().trim();
-    const reviewCount = parseInt(reviewCountText) || 0;
-
-    // Has live tracking
-    const hasLiveTracking = $bus.find(".liveTracking___67e4b2").length > 0;
-
-    // Offers/Deals
-    const offers = [];
-    $bus.find(".offerText___a0c81b").each((i, el) => {
-        const offerText = $(el).text().trim();
-        if (offerText) offers.push(offerText);
-    });
-
-    // Red Deal discount
-    const redDealText = $bus.find(".discount_text___909e2d").text().trim();
-    const redDeal = redDealText || null;
-
-    // Persuasion tags (On Time, Free date change, etc.)
-    const tags = [];
-    $bus.find(".persuasionTags___406ff3 .label___26b1b6").each((i, el) => {
-        const tagText = $(el).text().trim();
-        if (tagText) tags.push(tagText);
-    });
-
-    // Via route info (if starts from different city)
-    const viaRoute = $bus.find(".viaTagText___42d2f5").text().trim() || null;
-
-    // Is Primo bus
-    const isPrimo = $bus.find(".heroImg___6335f9").length > 0;
-
+function transformBusData(service) {
     return {
-        id: busId,
-        operatorName,
-        busType,
+        id: service.serviceKey,
+        operatorName: service.travelerAgentName,
+        busType: service.busTypeName,
         departure: {
-            time: departureTime,
+            time: service.startTimeTwfFormat, // "17:00"
+            timestamp: service.startTimestamp,
+            place: service.boardingInfoList?.[0]?.placeName || "",
         },
         arrival: {
-            time: arrivalTime,
+            time: service.arriveTimeTwfFormat, // "01:30"
+            timestamp: service.arriveTimestamp,
+            place: service.droppingInfoList?.[0]?.placeName || "",
         },
-        duration,
-        availableSeats,
+        duration: service.travelTime, // "08:30:00"
+        availableSeats: parseInt(service.availableSeats) || 0,
         pricing: {
-            originalPrice,
-            finalPrice,
-            discount: originalPrice && finalPrice ? originalPrice - finalPrice : 0,
+            originalPrice: service.sortFare, // Using sortFare as base
+            finalPrice: parseFloat(service.fare),
             currency: "INR",
+            discount: 0, // Calculate if needed based on original vs fare
         },
         rating: {
-            score: rating,
-            reviewCount,
+            score: parseFloat(service.rating) || 0,
+            reviewCount: parseInt(service.noOfRatings) || 0,
         },
         features: {
-            hasLiveTracking,
-            isPrimo,
-            tags,
+            liveTracking: service.is_track_avail === 1,
+            ac: service.busTypeName.toLowerCase().includes("ac") && !service.busTypeName.toLowerCase().includes("non-ac"),
+            sleeper: service.busTypeName.toLowerCase().includes("sleeper"),
+            seater: service.busTypeName.toLowerCase().includes("seater"),
+            tags: [], // Can extract from Amenities_list if populated
         },
         offers: {
-            redDeal,
-            promos: offers,
+            promos: [], // Can extract from edgeDeals if needed
         },
-        viaRoute,
+        viaRoute: service.viaPlaces,
     };
-}
-
-/**
- * Parse price string to number
- * @param {string} priceStr - Price string like "₹701" or "₹634.75"
- * @returns {number|null}
- */
-function parsePrice(priceStr) {
-    if (!priceStr) return null;
-    const cleaned = priceStr.replace(/[₹,\s]/g, "");
-    const price = parseFloat(cleaned);
-    return isNaN(price) ? null : price;
 }
