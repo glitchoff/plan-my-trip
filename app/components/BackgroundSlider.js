@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const images = [
@@ -10,15 +10,22 @@ const images = [
 ];
 
 export default function BackgroundSlider() {
-  const [randomIndex] = useState(() => Math.floor(Math.random() * images.length));
+  // Start with first image to avoid hydration mismatch, then randomize on client
+  const [imageIndex, setImageIndex] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setImageIndex(Math.floor(Math.random() * images.length));
+    setMounted(true);
+  }, []);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
       <Image
-        src={images[randomIndex]}
+        src={images[imageIndex]}
         alt="Hero Background"
         fill
-        className="object-cover"
+        className={`object-cover transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}
         priority
         quality={80}
         unoptimized

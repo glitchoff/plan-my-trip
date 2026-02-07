@@ -79,24 +79,25 @@ function ResultsTabs() {
 }
 
 export default function ResultsLayout({ children }) {
-    // We need to access pathname here too to conditionally remove pt-16
-    // Since ResultsTabs is used inside, we can just check children or use a wrapper? 
-    // Wait, usePathname hook is available here since "use client" is at top.
-    // Actually, createQueryString etc are inside ResultsTabs. usePathname is imported at top.
-    
-    // BUT ResultsLayout function itself doesn't use hooks currently.
-    // Let's make sure it does.
     const pathname = usePathname();
     const isAIChat = pathname?.includes("/results/ai-chat");
 
     return (
-        <div className={`min-h-screen bg-base-200 ${isAIChat ? "pt-0" : "pt-16"}`}>
+        <div className={`min-h-screen bg-base-200 ${isAIChat ? "" : "pt-16"}`}>
             <Suspense fallback={<div className="h-32 bg-base-100 animate-pulse"></div>}>
                 <ResultsTabs />
             </Suspense>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {children}
-            </div>
+            {isAIChat ? (
+                // AI Chat gets full height, no padding
+                <div className="h-[calc(100vh-48px)]">
+                    {children}
+                </div>
+            ) : (
+                // Other results pages get normal container
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {children}
+                </div>
+            )}
         </div>
     );
 }
