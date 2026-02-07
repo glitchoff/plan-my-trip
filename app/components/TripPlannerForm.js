@@ -116,131 +116,126 @@ export default function TripPlannerForm() {
     };
 
     return (
-        <div ref={formRef} className="max-w-4xl mx-auto bg-base-100 rounded-2xl shadow-xl border border-base-200 p-2 md:p-4">
-            <form onSubmit={handlePlanTrip} className="flex flex-col gap-6 relative z-10">
-                {/* Row 1: Locations */}
-                <div className="flex flex-col md:flex-row gap-4 items-center">
-                    {/* Source Input */}
-                    <div className="relative flex-1 w-full z-20">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            📍
+        <div ref={formRef} className="max-w-5xl mx-auto bg-base-100/90 backdrop-blur-md rounded-2xl shadow-xl border border-base-200 p-4 md:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Left Column - Compact Form */}
+                <div className="flex flex-col justify-center">
+                    <form onSubmit={handlePlanTrip} className="flex flex-col gap-2 relative z-10">
+                        {/* Source Input */}
+                        <div className="relative w-full z-30">
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/50">
+                                    📍
+                                </div>
+                                <input
+                                    type="text"
+                                    className="input input-bordered w-full pl-10 h-12 bg-base-200/50 focus:bg-base-100 transition-all text-sm"
+                                    placeholder={t('whereFrom')}
+                                    value={source}
+                                    onChange={(e) => {
+                                        setSource(e.target.value);
+                                        setActiveField('source');
+                                    }}
+                                    onFocus={() => setActiveField('source')}
+                                    required
+                                />
+                            </div>
+                            {activeField === 'source' && sourceSuggestions.length > 0 && (
+                                <ul className="absolute top-full left-0 right-0 bg-base-100/95 backdrop-blur-lg border-2 border-primary/20 rounded-xl shadow-2xl mt-2 max-h-48 overflow-y-auto z-[100]">
+                                    {sourceSuggestions.map((feature, idx) => (
+                                        <li
+                                            key={idx}
+                                            className="p-3 hover:bg-primary/10 cursor-pointer text-sm border-b border-base-200 last:border-0 transition-colors"
+                                            onClick={() => handleSelectSuggestion(feature, 'source')}
+                                        >
+                                            {feature.properties.formatted}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
-                        <input
-                            type="text"
-                            className="input input-bordered w-full pl-10 h-14 bg-base-200 focus:bg-base-100 transition-all"
-                            placeholder={t('whereFrom')}
-                            value={source}
-                            onChange={(e) => {
-                                setSource(e.target.value);
-                                setActiveField('source');
-                            }}
-                            onFocus={() => setActiveField('source')}
-                            required
-                        />
-                        {/* Suggestions Dropdown */}
-                        {activeField === 'source' && sourceSuggestions.length > 0 && (
-                            <ul className="absolute top-full left-0 right-0 bg-base-100 border border-base-200 rounded-lg shadow-xl mt-1 max-h-60 overflow-y-auto z-50">
-                                {sourceSuggestions.map((feature, idx) => (
-                                    <li
-                                        key={idx}
-                                        className="p-3 hover:bg-base-200 cursor-pointer flex items-center gap-2 border-b border-base-200 last:border-0"
-                                        onClick={() => handleSelectSuggestion(feature, 'source')}
-                                    >
-                                        <span className="text-lg">📍</span>
-                                        <div className="flex flex-col">
-                                            <span className="font-medium text-sm">{feature.properties.address_line1}</span>
-                                            <span className="text-xs text-base-content/60">{feature.properties.address_line2}</span>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
 
-                    <div className="hidden md:block text-base-content/30">➜</div>
-
-                    {/* Destination Input */}
-                    <div className="relative flex-1 w-full z-20">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            🗺️
+                        {/* Destination Input */}
+                        <div className="relative w-full z-10">
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/50">
+                                    🏁
+                                </div>
+                                <input
+                                    type="text"
+                                    className="input input-bordered w-full pl-10 h-12 bg-base-200/50 focus:bg-base-100 transition-all text-sm"
+                                    placeholder={t('whereTo')}
+                                    value={destination}
+                                    onChange={(e) => {
+                                        setDestination(e.target.value);
+                                        setActiveField('destination');
+                                    }}
+                                    onFocus={() => setActiveField('destination')}
+                                    required
+                                />
+                            </div>
+                            {activeField === 'destination' && destinationSuggestions.length > 0 && (
+                                <ul className="absolute top-full left-0 right-0 bg-base-100/95 backdrop-blur-lg border-2 border-primary/20 rounded-xl shadow-2xl mt-2 max-h-48 overflow-y-auto z-[100]">
+                                    {destinationSuggestions.map((feature, idx) => (
+                                        <li
+                                            key={idx}
+                                            className="p-3 hover:bg-primary/10 cursor-pointer text-sm border-b border-base-200 last:border-0 transition-colors"
+                                            onClick={() => handleSelectSuggestion(feature, 'destination')}
+                                        >
+                                            {feature.properties.formatted}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
-                        <input
-                            type="text"
-                            className="input input-bordered w-full pl-10 h-14 bg-base-200 focus:bg-base-100 transition-all"
-                            placeholder={t('whereTo')}
-                            value={destination}
-                            onChange={(e) => {
-                                setDestination(e.target.value);
-                                setActiveField('destination');
-                            }}
-                            onFocus={() => setActiveField('destination')}
-                            required
-                        />
-                        {/* Suggestions Dropdown */}
-                        {activeField === 'destination' && destinationSuggestions.length > 0 && (
-                            <ul className="absolute top-full left-0 right-0 bg-base-100 border border-base-200 rounded-lg shadow-xl mt-1 max-h-60 overflow-y-auto z-50">
-                                {destinationSuggestions.map((feature, idx) => (
-                                    <li
-                                        key={idx}
-                                        className="p-3 hover:bg-base-200 cursor-pointer flex items-center gap-2 border-b border-base-200 last:border-0"
-                                        onClick={() => handleSelectSuggestion(feature, 'destination')}
-                                    >
-                                        <span className="text-lg">🏁</span>
-                                        <div className="flex flex-col">
-                                            <span className="font-medium text-sm">{feature.properties.address_line1}</span>
-                                            <span className="text-xs text-base-content/60">{feature.properties.address_line2}</span>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
+
+                        {/* Date & Days Row */}
+                        <div className="flex gap-2">
+                            <div className="relative flex-1" onClick={() => document.getElementById('dateInput')?.showPicker()}>
+                                <input
+                                    id="dateInput"
+                                    type="date"
+                                    className="input input-bordered w-full h-12 bg-base-200/50 focus:bg-base-100 transition-all text-sm cursor-pointer"
+                                    value={travelDate}
+                                    min={new Date().toISOString().split('T')[0]}
+                                    onChange={(e) => setTravelDate(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="relative w-20">
+                                <input
+                                    type="number"
+                                    min="1"
+                                    className="input input-bordered w-full h-12 bg-base-200/50 focus:bg-base-100 transition-all text-sm text-center"
+                                    placeholder="Days"
+                                    value={duration}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setDuration(val === "" ? "" : parseInt(val));
+                                    }}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Go Button */}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="btn btn-primary w-full h-12 rounded-xl shadow-md text-base"
+                        >
+                            {loading ? '...' : 'Go →'}
+                        </button>
+                    </form>
                 </div>
 
-                {/* Row 2: Date, Duration, Submit */}
-                <div className="flex flex-col md:flex-row gap-4 items-center z-10">
-                    <div className="relative flex-1 w-full" onClick={() => document.getElementById('dateInput')?.showPicker()}>
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            📅
-                        </div>
-                        <input
-                            id="dateInput"
-                            type="date"
-                            className="input input-bordered w-full pl-10 h-14 bg-base-200 focus:bg-base-100 transition-all cursor-pointer"
-                            value={travelDate}
-                            min={new Date().toISOString().split('T')[0]}
-                            onChange={(e) => setTravelDate(e.target.value)}
-                            required
-                        />
+                {/* Right Column - Rectangular Map */}
+                <div className="flex items-center justify-center h-full">
+                    <div className="w-full h-full min-h-[250px] rounded-xl overflow-hidden border border-base-200 shadow-sm">
+                        <RouteMap source={sourceCoords} destination={destinationCoords} />
                     </div>
-                    <div className="relative w-full md:w-32">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            ⏳
-                        </div>
-                        <input
-                            type="number"
-                            min="1"
-                            className="input input-bordered w-full pl-10 h-14 bg-base-200 focus:bg-base-100 transition-all"
-                            placeholder="Days"
-                            value={duration}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                setDuration(val === "" ? "" : parseInt(val));
-                            }}
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="btn btn-primary w-full md:w-auto px-8 h-14 rounded-xl hover-lift shadow-lg"
-                    >
-                        {loading ? t('planning') : t('planTrip')}
-                    </button>
                 </div>
-            </form>
-
-            <RouteMap source={sourceCoords} destination={destinationCoords} />
+            </div>
         </div>
     );
 }
