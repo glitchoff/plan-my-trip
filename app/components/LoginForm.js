@@ -2,23 +2,26 @@
 
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
     const { data: session } = useSession();
     const router = useRouter();
 
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl") || "/results";
+
     useEffect(() => {
         if (session) {
-            router.push("/");
+            router.push(callbackUrl);
         }
-    }, [session, router]);
+    }, [session, router, callbackUrl]);
 
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         try {
-            await signIn("google", { callbackUrl: "/" });
+            await signIn("google", { callbackUrl });
         } catch (error) {
             console.error("Login error:", error);
             setIsLoading(false);
