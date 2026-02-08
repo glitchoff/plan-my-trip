@@ -2,7 +2,8 @@
 
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
-import { useState, memo, useCallback } from 'react';
+import { useState, memo, useCallback, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -57,12 +58,24 @@ const ChatMessage = memo(function ChatMessage({ message }) {
 });
 
 export default function Page() {
+    const searchParams = useSearchParams();
+    const promptFromUrl = searchParams.get('prompt');
+    const hasAutoSent = useRef(false);
+    
     const { messages, sendMessage, status, stop } = useChat({
         transport: new DefaultChatTransport({
             api: '/api/ai/chat',
         }),
     });
     const [input, setInput] = useState('');
+
+    // Auto-send prompt from URL when page loads
+    useEffect(() => {
+        if (promptFromUrl && status === 'ready' && !hasAutoSent.current && messages.length === 0) {
+            hasAutoSent.current = true;
+            sendMessage({ text: promptFromUrl });
+        }
+    }, [promptFromUrl, status, sendMessage, messages.length]);
 
     // No auto-scroll - user has full control over scrolling
 
@@ -78,6 +91,21 @@ export default function Page() {
         }
     }, [input, sendMessage]);
 
+    const handleSuggestionClick = useCallback((suggestion) => {
+        if (status === 'ready') {
+            sendMessage({ text: suggestion });
+        }
+    }, [status, sendMessage]);
+
+    const suggestedPrompts = [
+        "What are the best places to visit at my destination?",
+        "Suggest a budget-friendly itinerary for my trip",
+        "What's the best time to visit this place?",
+        "Recommend local food and restaurants to try",
+        "What should I pack for this trip?",
+        "Tell me about local customs and etiquette",
+    ];
+
     return (
         <div className="flex flex-col h-full pb-4 px-4">
             <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-6 bg-base-100/60 backdrop-blur-sm">
@@ -85,7 +113,23 @@ export default function Page() {
                     <div className="text-center text-base-content/60 mt-20">
                         <div className="text-6xl mb-4">💬</div>
                         <h2 className="text-2xl font-bold mb-2 text-base-content">AI Assistant</h2>
-                        <p className="text-base-content/80">Ask me anything about your trip!</p>
+                        <p className="text-base-content/80 mb-8">Ask me anything about your trip!</p>
+                        
+                        <div className="max-w-2xl mx-auto">
+                            <p className="text-sm text-base-content/60 mb-4">Try asking:</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {suggestedPrompts.map((prompt, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => handleSuggestionClick(prompt)}
+                                        disabled={status !== 'ready'}
+                                        className="p-3 text-left text-sm bg-base-200 hover:bg-primary hover:text-primary-content rounded-xl transition-all duration-200 hover:scale-[1.02] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {prompt}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 )}
 

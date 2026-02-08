@@ -82,7 +82,40 @@ export default function About() {
                 </div>
             </div>
 
-
+            {/* Technologies Section */}
+            <div className="mx-auto mt-12 max-w-7xl px-6 sm:mt-16 lg:px-8 mb-12">
+                <div className="mx-auto max-w-2xl lg:mx-0 mb-10">
+                    <h2 className="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">Built With</h2>
+                    <p className="mt-6 text-lg leading-8 text-base-content/70">
+                        Our platform is powered by modern, reliable technologies to deliver the best experience.
+                    </p>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                    {[
+                        { name: 'Next.js', icon: '⚡', description: 'React Framework', color: 'bg-black text-white' },
+                        { name: 'React', icon: '⚛️', description: 'UI Library', color: 'bg-blue-500 text-white' },
+                        { name: 'Tailwind CSS', icon: '🎨', description: 'Styling', color: 'bg-cyan-500 text-white' },
+                        { name: 'DaisyUI', icon: '🌼', description: 'Component Library', color: 'bg-purple-500 text-white' },
+                        { name: 'Framer Motion', icon: '🎬', description: 'Animations', color: 'bg-pink-500 text-white' },
+                        { name: 'Leaflet', icon: '🗺️', description: 'Interactive Maps', color: 'bg-green-500 text-white' },
+                        { name: 'Supabase', icon: '🔥', description: 'Backend & Auth', color: 'bg-emerald-500 text-white' },
+                        { name: 'NextAuth', icon: '🔐', description: 'Authentication', color: 'bg-violet-500 text-white' },
+                        { name: 'Vercel AI SDK', icon: '🤖', description: 'AI Integration', color: 'bg-gray-800 text-white' },
+                        { name: 'Lucide React', icon: '✨', description: 'Icons', color: 'bg-orange-500 text-white' },
+                        { name: 'Zod', icon: '🛡️', description: 'Validation', color: 'bg-blue-600 text-white' },
+                        { name: 'React Markdown', icon: '📝', description: 'Markdown Render', color: 'bg-teal-500 text-white' },
+                    ].map((tech) => (
+                        <div 
+                            key={tech.name} 
+                            className="group relative flex flex-col items-center p-4 rounded-2xl bg-base-200 hover:bg-base-300 transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-default"
+                        >
+                            <span className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-200">{tech.icon}</span>
+                            <span className="font-semibold text-base-content text-sm text-center">{tech.name}</span>
+                            <span className="text-xs text-base-content/60 text-center mt-1">{tech.description}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
 
             {/* CTA Section */}
             <div className="bg-primary text-primary-content py-16">

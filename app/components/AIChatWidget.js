@@ -48,22 +48,23 @@ export default function AIChatWidget() {
 
     return (
         <div className="fixed bottom-6 right-6 z-50">
-            {/* Stream-like speech bubble message */}
-            <div 
-                className={`absolute bottom-full right-0 mb-3 transition-all duration-300 ease-out ${
+            {/* Stream-like speech bubble message - CLICKABLE to send this prompt */}
+            <Link
+                href={`/results/ai-chat?prompt=${encodeURIComponent(currentPrompt.text)}`}
+                className={`absolute bottom-full right-0 mb-3 transition-all duration-300 ease-out cursor-pointer ${
                     isVisible 
                         ? (isAnimating ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95') 
                         : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
                 }`}
             >
                 <div 
-                    className="bg-base-100 text-base-content px-4 py-3 rounded-2xl shadow-xl border border-primary/20 flex items-center gap-2"
+                    className="bg-base-100 text-base-content px-4 py-3 rounded-2xl shadow-xl border border-primary/20 flex items-center gap-2 hover:bg-primary hover:text-primary-content hover:border-primary transition-colors duration-200"
                     style={{
                         animation: isVisible && isAnimating ? 'messageStream 0.4s ease-out forwards' : 'none'
                     }}
                 >
                     <PromptIcon 
-                        className="w-4 h-4 text-primary flex-shrink-0"
+                        className="w-4 h-4 text-primary flex-shrink-0 group-hover:text-primary-content"
                         style={{
                             animation: isVisible && isAnimating ? 'iconBounce 0.5s ease-out 0.2s forwards' : 'none'
                         }}
@@ -86,9 +87,9 @@ export default function AIChatWidget() {
                         transitionDelay: isVisible && isAnimating ? '0.15s' : '0s'
                     }}
                 />
-            </div>
+            </Link>
 
-            {/* Main chat button */}
+            {/* Main chat button - Opens fresh chat */}
             <Link
                 href="/results/ai-chat"
                 onMouseEnter={() => setIsHovered(true)}
