@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bus, MapPin, ArrowRight, AlertCircle } from "lucide-react";
 
+
 function BusContent() {
     const searchParams = useSearchParams();
 
@@ -68,8 +69,8 @@ function BusContent() {
         };
     };
 
-    // City Search API with optional auto-select callback
-    const searchCities = async (query, setOptions, setIsSearching, autoSelectCallback = null) => {
+    // City Search API with optional auto-select callback and fallback to first word
+    const searchCities = async (query, setOptions, setIsSearching, autoSelectCallback = null, isRetry = false) => {
         if (!query || query.length < 2) {
             setOptions([]);
             return;
@@ -78,13 +79,29 @@ function BusContent() {
         try {
             const res = await fetch(`/api/bus/city-search?q=${encodeURIComponent(query)}`);
             const data = await res.json();
-            if (data.success && Array.isArray(data.results)) {
+            if (data.success && Array.isArray(data.results) && data.results.length > 0) {
                 setOptions(data.results);
-                // Auto-select the first result if callback provided
-                if (autoSelectCallback && data.results.length > 0) {
-                    autoSelectCallback(data.results[0]);
+                // Auto-select the first result if callback provided, pass all results for alternatives
+                if (autoSelectCallback) {
+                    autoSelectCallback(data.results[0], data.results);
                 }
             } else {
+                // Fallback: If no results and not already a retry, try with just the first word
+                if (!isRetry && query.includes(' ')) {
+                    const firstWord = query.split(/[\s,]+/)[0].trim();
+                    if (firstWord && firstWord.length >= 2) {
+                        console.log(`No results for "${query}", retrying with first word: "${firstWord}"`);
+                        return searchCities(firstWord, setOptions, setIsSearching, autoSelectCallback, true);
+                    }
+                }
+                // Also try splitting by comma if still no results
+                if (!isRetry && query.includes(',')) {
+                    const firstPart = query.split(',')[0].trim();
+                    if (firstPart && firstPart.length >= 2) {
+                        console.log(`No results for "${query}", retrying with first part: "${firstPart}"`);
+                        return searchCities(firstPart, setOptions, setIsSearching, autoSelectCallback, true);
+                    }
+                }
                 setOptions([]);
             }
         } catch (err) {
@@ -245,25 +262,37 @@ function BusContent() {
     useEffect(() => {
         const sParam = searchParams.get("source");
         const dParam = searchParams.get("destination");
+        const dateParam = searchParams.get("date");
 
-        const sanitize = (str) => str ? str.split(',')[0].trim() : "";
-        const cleanFrom = sanitize(sParam);
-        const cleanTo = sanitize(dParam);
+        // Use full location string as-is for closest match
+        const cleanFrom = sParam ? sParam.trim() : "";
+        const cleanTo = dParam ? dParam.trim() : "";
+
+        // Set date from URL if provided
+        if (dateParam) {
+            setDate(dateParam);
+        }
 
         if (cleanFrom && !selectedFrom) {
             setFromQuery(cleanFrom);
-            // Auto-select the first result when loading from URL
-            searchCities(cleanFrom, setFromOptions, setIsSearchingFrom, (city) => {
+            // Auto-select the first result when loading from URL, store others as alternatives
+            searchCities(cleanFrom, setFromOptions, setIsSearchingFrom, (city, allResults) => {
                 setSelectedFrom(city);
                 setFromQuery(city.name);
+                // Store other results as alternatives (Similar locations)
+                const alts = allResults.filter(c => c.id !== city.id);
+                setFromAlternatives(alts);
             });
         }
         if (cleanTo && !selectedTo) {
             setToQuery(cleanTo);
-            // Auto-select the first result when loading from URL
-            searchCities(cleanTo, setToOptions, setIsSearchingTo, (city) => {
+            // Auto-select the first result when loading from URL, store others as alternatives
+            searchCities(cleanTo, setToOptions, setIsSearchingTo, (city, allResults) => {
                 setSelectedTo(city);
                 setToQuery(city.name);
+                // Store other results as alternatives (Similar locations)
+                const alts = allResults.filter(c => c.id !== city.id);
+                setToAlternatives(alts);
             });
         }
     }, []);
@@ -322,10 +351,11 @@ function BusContent() {
                                 {isSearchingFrom && <span className="loading loading-spinner loading-xs absolute right-3 top-3 text-primary"></span>}
                             </div>
 
-                            {/* Alternatives Chips */}
+                            {/* Similar/Alternative Locations - Always Visible */}
                             {fromAlternatives.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                    {fromAlternatives.slice(0, 3).map((alt) => (
+                                <div className="mt-2 flex flex-wrap gap-1 items-center">
+                                    <span className="text-xs text-base-content/50 mr-1">Similar:</span>
+                                    {fromAlternatives.slice(0, 4).map((alt) => (
                                         <button
                                             key={alt.id}
                                             onClick={() => selectFromAlternative(alt)}
@@ -414,10 +444,11 @@ function BusContent() {
                                 {isSearchingTo && <span className="loading loading-spinner loading-xs absolute right-3 top-3 text-primary"></span>}
                             </div>
 
-                            {/* Alternatives Chips */}
+                            {/* Similar/Alternative Locations - Always Visible */}
                             {toAlternatives.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                    {toAlternatives.slice(0, 3).map((alt) => (
+                                <div className="mt-2 flex flex-wrap gap-1 items-center">
+                                    <span className="text-xs text-base-content/50 mr-1">Similar:</span>
+                                    {toAlternatives.slice(0, 4).map((alt) => (
                                         <button
                                             key={alt.id}
                                             onClick={() => selectToAlternative(alt)}
