@@ -6,7 +6,7 @@ export const translations = {
         wishlist: "Wishlist",
         myTrips: "My Trips",
         signIn: "Sign In",
-        heroTitle: "Your Next Adventure Starts Here",
+        heroTitle: "Wander More, Worry Less",
         heroSubtitle: "Comparing flights, trains, and hotels has never been easier.",
         planTrip: "Plan Trip",
         whereFrom: "Where are you now?",
