@@ -513,7 +513,6 @@ function BusContent() {
                                                     <div className="text-xs opacity-60">{bus.departure.place}</div>
                                                 </div>
                                                 <div className="flex flex-col items-center opacity-40">
-                                                    <span className="text-xs">{bus.duration}</span>
                                                     <div className="flex items-center text-primary/50">
                                                         <span className="h-[2px] w-8 bg-current"></span>
                                                         <ArrowRight className="w-4 h-4 ml-[-2px]" />
@@ -534,6 +533,10 @@ function BusContent() {
                                         </div>
 
                                         <div className="flex flex-col items-end gap-2 w-full md:w-[30%] border-t md:border-t-0 md:border-l border-base-200 pt-4 md:pt-0 md:pl-4">
+                                            <div className="text-right mb-2">
+                                                <div className="text-lg font-bold text-success">{bus.duration}</div>
+                                                <div className="text-xs text-base-content/60">Total Time</div>
+                                            </div>
                                             <div className="text-right">
                                                 <span className="text-xs opacity-60 block">Starting from</span>
                                                 <span className="text-2xl font-bold text-primary">₹{bus.pricing.finalPrice}</span>

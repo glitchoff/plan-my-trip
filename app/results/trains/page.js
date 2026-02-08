@@ -439,14 +439,13 @@ function TrainsContent() {
                                                         <span className="font-semibold">{train.arr}</span>
                                                         <span className="text-xs">{train.to}</span>
                                                     </div>
-                                                    <div className="badge badge-ghost gap-1">
-                                                        ⏱ {train.duration}
-                                                    </div>
-                                                    <div className="text-xs opacity-60">
-                                                        Runs: {train.days}
-                                                    </div>
+                                                    <div className="badge badge-ghost gap-1 opacity-0 pointer-events-none hidden"></div>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="flex flex-col items-end min-w-[100px]">
+                                            <div className="text-lg font-bold text-success">{train.duration}</div>
+                                            <div className="text-xs text-base-content/60">Total Time</div>
                                         </div>
                                     </div>
                                 ))}
