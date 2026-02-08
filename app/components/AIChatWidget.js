@@ -51,20 +51,20 @@ export default function AIChatWidget() {
             {/* Stream-like speech bubble message - CLICKABLE to send this prompt */}
             <Link
                 href={`/results/ai-chat?prompt=${encodeURIComponent(currentPrompt.text)}`}
-                className={`absolute bottom-full right-0 mb-3 transition-all duration-300 ease-out cursor-pointer ${
+                className={`group absolute bottom-full right-0 mb-3 transition-all duration-300 ease-out cursor-pointer ${
                     isVisible 
                         ? (isAnimating ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95') 
                         : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
                 }`}
             >
                 <div 
-                    className="bg-base-100 text-base-content px-4 py-3 rounded-2xl shadow-xl border border-primary/20 flex items-center gap-2 hover:bg-primary hover:text-primary-content hover:border-primary transition-colors duration-200"
+                    className="bg-base-100 text-base-content px-4 py-3 rounded-2xl shadow-xl border border-primary/20 flex items-center gap-2 group-hover:bg-pink-500 group-hover:text-white group-hover:border-pink-500 transition-colors duration-200"
                     style={{
                         animation: isVisible && isAnimating ? 'messageStream 0.4s ease-out forwards' : 'none'
                     }}
                 >
                     <PromptIcon 
-                        className="w-4 h-4 text-primary flex-shrink-0 group-hover:text-primary-content"
+                        className="w-4 h-4 text-primary flex-shrink-0 group-hover:text-white"
                         style={{
                             animation: isVisible && isAnimating ? 'iconBounce 0.5s ease-out 0.2s forwards' : 'none'
                         }}
@@ -80,7 +80,7 @@ export default function AIChatWidget() {
                 </div>
                 {/* Diamond pointer with coordinated animation */}
                 <div 
-                    className={`absolute -bottom-2 right-6 w-4 h-4 bg-base-100 border-r border-b border-primary/20 transform rotate-45 transition-all duration-300 ${
+                    className={`absolute -bottom-2 right-6 w-4 h-4 bg-base-100 group-hover:bg-pink-500 border-r border-b border-primary/20 group-hover:border-pink-500 transform rotate-45 transition-colors duration-200 ${
                         isVisible && isAnimating ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
                     }`}
                     style={{
