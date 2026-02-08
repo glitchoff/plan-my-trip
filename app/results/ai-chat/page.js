@@ -6,12 +6,13 @@ import { useState, memo, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { BusList } from '@/app/components/chat/BusList';
 
 // Memoized markdown renderer to prevent re-parsing on every render
 const MarkdownContent = memo(function MarkdownContent({ text }) {
     return (
         <div className="prose prose-sm max-w-none prose-headings:text-base-content prose-p:text-base-content prose-li:text-base-content prose-strong:text-base-content prose-code:text-primary prose-code:bg-base-300 prose-code:px-1 prose-code:rounded prose-table:text-base-content prose-th:text-base-content prose-td:text-base-content [&_th]:border [&_th]:border-base-content/20 [&_th]:px-3 [&_th]:py-2 [&_td]:border [&_td]:border-base-content/20 [&_td]:px-3 [&_td]:py-2">
-            <ReactMarkdown 
+            <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
                     table: ({ children }) => (
@@ -32,26 +33,110 @@ const MarkdownContent = memo(function MarkdownContent({ text }) {
 // Memoized message component to prevent unnecessary re-renders
 const ChatMessage = memo(function ChatMessage({ message }) {
     const isUser = message.role === 'user';
-    
+
     return (
         <div className={`chat ${isUser ? 'chat-end' : 'chat-start'}`}>
             <div className="chat-header text-xs mb-1 opacity-70 text-base-content">
                 {isUser ? 'You' : 'AI Assistant'}
             </div>
-            <div className={`chat-bubble shadow-md ${
-                isUser 
-                ? 'chat-bubble-primary text-primary-content' 
+            <div className={`chat-bubble shadow-md ${isUser
+                ? 'chat-bubble-primary text-primary-content'
                 : 'bg-base-200 text-base-content'
-            }`}>
-                {message.parts.map((part, index) =>
-                    part.type === 'text' ? (
-                        isUser ? (
-                            <span key={index}>{part.text}</span>
-                        ) : (
-                            <MarkdownContent key={index} text={part.text} />
-                        )
-                    ) : null,
-                )}
+                } max-w-[85%] md:max-w-[80%]`}>
+                {message.parts.map((part, index) => {
+                    switch (part.type) {
+                        case 'text':
+                            return isUser ? (
+                                <span key={index}>{part.text}</span>
+                            ) : (
+                                <MarkdownContent key={index} text={part.text} />
+                            );
+
+                        case 'step-start':
+                            return (
+                                <div key={index} className="text-base-content/30 my-2">
+                                    <hr className="border-base-content/10" />
+                                </div>
+                            );
+
+                        case 'tool-getBusRoutes':
+                            switch (part.state) {
+                                case 'input-streaming':
+                                case 'input-available':
+                                    return (
+                                        <div key={index} className="flex items-center gap-2 text-xs opacity-70 my-2 bg-base-300/30 p-2 rounded-lg">
+                                            <span className="loading loading-spinner loading-xs"></span>
+                                            Searching buses from {part.input?.fromCityName || '...'} to {part.input?.toCityName || '...'}...
+                                        </div>
+                                    );
+                                case 'output-available':
+                                    if (part.output?.error) {
+                                        return (
+                                            <div key={index} className="alert alert-error text-xs p-2 mt-2">
+                                                <span>Error: {part.output.error}</span>
+                                            </div>
+                                        );
+                                    }
+                                    return (
+                                        <div key={index} className="mt-2 w-full">
+                                            <BusList {...part.output} />
+                                        </div>
+                                    );
+                                case 'output-error':
+                                    return <div key={index} className="text-error text-xs">Error: {part.errorText}</div>;
+                                default:
+                                    return null;
+                            }
+
+                        case 'tool-searchCity':
+                            switch (part.state) {
+                                case 'input-streaming':
+                                case 'input-available':
+                                    return (
+                                        <div key={index} className="flex items-center gap-2 text-xs opacity-70 my-1 bg-base-300/30 p-2 rounded-lg">
+                                            <span className="loading loading-dots loading-xs"></span>
+                                            Finding city: {part.input?.query || '...'}...
+                                        </div>
+                                    );
+                                case 'output-available':
+                                    return (
+                                        <div key={index} className="text-xs opacity-70 my-1 font-mono bg-base-300/30 p-2 rounded">
+                                            ✓ Found cities matching "{part.input?.query || '...'}"
+                                        </div>
+                                    );
+                                case 'output-error':
+                                    return <div key={index} className="text-error text-xs">Error: {part.errorText}</div>;
+                                default:
+                                    return null;
+                            }
+
+                        case 'tool-getTodayDate':
+                            switch (part.state) {
+                                case 'input-streaming':
+                                case 'input-available':
+                                    return (
+                                        <div key={index} className="flex items-center gap-2 text-xs opacity-70 my-1 bg-base-300/30 p-2 rounded-lg">
+                                            <span className="loading loading-dots loading-xs"></span>
+                                            Checking date...
+                                        </div>
+                                    );
+                                case 'output-available':
+                                    return (
+                                        <div key={index} className="badge badge-neutral gap-2 my-2">
+                                            📅 Today is {part.output}
+                                        </div>
+                                    );
+                                case 'output-error':
+                                    return <div key={index} className="text-error text-xs">Error: {part.errorText}</div>;
+                                default:
+                                    return null;
+                            }
+
+                        // Fallback/Legacy handling if needed, or simply null to ignore unknown parts
+                        default:
+                            return null;
+                    }
+                })}
             </div>
         </div>
     );
@@ -61,7 +146,7 @@ export default function Page() {
     const searchParams = useSearchParams();
     const promptFromUrl = searchParams.get('prompt');
     const hasAutoSent = useRef(false);
-    
+
     const { messages, sendMessage, status, stop } = useChat({
         transport: new DefaultChatTransport({
             api: '/api/ai/chat',
@@ -114,7 +199,7 @@ export default function Page() {
                         <div className="text-6xl mb-4">💬</div>
                         <h2 className="text-2xl font-bold mb-2 text-base-content">AI Assistant</h2>
                         <p className="text-base-content/80 mb-8">Ask me anything about your trip!</p>
-                        
+
                         <div className="max-w-2xl mx-auto">
                             <p className="text-sm text-base-content/60 mb-4">Try asking:</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
