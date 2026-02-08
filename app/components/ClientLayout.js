@@ -17,8 +17,8 @@ export default function ClientLayout({ children }) {
         {children}
       </main>
       {!isResultsPage && <Footer />}
-      {/* Floating AI Chat Widget - shows on all pages except AI Chat (AND now unexpected on Results Pages) */}
-      {!isResultsPage && <AIChatWidget />}
+      {/* Floating AI Chat Widget - shows on all pages except AI Chat */}
+      {!isAIChat && <AIChatWidget />}
     </>
   );
 }

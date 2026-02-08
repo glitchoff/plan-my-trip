@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { Bus, Train, Map, MessageCircle, Plane, ArrowRight, Calendar } from "lucide-react";
+import { Bus, Train, Map, MessageCircle, Plane, ArrowRight, Calendar, Car } from "lucide-react";
 
 
 function ResultsTabs() {
@@ -20,7 +20,7 @@ function ResultsTabs() {
         { name: "Trains", path: "/results/trains", icon: Train },
         { name: "Itinerary", path: "/results/itinerary", icon: Calendar },
         { name: "Best Route", path: "/results/best-route", icon: Map },
-        { name: "AI Chat", path: "/results/ai-chat", icon: MessageCircle },
+        { name: "Vehicle", path: "/results/vehicle", icon: Car },
         { name: "Flight", path: "/results/flight", icon: Plane },
     ];
 
@@ -55,10 +55,6 @@ function ResultsTabs() {
                         <span>{source.split(',')[0]}</span>
                         <ArrowRight className="w-4 h-4 text-primary/60" />
                         <span>{destination.split(',')[0]}</span>
-                    </div>
-                    <div className="h-4 w-px bg-base-content/10"></div>
-                    <div className="text-sm text-base-content/60">
-                        {date}
                     </div>
                 </div>
 
