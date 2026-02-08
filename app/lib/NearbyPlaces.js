@@ -78,7 +78,7 @@ export default function NearbyPlaces({ destination, lat, lon, radius = 5000 }) {
 
     return (
         <section className="py-2">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-primary">
                 <MapPin className="w-6 h-6 text-primary" />
                 Explore {destination}
             </h2>

@@ -40,14 +40,14 @@ const ChatMessage = memo(function ChatMessage({ message }) {
     const isUser = message.role === 'user';
 
     return (
-        <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} w-full mb-4`}>
-            <div className={`text-xs mb-1 opacity-70 text-base-content ${isUser ? 'text-right mr-2' : 'text-left ml-2'}`}>
+        <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} w-full mb-3 md:mb-4`}>
+            <div className={`text-[10px] sm:text-xs mb-1 opacity-70 text-base-content ${isUser ? 'text-right mr-2' : 'text-left ml-2'}`}>
                 {isUser ? 'You' : 'AI Assistant'}
             </div>
             <div className={`chat-bubble shadow-md ${isUser
                 ? 'chat-bubble-primary text-primary-content'
                 : 'bg-base-200 text-base-content'
-                } ${!isUser && message.parts.some(p => p.type.startsWith('tool-')) ? 'w-[80%] max-w-none' : 'max-w-[85%] md:max-w-[80%]'}`}>
+                } ${!isUser && message.parts.some(p => p.type.startsWith('tool-')) ? 'w-[95%] sm:w-[85%] md:w-[80%] max-w-none' : 'max-w-[90%] sm:max-w-[85%] md:max-w-[75%]'}`}>
                 {message.parts.map((part, index) => {
                     switch (part.type) {
                         case 'text':
@@ -266,7 +266,7 @@ export function ChatInterface({ sessionId }) {
             {/* Back to Home Button */}
             <Link
                 href="/"
-                className="fixed top-20 left-4 z-30 btn btn-circle btn-sm shadow-lg bg-base-100 hover:bg-primary hover:text-primary-content transition-colors"
+                className="fixed top-16 sm:top-20 left-3 sm:left-4 z-30 btn btn-circle btn-sm shadow-lg bg-base-100 hover:bg-primary hover:text-primary-content transition-colors"
                 title="Back to Home"
             >
                 <ArrowLeft className="w-4 h-4" />
@@ -274,7 +274,7 @@ export function ChatInterface({ sessionId }) {
 
             {/* Mobile Sidebar Toggle */}
             <button
-                className="md:hidden fixed top-20 left-16 z-30 btn btn-circle btn-sm shadow-lg bg-base-100"
+                className="md:hidden fixed top-16 sm:top-20 left-14 sm:left-16 z-30 btn btn-circle btn-sm shadow-lg bg-base-100"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
                 <Menu className="w-4 h-4" />
@@ -295,24 +295,24 @@ export function ChatInterface({ sessionId }) {
             <div className="flex-1 flex flex-col h-full relative w-full transition-all duration-300">
 
                 <div className="flex-1 overflow-y-auto mb-4 bg-base-100/60 backdrop-blur-sm scrollbar-thin scrollbar-thumb-base-content/10">
-                    <div className="max-w-3xl mx-auto p-4 md:p-6 space-y-6">
+                    <div className="max-w-3xl mx-auto px-3 py-4 sm:px-4 md:px-6 space-y-4 sm:space-y-6">
                         {messages.length === 0 && (
-                            <div className="text-center text-base-content/60 mt-20 fade-in">
-                                <div className="text-6xl mb-4 animate-bounce-slow">💬</div>
-                                <h2 className="text-2xl font-bold mb-2 text-base-content">AI Assistant</h2>
-                                <p className="text-base-content/80 mb-8 max-w-md mx-auto">
+                            <div className="text-center text-base-content/60 mt-12 sm:mt-16 md:mt-20 fade-in">
+                                <div className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4 animate-bounce-slow">💬</div>
+                                <h2 className="text-xl sm:text-2xl font-bold mb-2 text-base-content">AI Assistant</h2>
+                                <p className="text-sm sm:text-base text-base-content/80 mb-6 sm:mb-8 max-w-md mx-auto px-4">
                                     Your personal travel guide. Ask me anything about destinations, itineraries, or travel tips!
                                 </p>
 
                                 <div className="max-w-2xl mx-auto">
-                                    <p className="text-sm text-base-content/60 mb-4 font-medium uppercase tracking-wide">Try asking:</p>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <p className="text-xs sm:text-sm text-base-content/60 mb-3 sm:mb-4 font-medium uppercase tracking-wide">Try asking:</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                                         {suggestedPrompts.map((prompt, index) => (
                                             <button
                                                 key={index}
                                                 onClick={() => handleSuggestionClick(prompt)}
                                                 disabled={status !== 'ready'}
-                                                className="p-3 text-left text-sm bg-base-200/50 hover:bg-primary hover:text-primary-content rounded-xl transition-all duration-200 hover:scale-[1.02] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed border border-base-content/5"
+                                                className="p-2 sm:p-3 text-left text-xs sm:text-sm bg-base-200/50 hover:bg-primary hover:text-primary-content rounded-xl transition-all duration-200 hover:scale-[1.02] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed border border-base-content/5 min-h-[44px]"
                                             >
                                                 {prompt}
                                             </button>
@@ -336,14 +336,14 @@ export function ChatInterface({ sessionId }) {
                     </div>
                 </div>
 
-                <div className="w-full flex justify-center px-4 pb-4">
+                <div className="w-full flex justify-center px-3 sm:px-4 pb-3 sm:pb-4">
                     <form
-                        className="flex gap-2 w-full max-w-3xl bg-base-100/90 backdrop-blur-md p-2 rounded-2xl border border-base-content/10 shadow-lg ring-1 ring-base-content/5 focus-within:ring-2 focus-within:ring-primary/20 transition-all"
+                        className="flex gap-1.5 sm:gap-2 w-full max-w-3xl bg-base-100/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl border border-base-content/10 shadow-lg ring-1 ring-base-content/5 focus-within:ring-2 focus-within:ring-primary/20 transition-all"
                         onSubmit={handleSubmit}
                     >
                         <input
                             ref={inputRef}
-                            className="input input-ghost flex-1 focus:bg-transparent focus:outline-none text-base-content placeholder:text-base-content/40 h-10 min-h-0"
+                            className="input input-ghost flex-1 focus:bg-transparent focus:outline-none text-base-content placeholder:text-base-content/40 h-9 sm:h-10 min-h-0 text-sm sm:text-base"
                             value={input}
                             onChange={handleInputChange}
                             disabled={status !== 'ready'}
@@ -351,7 +351,7 @@ export function ChatInterface({ sessionId }) {
                         />
                         <button
                             type="submit"
-                            className="btn btn-primary btn-sm h-10 min-h-0 rounded-xl px-6 shadow-sm"
+                            className="btn btn-primary btn-sm h-9 sm:h-10 min-h-0 rounded-xl px-4 sm:px-6 shadow-sm text-xs sm:text-sm"
                             disabled={status !== 'ready' || !input.trim()}
                         >
                             Send

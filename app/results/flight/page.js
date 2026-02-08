@@ -189,7 +189,7 @@ function FlightContent() {
     return (
         <div className="space-y-8 max-w-5xl mx-auto px-4 py-8 min-h-screen">
             <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold mb-2">Find Your Flight</h1>
+                <h1 className="text-4xl font-bold mb-2 text-base-content">Find Your Flight</h1>
                 <p className="text-base-content/60">Search for real-time flight deals (Powered by Amadeus)</p>
             </div>
 
@@ -200,7 +200,7 @@ function FlightContent() {
                     {/* Source Input */}
                     <div className="form-control relative">
                         <label className="label">
-                            <span className="label-text font-semibold">From</span>
+                            <span className="label-text font-semibold text-base-content">From</span>
                         </label>
                         <div className="relative">
                             <input
@@ -208,9 +208,9 @@ function FlightContent() {
                                 value={sourceQuery}
                                 onChange={handleSourceChange}
                                 placeholder="City or Airport (e.g. LON)"
-                                className="input input-bordered w-full pl-10 focus:input-primary"
+                                className="input input-bordered w-full pl-10 focus:input-primary text-base-content placeholder:text-base-content/40"
                             />
-                            <span className="absolute left-3 top-3 text-xl">🛫</span>
+                            <span className="absolute left-3 top-3 text-xl text-base-content">🛫</span>
                             {isSearchingSource && <span className="loading loading-spinner loading-xs absolute right-3 top-3 text-primary"></span>}
                         </div>
 
@@ -230,8 +230,8 @@ function FlightContent() {
                                         >
                                             <span className="badge badge-primary badge-outline mr-2 w-16 shrink-0">{apt.iataCode}</span>
                                             <div className="flex flex-col items-start gap-0.5">
-                                                <span className="text-sm font-bold">{apt.name}</span>
-                                                <span className="text-xs opacity-60">{apt.address?.cityName}, {apt.address?.countryName}</span>
+                                                <span className="text-sm font-bold text-base-content">{apt.name}</span>
+                                                <span className="text-xs text-base-content/60">{apt.address?.cityName}, {apt.address?.countryName}</span>
                                             </div>
                                         </button>
                                     ))}
@@ -243,7 +243,7 @@ function FlightContent() {
                     {/* Destination Input */}
                     <div className="form-control relative">
                         <label className="label">
-                            <span className="label-text font-semibold">To</span>
+                            <span className="label-text font-semibold text-base-content">To</span>
                         </label>
                         <div className="relative">
                             <input
@@ -251,9 +251,9 @@ function FlightContent() {
                                 value={destQuery}
                                 onChange={handleDestChange}
                                 placeholder="City or Airport (e.g. NYC)"
-                                className="input input-bordered w-full pl-10 focus:input-primary"
+                                className="input input-bordered w-full pl-10 focus:input-primary text-base-content placeholder:text-base-content/40"
                             />
-                            <span className="absolute left-3 top-3 text-xl">🛬</span>
+                            <span className="absolute left-3 top-3 text-xl text-base-content">🛬</span>
                             {isSearchingDest && <span className="loading loading-spinner loading-xs absolute right-3 top-3 text-primary"></span>}
                         </div>
 
@@ -273,8 +273,8 @@ function FlightContent() {
                                         >
                                             <span className="badge badge-secondary badge-outline mr-2 w-16 shrink-0">{apt.iataCode}</span>
                                             <div className="flex flex-col items-start gap-0.5">
-                                                <span className="text-sm font-bold">{apt.name}</span>
-                                                <span className="text-xs opacity-60">{apt.address?.cityName}, {apt.address?.countryName}</span>
+                                                <span className="text-sm font-bold text-base-content">{apt.name}</span>
+                                                <span className="text-xs text-base-content/60">{apt.address?.cityName}, {apt.address?.countryName}</span>
                                             </div>
                                         </button>
                                     ))}
@@ -286,11 +286,11 @@ function FlightContent() {
                     {/* Date Input */}
                     <div className="form-control">
                         <label className="label">
-                            <span className="label-text font-semibold">Date</span>
+                            <span className="label-text font-semibold text-base-content">Date</span>
                         </label>
                         <input
                             type="date"
-                            className="input input-bordered w-full"
+                            className="input input-bordered w-full text-base-content"
                             value={date}
                             min={getLocalDate()}
                             onChange={(e) => setDate(e.target.value)}
@@ -326,21 +326,21 @@ function FlightContent() {
                                         <div>
                                             <h4 className="text-xl font-bold text-base-content flex items-center gap-2">
                                                 {flight.airline}
-                                                <span className="badge badge-neutral text-xs">{flight.flightNumber}</span>
+                                                <span className="badge badge-info text-xs">{flight.flightNumber}</span>
                                                 {flight.stops === 0 && <span className="badge badge-success badge-outline text-xs">Direct</span>}
                                                 {flight.stops > 0 && <span className="badge badge-warning badge-outline text-xs">{flight.stops} Stop(s)</span>}
                                             </h4>
                                             <div className="flex flex-wrap items-center gap-4 text-sm text-base-content/70 mt-2">
                                                 <div className="flex items-center gap-1">
-                                                    <span className="font-semibold">{new Date(flight.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                                    <span className="text-xs">Dep</span>
+                                                    <span className="font-semibold text-base-content">{new Date(flight.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                    <span className="text-xs text-base-content/60">Dep</span>
                                                 </div>
-                                                <span className="text-base-content/30">➜</span>
+                                                <span className="text-base-content/40">➜</span>
                                                 <div className="flex items-center gap-1">
-                                                    <span className="font-semibold">{new Date(flight.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                                    <span className="text-xs">Arr</span>
+                                                    <span className="font-semibold text-base-content">{new Date(flight.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                    <span className="text-xs text-base-content/60">Arr</span>
                                                 </div>
-                                                <div className="badge badge-ghost gap-1">
+                                                <div className="badge badge-ghost gap-1 text-base-content/70">
                                                     {flight.duration}
                                                 </div>
                                             </div>
@@ -358,9 +358,9 @@ function FlightContent() {
                         !loading && (
                             <div className="text-center py-12 bg-base-100 rounded-2xl border border-dashed border-base-300">
                                 <div className="text-6xl mb-4">🛫</div>
-                                <h3 className="text-xl font-bold">No flights found</h3>
+                                <h3 className="text-xl font-bold text-base-content">No flights found</h3>
                                 <p className="text-base-content/60 max-w-md mx-auto mt-2">
-                                    We couldn't find any flights between <span className="font-semibold">{selectedSource?.iataCode}</span> and <span className="font-semibold">{selectedDest?.iataCode}</span> on {date}.
+                                    We couldn't find any flights between <span className="font-semibold text-base-content">{selectedSource?.iataCode}</span> and <span className="font-semibold text-base-content">{selectedDest?.iataCode}</span> on {date}.
                                 </p>
                             </div>
                         )
