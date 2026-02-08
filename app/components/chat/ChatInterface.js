@@ -6,7 +6,8 @@ import { useState, memo, useCallback, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Menu } from 'lucide-react';
+import { Menu, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 // Components
 import { ChatSidebar } from '@/app/components/chat/ChatSidebar';
@@ -253,18 +254,27 @@ export function ChatInterface({ sessionId }) {
     }, [status, sendMessage]);
 
     const suggestedPrompts = [
-        "What type of places do you love to visit?",
+        "Best place to visit this season?",
         "Which places in India are currently good to go this season?",
-        "Need help planning your next adventure?",
-        "Looking for hidden gems to explore in India?",
+        "What should I pack for my North India trip this winter?",
+        "Best places to visit near my location in a budget friendly way?",
     ];
 
     return (
         <div className="flex h-full overflow-hidden">
 
+            {/* Back to Home Button */}
+            <Link
+                href="/"
+                className="fixed top-20 left-4 z-30 btn btn-circle btn-sm shadow-lg bg-base-100 hover:bg-primary hover:text-primary-content transition-colors"
+                title="Back to Home"
+            >
+                <ArrowLeft className="w-4 h-4" />
+            </Link>
+
             {/* Mobile Sidebar Toggle */}
             <button
-                className="md:hidden fixed top-20 left-4 z-30 btn btn-circle btn-sm shadow-lg bg-base-100"
+                className="md:hidden fixed top-20 left-16 z-30 btn btn-circle btn-sm shadow-lg bg-base-100"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
                 <Menu className="w-4 h-4" />

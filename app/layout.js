@@ -29,6 +29,22 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const savedTheme = localStorage.getItem('plan-my-trip-theme-v1');
+                  if (savedTheme) {
+                    document.documentElement.setAttribute('data-theme', savedTheme);
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${spaceGrotesk.variable} ${geistMono.variable} ${pacifico.variable} antialiased font-sans`}
         style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}

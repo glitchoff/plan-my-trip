@@ -1,7 +1,7 @@
 'use client';
 
 import { Plus, MessageSquare, Trash2, X, Timer, ChevronLeft, ChevronRight, History } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 
 export const ChatSidebar = memo(function ChatSidebar({
     sessions = [],
@@ -12,7 +12,26 @@ export const ChatSidebar = memo(function ChatSidebar({
     isOpen,
     onClose
 }) {
+    // Load collapsed state from localStorage, default to true (collapsed)
+    // Always start with true for SSR to prevent hydration mismatch
     const [isCollapsed, setIsCollapsed] = useState(true);
+
+    // Initialize from localStorage after mount (client-side only)
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('chat_sidebar_collapsed');
+            if (saved !== null) {
+                setIsCollapsed(JSON.parse(saved));
+            }
+        }
+    }, []);
+
+    // Persist collapsed state to localStorage
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('chat_sidebar_collapsed', JSON.stringify(isCollapsed));
+        }
+    }, [isCollapsed]);
 
     // Format date for display (e.g., "Today", "Yesterday", "MMM DD")
     const formatDate = (timestamp) => {

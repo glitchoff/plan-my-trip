@@ -5,10 +5,10 @@ import { useState, useEffect } from "react";
 import { Bot, Globe, Sparkles, Heart, Plane } from "lucide-react";
 
 const promptMessages = [
-    { text: "What type of places do you love to visit?", icon: Heart },
+    { text: "Best place to visit this season?", icon: Heart },
     { text: "Which places in India are currently good to go this season?", icon: Plane },
-    { text: "Need help planning your next adventure?", icon: Globe },
-    { text: "Looking for hidden gems to explore in India?", icon: Sparkles },
+    { text: "What should I pack for my North India trip this winter?", icon: Globe },
+    { text: "Best places to visit near my location in a budget friendly way?", icon: Sparkles },
 ];
 
 export default function AIChatWidget() {
