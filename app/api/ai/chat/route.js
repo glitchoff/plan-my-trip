@@ -29,6 +29,10 @@ export async function POST(req) {
         tools: alltools,
         messages: await convertToModelMessages(messages),
         maxOutputTokens: 2000,
+        onFinish: () => {
+          
+            console.log("AI chat finished");
+        },
         onError: (error) => {
             console.error("Error in AI chat:", error);
         }
