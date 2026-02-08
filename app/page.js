@@ -6,23 +6,36 @@ import TripPlannerForm from "./components/TripPlannerForm";
 import { useLanguage } from "./context/LanguageContext";
 import { useSession } from "next-auth/react";
 
-// Typewriter Hook
-function useTypewriter(text, typingSpeed = 100, pauseDuration = 2000) {
+// Typewriter Hook with language cycling
+function useMultiLangTypewriter(userName, typingSpeed = 80, pauseDuration = 2000) {
+  const greetings = [
+    `Hello, ${userName}!`,           // English
+    `नमस्ते, यात्री!`,                 // Hindi (Traveler)
+    `नमस्कार, मित्रा!`,                // Marathi (Friend)
+    `നമസ്കാരം, സുഹൃത്തേ!`,           // Malayalam (Friend)
+    `Bonjour, Voyageur!`,            // French (Traveler)
+    `¡Hola, Viajero!`,               // Spanish (Traveler)
+  ];
+  
   const [displayedText, setDisplayedText] = useState('');
+  const [greetingIndex, setGreetingIndex] = useState(0);
+  
+  const currentGreeting = greetings[greetingIndex];
   
   useEffect(() => {
     let timeout;
-    if (displayedText.length < text.length) {
+    if (displayedText.length < currentGreeting.length) {
       timeout = setTimeout(() => {
-        setDisplayedText(text.slice(0, displayedText.length + 1));
+        setDisplayedText(currentGreeting.slice(0, displayedText.length + 1));
       }, typingSpeed);
     } else {
       timeout = setTimeout(() => {
         setDisplayedText('');
+        setGreetingIndex((prev) => (prev + 1) % greetings.length);
       }, pauseDuration);
     }
     return () => clearTimeout(timeout);
-  }, [displayedText, text, typingSpeed, pauseDuration]);
+  }, [displayedText, currentGreeting, typingSpeed, pauseDuration, greetings.length]);
   
   return displayedText;
 }
@@ -32,8 +45,7 @@ export default function Home() {
   const { data: session } = useSession();
   
   const userName = session?.user?.name?.split(' ')[0] || 'Traveler';
-  const greetingText = `Hello, ${userName}!`;
-  const displayedGreeting = useTypewriter(greetingText, 80, 2000);
+  const displayedGreeting = useMultiLangTypewriter(userName, 80, 2000);
 
   return (
     <div className="min-h-screen text-base-content font-sans">
@@ -47,10 +59,10 @@ export default function Home() {
               <span className="inline-block w-0.5 h-8 bg-primary ml-1 align-middle animate-pulse"></span>
             </p>
           )}
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 hover:scale-105 transition-transform duration-200 cursor-default">
-            {t('heroTitle').split("Starts")[0]} <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-              {t('heroTitle').split("Starts")[1] || "Starts Here"}
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-6 hover:scale-105 transition-transform duration-200 cursor-default drop-shadow-lg">
+            {t('heroTitle').split(",")[0]},{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-400 drop-shadow-lg" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.4)' }}>
+              {t('heroTitle').split(",")[1]?.trim() || "Worry Less"}
             </span>
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-xl text-white drop-shadow-md font-medium mb-10 hover:scale-105 transition-transform duration-200 cursor-default">
