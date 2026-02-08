@@ -1,9 +1,24 @@
 "use client";
 
 import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import BackgroundSlider from "../components/BackgroundSlider";
 
 export default function About() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
+    const handlePlanTrip = () => {
+        if (status === 'loading') return;
+        
+        if (session) {
+            router.push('/');
+        } else {
+            router.push('/login');
+        }
+    };
+
     const stats = [
         { label: 'Happy Travelers', value: '50k+' },
         { label: 'Destinations', value: '100+' },
@@ -11,23 +26,7 @@ export default function About() {
         { label: 'Support', value: '24/7' },
     ];
 
-    const team = [
-        {
-            name: 'Adarsh Gupta',
-            role: 'Founder & CEO',
-            image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-        },
-        {
-            name: 'Sarah Chen',
-            role: 'Head of Product',
-            image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-        },
-        {
-            name: 'Michael Foster',
-            role: 'CTO',
-            image: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-        },
-    ];
+
 
     return (
         <div className="min-h-screen bg-base-100">
@@ -83,32 +82,16 @@ export default function About() {
                 </div>
             </div>
 
-            {/* Team Section */}
-            <div className="mx-auto mt-12 max-w-7xl px-6 sm:mt-16 lg:px-8 mb-12 bg-neutral text-neutral-content dark:bg-primary dark:text-primary-content backdrop-blur-md rounded-3xl p-8 shadow-sm">
-                <div className="mx-auto max-w-2xl lg:mx-0">
-                    <h2 className="text-3xl font-bold tracking-tight text-inherit sm:text-4xl">Meet the Team</h2>
-                    <p className="mt-6 text-lg leading-8 text-inherit/80">
-                        We’re a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.
-                    </p>
-                </div>
-                <ul role="list" className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-                    {team.map((person) => (
-                        <li key={person.name} className="group bg-base-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all">
-                            <div className="aspect-[3/2] w-full rounded-xl overflow-hidden mb-6">
-                                <img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src={person.image} alt={person.name} />
-                            </div>
-                            <h3 className="text-lg font-semibold leading-8 tracking-tight text-base-content group-hover:text-primary transition-colors">{person.name}</h3>
-                            <p className="text-base leading-7 text-base-content/70">{person.role}</p>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+
 
             {/* CTA Section */}
             <div className="bg-primary text-primary-content py-16">
                 <div className="max-w-7xl mx-auto px-4 text-center">
                     <h2 className="text-3xl font-bold mb-6">Ready to start your journey?</h2>
-                    <button className="btn btn-neutral rounded-full font-bold shadow-lg">
+                    <button 
+                        onClick={handlePlanTrip}
+                        className="btn btn-neutral rounded-full font-bold shadow-lg"
+                    >
                         Plan a Trip Now
                     </button>
                 </div>
