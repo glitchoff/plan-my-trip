@@ -126,12 +126,10 @@ export default function Page() {
     }, [status, sendMessage]);
 
     const suggestedPrompts = [
-        "What are the best places to visit at my destination?",
-        "Suggest a budget-friendly itinerary for my trip",
-        "What's the best time to visit this place?",
-        "Recommend local food and restaurants to try",
-        "What should I pack for this trip?",
-        "Tell me about local customs and etiquette",
+        "What type of places do you love to visit?",
+        "Which places in India are currently good to go this season?",
+        "Need help planning your next adventure?",
+        "Looking for hidden gems to explore in India?",
     ];
 
     return (

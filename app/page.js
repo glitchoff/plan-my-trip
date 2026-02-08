@@ -1,13 +1,39 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import BackgroundSlider from "./components/BackgroundSlider";
 import TripPlannerForm from "./components/TripPlannerForm";
 import { useLanguage } from "./context/LanguageContext";
 import { useSession } from "next-auth/react";
 
+// Typewriter Hook
+function useTypewriter(text, typingSpeed = 100, pauseDuration = 2000) {
+  const [displayedText, setDisplayedText] = useState('');
+  
+  useEffect(() => {
+    let timeout;
+    if (displayedText.length < text.length) {
+      timeout = setTimeout(() => {
+        setDisplayedText(text.slice(0, displayedText.length + 1));
+      }, typingSpeed);
+    } else {
+      timeout = setTimeout(() => {
+        setDisplayedText('');
+      }, pauseDuration);
+    }
+    return () => clearTimeout(timeout);
+  }, [displayedText, text, typingSpeed, pauseDuration]);
+  
+  return displayedText;
+}
+
 export default function Home() {
   const { t } = useLanguage();
   const { data: session } = useSession();
+  
+  const userName = session?.user?.name?.split(' ')[0] || 'Traveler';
+  const greetingText = `Hello, ${userName}!`;
+  const displayedGreeting = useTypewriter(greetingText, 80, 2000);
 
   return (
     <div className="min-h-screen text-base-content font-sans">
@@ -17,7 +43,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           {session?.user && (
             <p className="text-3xl md:text-4xl text-white/90 mb-4 hover:scale-105 transition-transform duration-200 cursor-default inline-block" style={{ fontFamily: 'var(--font-pacifico), cursive' }}>
-              Hello, <span className="text-primary capitalize">{session.user.name?.split(' ')[0] || 'Traveler'}</span>!
+              {displayedGreeting}
+              <span className="inline-block w-0.5 h-8 bg-primary ml-1 align-middle animate-pulse"></span>
             </p>
           )}
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 hover:scale-105 transition-transform duration-200 cursor-default">
