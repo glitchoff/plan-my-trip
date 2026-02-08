@@ -30,6 +30,8 @@ const MarkdownContent = memo(function MarkdownContent({ text }) {
     );
 });
 
+import { ToolRegistry } from '@/app/components/chat/ToolRegistry';
+
 // Memoized message component to prevent unnecessary re-renders
 const ChatMessage = memo(function ChatMessage({ message }) {
     const isUser = message.role === 'user';
@@ -40,8 +42,8 @@ const ChatMessage = memo(function ChatMessage({ message }) {
                 {isUser ? 'You' : 'AI Assistant'}
             </div>
             <div className={`chat-bubble shadow-md ${isUser
-                ? 'chat-bubble-primary text-primary-content'
-                : 'bg-base-200 text-base-content'
+                    ? 'chat-bubble-primary text-primary-content'
+                    : 'bg-base-200 text-base-content'
                 } max-w-[85%] md:max-w-[80%]`}>
                 {message.parts.map((part, index) => {
                     switch (part.type) {
@@ -59,81 +61,22 @@ const ChatMessage = memo(function ChatMessage({ message }) {
                                 </div>
                             );
 
-                        case 'tool-getBusRoutes':
-                            switch (part.state) {
-                                case 'input-streaming':
-                                case 'input-available':
-                                    return (
-                                        <div key={index} className="flex items-center gap-2 text-xs opacity-70 my-2 bg-base-300/30 p-2 rounded-lg">
-                                            <span className="loading loading-spinner loading-xs"></span>
-                                            Searching buses from {part.input?.fromCityName || '...'} to {part.input?.toCityName || '...'}...
-                                        </div>
-                                    );
-                                case 'output-available':
-                                    if (part.output?.error) {
-                                        return (
-                                            <div key={index} className="alert alert-error text-xs p-2 mt-2">
-                                                <span>Error: {part.output.error}</span>
-                                            </div>
-                                        );
-                                    }
-                                    return (
-                                        <div key={index} className="mt-2 w-full">
-                                            <BusList {...part.output} />
-                                        </div>
-                                    );
-                                case 'output-error':
-                                    return <div key={index} className="text-error text-xs">Error: {part.errorText}</div>;
-                                default:
-                                    return null;
-                            }
-
-                        case 'tool-searchCity':
-                            switch (part.state) {
-                                case 'input-streaming':
-                                case 'input-available':
-                                    return (
-                                        <div key={index} className="flex items-center gap-2 text-xs opacity-70 my-1 bg-base-300/30 p-2 rounded-lg">
-                                            <span className="loading loading-dots loading-xs"></span>
-                                            Finding city: {part.input?.query || '...'}...
-                                        </div>
-                                    );
-                                case 'output-available':
-                                    return (
-                                        <div key={index} className="text-xs opacity-70 my-1 font-mono bg-base-300/30 p-2 rounded">
-                                            ✓ Found cities matching "{part.input?.query || '...'}"
-                                        </div>
-                                    );
-                                case 'output-error':
-                                    return <div key={index} className="text-error text-xs">Error: {part.errorText}</div>;
-                                default:
-                                    return null;
-                            }
-
-                        case 'tool-getTodayDate':
-                            switch (part.state) {
-                                case 'input-streaming':
-                                case 'input-available':
-                                    return (
-                                        <div key={index} className="flex items-center gap-2 text-xs opacity-70 my-1 bg-base-300/30 p-2 rounded-lg">
-                                            <span className="loading loading-dots loading-xs"></span>
-                                            Checking date...
-                                        </div>
-                                    );
-                                case 'output-available':
-                                    return (
-                                        <div key={index} className="badge badge-neutral gap-2 my-2">
-                                            📅 Today is {part.output}
-                                        </div>
-                                    );
-                                case 'output-error':
-                                    return <div key={index} className="text-error text-xs">Error: {part.errorText}</div>;
-                                default:
-                                    return null;
-                            }
-
-                        // Fallback/Legacy handling if needed, or simply null to ignore unknown parts
                         default:
+                            // Handle tools dynamically from registry
+                            if (part.type.startsWith('tool-')) {
+                                const toolName = part.type.replace('tool-', '');
+                                const ToolComponent = ToolRegistry[toolName];
+
+                                if (ToolComponent) {
+                                    return <ToolComponent key={index} {...part} />;
+                                }
+
+                                return (
+                                    <div key={index} className="text-xs opacity-50 my-1 bg-base-300/30 p-2 rounded-lg">
+                                        Using tool: {toolName}...
+                                    </div>
+                                );
+                            }
                             return null;
                     }
                 })}
