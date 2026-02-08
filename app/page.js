@@ -61,7 +61,7 @@ export default function Home() {
           )}
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-6 hover:scale-105 transition-transform duration-200 cursor-default drop-shadow-lg">
             {t('heroTitle').split(",")[0]},{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary drop-shadow-lg" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.3)' }}>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-400 drop-shadow-lg" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.4)' }}>
               {t('heroTitle').split(",")[1]?.trim() || "Worry Less"}
             </span>
           </h1>
