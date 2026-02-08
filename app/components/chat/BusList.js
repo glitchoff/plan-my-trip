@@ -11,13 +11,13 @@ export function BusList({ buses, totalBuses, route }) {
     }
 
     return (
-        <div className="space-y-3 my-2 w-full max-w-md">
+        <div className="space-y-3 my-2 w-full">
             <div className="flex justify-between items-center text-xs opacity-70 px-1">
                 <span>{route?.from} to {route?.to}</span>
                 <span>{route?.date}</span>
             </div>
 
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {buses.map((bus, index) => (
                     <div key={index} className="card bg-base-100 border border-base-200 shadow-sm p-3 hover:border-primary transition-colors">
                         <div className="flex justify-between items-start mb-2">
