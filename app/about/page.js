@@ -90,26 +90,30 @@ export default function About() {
                         Our platform is powered by modern, reliable technologies to deliver the best experience.
                     </p>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <div className="flex flex-wrap justify-center gap-6">
                     {[
-                        { name: 'Next.js', icon: '⚡', description: 'React Framework', color: 'bg-black text-white' },
-                        { name: 'React', icon: '⚛️', description: 'UI Library', color: 'bg-blue-500 text-white' },
-                        { name: 'Tailwind CSS', icon: '🎨', description: 'Styling', color: 'bg-cyan-500 text-white' },
-                        { name: 'DaisyUI', icon: '🌼', description: 'Component Library', color: 'bg-purple-500 text-white' },
-                        { name: 'Framer Motion', icon: '🎬', description: 'Animations', color: 'bg-pink-500 text-white' },
-                        { name: 'Leaflet', icon: '🗺️', description: 'Interactive Maps', color: 'bg-green-500 text-white' },
-                        { name: 'Supabase', icon: '🔥', description: 'Backend & Auth', color: 'bg-emerald-500 text-white' },
-                        { name: 'NextAuth', icon: '🔐', description: 'Authentication', color: 'bg-violet-500 text-white' },
-                        { name: 'Vercel AI SDK', icon: '🤖', description: 'AI Integration', color: 'bg-gray-800 text-white' },
-                        { name: 'Lucide React', icon: '✨', description: 'Icons', color: 'bg-orange-500 text-white' },
-                        { name: 'Zod', icon: '🛡️', description: 'Validation', color: 'bg-blue-600 text-white' },
-                        { name: 'React Markdown', icon: '📝', description: 'Markdown Render', color: 'bg-teal-500 text-white' },
+                        { name: 'Next.js', icon: 'https://nextjs.org/favicon.ico', description: 'React Framework' },
+                        { name: 'React', icon: 'https://react.dev/favicon.ico', description: 'UI Library' },
+                        { name: 'Tailwind CSS', icon: 'https://tailwindcss.com/favicons/favicon.ico', description: 'Styling' },
+                        { name: 'DaisyUI', icon: 'https://daisyui.com/favicon.ico', description: 'Component Library' },
+                        { name: 'Framer Motion', icon: 'https://user-images.githubusercontent.com/38039349/60953119-d3c6f300-a2fc-11e9-9596-4978e5d52180.png', description: 'Animations' },
+                        { name: 'Leaflet', icon: 'https://leafletjs.com/docs/images/favicon.ico', description: 'Interactive Maps' },
+                        { name: 'Supabase', icon: 'https://supabase.com/favicon/favicon.ico', description: 'Backend & Auth' },
+                        { name: 'NextAuth', icon: 'https://authjs.dev/favicon.ico', description: 'Authentication' },
+                        { name: 'Vercel AI SDK', icon: 'https://vercel.com/favicon.ico', description: 'AI Integration' },
+                        { name: 'Lucide React', icon: 'https://lucide.dev/favicon.ico', description: 'Icons' },
+                        { name: 'Zod', icon: 'https://zod.dev/icon.png?39fe259ddd7f4224', description: 'Validation' },
                     ].map((tech) => (
                         <div 
                             key={tech.name} 
                             className="group relative flex flex-col items-center p-4 rounded-2xl bg-base-200 hover:bg-base-300 transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-default"
                         >
-                            <span className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-200">{tech.icon}</span>
+                            <img 
+                                src={tech.icon} 
+                                alt={tech.name} 
+                                className="w-8 h-8 mb-2 group-hover:scale-110 transition-transform duration-200 object-contain"
+                                onError={(e) => { e.target.style.display = 'none'; }}
+                            />
                             <span className="font-semibold text-base-content text-sm text-center">{tech.name}</span>
                             <span className="text-xs text-base-content/60 text-center mt-1">{tech.description}</span>
                         </div>
