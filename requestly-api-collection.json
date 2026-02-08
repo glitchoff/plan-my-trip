@@ -1,0 +1,29 @@
+{
+    "name": "Plan My Trip API Collection",
+    "id": "plan-my-trip-apis",
+    "description": "Complete API collection for the Plan My Trip application with integrated environment keys",
+    "variables": {
+        "baseUrl": "http://localhost:3000",
+        "GEOCODING": "08e3f37093284ac99db2718c9d43d9f4",
+        "RAILRADAR_API": "rr_eds4j766p74i1esenzk07lfiy5bye0yu",
+        "NIM_API_KEY": "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",
+        "AMADEUS_KEY": "vNaPmUcucSuh0jvOSUtoeo6a2LpGYWG9",
+        "AMADEUS_SECRET": "0kf0nBOC2mlwtJ30",
+        "SUPABASE_URL": "https://sehimfqfpjgliklwamli.supabase.co",
+        "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlaGltZnFmcGpnbGlrbHdhbWxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0NTcxODcsImV4cCI6MjA4NjAzMzE4N30.5-uS7AAIU7385yl_rB_BCsNaYqUke5n2inwco67-UKY"
+    },
+    "requests": [
+        {
+            "id": "ai-station-search",
+            "name": "AI Station Search",
+            "url": "{{baseUrl}}/api/ai",
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": {
+                "prompt": "Find railway stations in Mumbai"
+            }
+        }
+    ]
+}

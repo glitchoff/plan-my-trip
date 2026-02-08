@@ -37,14 +37,14 @@ const ChatMessage = memo(function ChatMessage({ message }) {
     const isUser = message.role === 'user';
 
     return (
-        <div className={`chat ${isUser ? 'chat-end' : 'chat-start'}`}>
-            <div className="chat-header text-xs mb-1 opacity-70 text-base-content">
+        <div className={`flex flex-col ${isUser ? 'items-end' : 'items-center'} w-full mb-4`}>
+            <div className={`text-xs mb-1 opacity-70 text-base-content ${isUser ? 'text-right mr-2' : 'text-center'}`}>
                 {isUser ? 'You' : 'AI Assistant'}
             </div>
             <div className={`chat-bubble shadow-md ${isUser
-                    ? 'chat-bubble-primary text-primary-content'
-                    : 'bg-base-200 text-base-content'
-                } max-w-[85%] md:max-w-[80%]`}>
+                ? 'chat-bubble-primary text-primary-content'
+                : 'bg-base-200 text-base-content'
+                } ${!isUser && message.parts.some(p => p.type.startsWith('tool-')) ? 'w-[80%] max-w-none' : 'max-w-[85%] md:max-w-[80%]'}`}>
                 {message.parts.map((part, index) => {
                     switch (part.type) {
                         case 'text':
@@ -96,6 +96,14 @@ export default function Page() {
         }),
     });
     const [input, setInput] = useState('');
+    const inputRef = useRef(null);
+
+    // Auto-focus the input when status is 'ready'
+    useEffect(() => {
+        if (status === 'ready' && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [status]);
 
     // Auto-send prompt from URL when page loads
     useEffect(() => {
@@ -133,64 +141,68 @@ export default function Page() {
     ];
 
     return (
-        <div className="flex flex-col h-full pb-4 px-4">
-            <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-6 bg-base-100/60 backdrop-blur-sm">
-                {messages.length === 0 && (
-                    <div className="text-center text-base-content/60 mt-20">
-                        <div className="text-6xl mb-4">💬</div>
-                        <h2 className="text-2xl font-bold mb-2 text-base-content">AI Assistant</h2>
-                        <p className="text-base-content/80 mb-8">Ask me anything about your trip!</p>
+        <div className="flex flex-col h-full pb-4">
+            <div className="flex-1 overflow-y-auto mb-4 bg-base-100/60 backdrop-blur-sm">
+                <div className="max-w-[80%] mx-auto p-6 space-y-4">
+                    {messages.length === 0 && (
+                        <div className="text-center text-base-content/60 mt-20">
+                            <div className="text-6xl mb-4">💬</div>
+                            <h2 className="text-2xl font-bold mb-2 text-base-content">AI Assistant</h2>
+                            <p className="text-base-content/80 mb-8">Ask me anything about your trip!</p>
 
-                        <div className="max-w-2xl mx-auto">
-                            <p className="text-sm text-base-content/60 mb-4">Try asking:</p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {suggestedPrompts.map((prompt, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => handleSuggestionClick(prompt)}
-                                        disabled={status !== 'ready'}
-                                        className="p-3 text-left text-sm bg-base-200 hover:bg-primary hover:text-primary-content rounded-xl transition-all duration-200 hover:scale-[1.02] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {prompt}
-                                    </button>
-                                ))}
+                            <div className="max-w-2xl mx-auto">
+                                <p className="text-sm text-base-content/60 mb-4">Try asking:</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {suggestedPrompts.map((prompt, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleSuggestionClick(prompt)}
+                                            disabled={status !== 'ready'}
+                                            className="p-3 text-left text-sm bg-base-200 hover:bg-primary hover:text-primary-content rounded-xl transition-all duration-200 hover:scale-[1.02] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {prompt}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {messages.map(message => (
-                    <ChatMessage key={message.id} message={message} />
-                ))}
+                    {messages.map(message => (
+                        <ChatMessage key={message.id} message={message} />
+                    ))}
 
-                {(status === 'submitted' || status === 'streaming') && (
-                    <div className="flex justify-start items-center gap-2 mt-2 ml-2">
-                        <span className="loading loading-dots loading-md text-primary"></span>
-                        <span className="text-xs text-base-content/50">Thinking...</span>
-                    </div>
-                )}
+                    {(status === 'submitted' || status === 'streaming') && (
+                        <div className="flex justify-center items-center gap-2 mt-2">
+                            <span className="loading loading-dots loading-md text-primary"></span>
+                            <span className="text-xs text-base-content/50">Thinking...</span>
+                        </div>
+                    )}
+                </div>
             </div>
 
-            <form
-                className="flex gap-2 bg-base-100/90 backdrop-blur-md p-3 rounded-2xl border border-base-content/10 shadow-lg"
-                onSubmit={handleSubmit}
-            >
-                <input
-                    className="input input-bordered flex-1 bg-transparent focus:outline-none text-base-content placeholder:text-base-content/50"
-                    value={input}
-                    onChange={handleInputChange}
-                    disabled={status !== 'ready'}
-                    placeholder="Ask about destinations, flights, or hotels..."
-                    autoFocus
-                />
-                <button
-                    type="submit"
-                    className="btn btn-primary rounded-xl px-6"
-                    disabled={status !== 'ready' || !input.trim()}
+            <div className="w-full flex justify-center px-4">
+                <form
+                    className="flex gap-2 w-full max-w-[80%] bg-base-100/90 backdrop-blur-md p-3 rounded-2xl border border-base-content/10 shadow-lg"
+                    onSubmit={handleSubmit}
                 >
-                    Send
-                </button>
-            </form>
+                    <input
+                        ref={inputRef}
+                        className="input input-bordered flex-1 bg-transparent focus:outline-none text-base-content placeholder:text-base-content/50"
+                        value={input}
+                        onChange={handleInputChange}
+                        disabled={status !== 'ready'}
+                        placeholder="Ask about destinations, flights, or hotels..."
+                    />
+                    <button
+                        type="submit"
+                        className="btn btn-primary rounded-xl px-6"
+                        disabled={status !== 'ready' || !input.trim()}
+                    >
+                        Send
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
