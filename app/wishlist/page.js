@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useAuthProtection } from "../hooks/useAuthProtection";
 
 export default function Wishlist() {
@@ -226,39 +227,42 @@ export default function Wishlist() {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {wishlistItems.map((item) => (
-                                <div key={item.id} className="bg-base-100 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow relative group">
+                                <div key={item.id} className="bg-base-100 rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 relative group">
                                     <div className="relative h-48">
-                                        <img src={item.image_url || "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=1000"} alt={item.place_name} className="w-full h-full object-cover" />
+                                        <img src={item.image_url || "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=1000"} alt={item.place_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                         <button
                                             onClick={() => removeFromWishlist(item.id)}
-                                            className="absolute top-4 right-4 bg-white/90 p-2 rounded-full text-red-500 hover:bg-white transition-colors shadow-sm"
+                                            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white/90 hover:bg-red-500 rounded-full text-gray-600 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-110"
                                             title="Remove from wishlist"
                                         >
-                                            ✕
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
                                         </button>
                                     </div>
-                                    <div className="p-6">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h3 className="text-xl font-bold text-base-content line-clamp-1">{item.place_name}</h3>
-                                            <span className="bg-primary/20 text-primary text-xs font-semibold px-2.5 py-0.5 rounded shrink-0">
-                                                {item.rating || 4.5} ★
-                                            </span>
-                                        </div>
-                                        <p className="text-base-content/60 text-sm mb-4 line-clamp-2">📍 {item.location}</p>
-                                        <div className="flex items-end justify-between">
+                                    <div className="p-5">
+                                        <h3 className="text-lg font-bold text-base-content mb-1 line-clamp-1">{item.place_name}</h3>
+                                        <p className="text-base-content/60 text-sm mb-4 line-clamp-2 flex items-center gap-1">
+                                            <span>📍</span> {item.location}
+                                        </p>
+                                        <div className="flex items-center justify-between">
                                             <div>
                                                 {(!isNaN(item.price)) ? (
                                                     <>
-                                                        <span className="text-2xl font-bold text-base-content">${item.price}</span>
+                                                        <span className="text-xl font-bold text-base-content">${item.price}</span>
                                                         <span className="text-base-content/60 text-sm">/night</span>
                                                     </>
                                                 ) : (
-                                                    <span className="text-lg font-bold text-base-content">{item.price}</span>
+                                                    <span className="text-base font-semibold text-primary">{item.price}</span>
                                                 )}
                                             </div>
-                                            <button className="text-primary font-semibold hover:text-primary/80 text-sm">
+                                            <Link 
+                                                href={`/results/ai-chat?prompt=${encodeURIComponent(`Show me all the famous places to visit in ${item.place_name} and suggest the best routes to explore them`)}`}
+                                                className="btn btn-sm btn-primary btn-outline rounded-full text-xs"
+                                            >
                                                 View Details
-                                            </button>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
