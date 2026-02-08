@@ -2,6 +2,7 @@
 import BackgroundSlider from "../components/BackgroundSlider";
 import { useState, useEffect } from "react";
 import { useAuthProtection } from "../hooks/useAuthProtection";
+import { MapPin, Calendar, Clock, ArrowRight, Wallet, ExternalLink } from "lucide-react";
 
 export default function History() {
     const { isAuthenticated, isLoading: authLoading, user } = useAuthProtection();
@@ -88,39 +89,39 @@ export default function History() {
     return (
         <div className="min-h-screen pt-20 pb-16 bg-base-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
-                    <h1 className="text-4xl font-bold tracking-tight text-base-content sm:text-6xl animate-fade-in-up hover:scale-105 transition-transform duration-200 cursor-default">
-                        My Past Trips
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl font-extrabold tracking-tight text-base-content sm:text-5xl">
+                        Your Travel Journal
                     </h1>
-                    <p className="mt-6 text-lg leading-8 text-base-content/70 animate-fade-in-up delay-100 hover:scale-105 transition-transform duration-200 cursor-default">
-                        Relive your travel memories and adventures.
+                    <p className="mt-4 text-lg text-base-content/70 max-w-2xl mx-auto">
+                        Track your adventures, reviews, and future plans all in one place.
                     </p>
                 </div>
 
-                <div className="bg-base-100/80 backdrop-blur-md rounded-2xl shadow-lg p-8">
+                <div className="bg-base-100 rounded-3xl p-4 md:p-8">
                     {isLoadingItems ? (
                         <div className="flex justify-center py-20">
-                            <span className="loading loading-spinner loading-md text-primary"></span>
+                            <span className="loading loading-spinner loading-lg text-primary"></span>
                         </div>
                     ) : trips.length === 0 ? (
-                        <div className="text-center py-20">
-                            <p className="text-base-content/60 text-lg">No past trips found.</p>
-                            <p className="text-sm text-base-content/40 mt-2">Book a trip to see it here!</p>
+                        <div className="text-center py-20 border-2 border-dashed border-base-300 rounded-2xl">
+                            <MapPin className="w-12 h-12 text-base-content/20 mx-auto mb-4" />
+                            <p className="text-base-content/60 text-lg font-medium">No trips saved yet.</p>
+                            <p className="text-sm text-base-content/40 mt-1">Start planning your next getaway!</p>
                         </div>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {trips.map((trip) => {
-                                // Parse itinerary to get search params
+                                // Parse itinerary details
+                                let itineraryData = {};
                                 let searchParams = "";
+
                                 try {
                                     if (trip.itinerary) {
-                                        // If it's already an object (which it should be for jsonb), use it directly.
-                                        // If it's a string (legacy or double encoded), parse it.
-                                        const itineraryData = typeof trip.itinerary === 'string'
+                                        itineraryData = typeof trip.itinerary === 'string'
                                             ? JSON.parse(trip.itinerary)
                                             : trip.itinerary;
 
-                                        // filter out any non-string/number/boolean values to be safe for URLSearchParams
                                         const cleanParams = Object.entries(itineraryData || {})
                                             .filter(([_, v]) => typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean')
                                             .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {});
@@ -131,74 +132,109 @@ export default function History() {
                                     console.error("Failed to parse itinerary", e);
                                 }
 
-                                return (
-                                    <div key={trip.id} className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col md:flex-row hover:shadow-md transition-shadow">
-                                        <div className="md:w-72 h-48 md:h-64 relative shrink-0">
-                                            <img
-                                                src={trip.image_url || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1000"}
-                                                alt={trip.destination}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                        <div className="p-4 flex-1 flex flex-col justify-between">
-                                            <div>
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <h3 className="text-2xl font-bold text-gray-900">{trip.destination}</h3>
-                                                    <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                                                        {trip.status}
-                                                    </span>
-                                                </div>
-                                                <p className="text-gray-500 mb-1">📅 {new Date(trip.start_date || trip.created_at).toLocaleDateString()}</p>
-                                                <p className="text-gray-500">💰 Total Cost: ${trip.total_cost || 0}</p>
+                                const source = itineraryData.source?.split(',')[0] || "Origin";
+                                const destination = trip.destination || itineraryData.destination?.split(',')[0];
+                                const date = itineraryData.date || trip.start_date;
+                                const duration = itineraryData.duration;
 
-                                                {editingId === trip.id ? (
-                                                    <div className="mt-3">
-                                                        <textarea
-                                                            className="textarea textarea-bordered w-full text-base-content bg-white"
-                                                            value={editText}
-                                                            onChange={(e) => setEditText(e.target.value)}
-                                                            rows={3}
-                                                            autoFocus
-                                                        />
+                                return (
+                                    <div key={trip.id} className="group bg-base-100 border border-base-200 hover:border-primary/50 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden">
+                                        {/* Card Header / Image Area */}
+                                        <div className="relative h-48 overflow-hidden bg-base-200">
+                                            <img
+                                                src={trip.image_url || `https://source.unsplash.com/800x600/?${encodeURIComponent(destination)},travel`}
+                                                alt={destination}
+                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1000";
+                                                }}
+                                            />
+                                            <div className="absolute top-3 right-3">
+                                                <span className={`badge ${trip.status === 'Completed' ? 'badge-neutral' : 'badge-primary'} shadow-lg font-medium`}>
+                                                    {trip.status}
+                                                </span>
+                                            </div>
+                                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                                                <div className="text-white font-bold text-xl flex items-center gap-2">
+                                                    <span className="truncate max-w-[45%]">{source}</span>
+                                                    <ArrowRight className="w-5 h-5 flex-shrink-0" />
+                                                    <span className="truncate max-w-[45%]">{destination}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Card Content */}
+                                        <div className="p-5 flex-1 flex flex-col">
+                                            <div className="space-y-3 mb-6">
+                                                <div className="flex items-center gap-3 text-sm text-base-content/70">
+                                                    <Calendar className="w-4 h-4 text-primary" />
+                                                    <span>{date ? new Date(date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) : 'Date not set'}</span>
+                                                </div>
+                                                {duration && (
+                                                    <div className="flex items-center gap-3 text-sm text-base-content/70">
+                                                        <Clock className="w-4 h-4 text-primary" />
+                                                        <span>{duration} Day{duration > 1 ? 's' : ''} trip</span>
                                                     </div>
-                                                ) : (
-                                                    trip.review && (
-                                                        <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-100 italic text-gray-600 text-sm">
-                                                            "{trip.review}"
-                                                        </div>
-                                                    )
+                                                )}
+                                                {trip.total_cost > 0 && (
+                                                    <div className="flex items-center gap-3 text-sm text-base-content/70">
+                                                        <Wallet className="w-4 h-4 text-primary" />
+                                                        <span>${trip.total_cost} spent</span>
+                                                    </div>
                                                 )}
                                             </div>
-                                            <div className="mt-2 flex justify-end gap-3">
+
+                                            {/* Review Section */}
+                                            <div className="bg-base-200/50 rounded-xl p-3 mb-4 flex-1">
                                                 {editingId === trip.id ? (
-                                                    <>
-                                                        <button
-                                                            onClick={handleCancelClick}
-                                                            className="text-red-500 font-semibold hover:text-red-700 text-sm"
-                                                        >
-                                                            Cancel
-                                                        </button>
+                                                    <textarea
+                                                        className="textarea textarea-ghost w-full h-full focus:bg-base-100 text-sm resize-none p-1"
+                                                        value={editText}
+                                                        onChange={(e) => setEditText(e.target.value)}
+                                                        placeholder="Write your memory here..."
+                                                        autoFocus
+                                                    />
+                                                ) : (
+                                                    <p className={`text-sm ${trip.review ? 'text-base-content/80' : 'text-base-content/40 italic'}`}>
+                                                        {trip.review || "No personal notes added yet..."}
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            {/* Actions */}
+                                            <div className="flex items-center justify-between gap-2 mt-auto pt-2 border-t border-base-200">
+                                                {editingId === trip.id ? (
+                                                    <div className="flex gap-2 w-full">
                                                         <button
                                                             onClick={() => handleSaveClick(trip.id)}
-                                                            className="text-green-600 font-semibold hover:text-green-800 text-sm"
+                                                            className="btn btn-sm btn-primary flex-1"
                                                         >
                                                             Save
                                                         </button>
-                                                    </>
+                                                        <button
+                                                            onClick={handleCancelClick}
+                                                            className="btn btn-sm btn-ghost flex-1"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </div>
                                                 ) : (
                                                     <>
                                                         <button
                                                             onClick={() => handleEditClick(trip)}
-                                                            className="text-gray-600 font-semibold hover:text-gray-900 text-sm"
+                                                            className="btn btn-sm btn-ghost text-xs hover:bg-base-200"
                                                         >
-                                                            Edit Review ✍️
+                                                            {trip.review ? 'Edit Note' : 'Add Note'}
                                                         </button>
+
                                                         {searchParams && (
                                                             <a
                                                                 href={`/results/bus?${searchParams}`}
-                                                                className="text-blue-600 font-semibold hover:text-blue-800 text-sm flex items-center gap-1"
+                                                                className="btn btn-sm btn-outline btn-primary gap-2"
                                                             >
-                                                                View Deal &rarr;
+                                                                Re-Plan
+                                                                <ExternalLink className="w-3 h-3" />
                                                             </a>
                                                         )}
                                                     </>
