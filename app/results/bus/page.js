@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense, useCallback, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bus, MapPin, ArrowRight, AlertCircle } from "lucide-react";
+import { Bus, MapPin, ArrowRight, AlertCircle, Sparkles, Check, X, Brain, ArrowLeft } from "lucide-react";
 
 
 function BusContent() {
@@ -28,6 +28,15 @@ function BusContent() {
     // Alternatives State
     const [fromAlternatives, setFromAlternatives] = useState([]);
     const [toAlternatives, setToAlternatives] = useState([]);
+
+    // AI Suggestion State
+    const [aiEnabled, setAiEnabled] = useState(false);
+    const [aiSuggestions, setAiSuggestions] = useState(null);
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiError, setAiError] = useState(null);
+    const [aiApplied, setAiApplied] = useState({ from: false, to: false });
+    const [originalSelection, setOriginalSelection] = useState({ from: null, to: null });
+    const hasAutoCalledAI = useRef(false);
 
     // Autocomplete State
     const [fromOptions, setFromOptions] = useState([]);
@@ -113,6 +122,166 @@ function BusContent() {
 
     const debouncedFromSearch = useCallback(debounce((q) => searchCities(q, setFromOptions, setIsSearchingFrom), 400), []);
     const debouncedToSearch = useCallback(debounce((q) => searchCities(q, setToOptions, setIsSearchingTo), 400), []);
+
+    // AI Station Suggestion Function
+    const getAIStationSuggestions = useCallback(async () => {
+        if (!fromAlternatives.length && !toAlternatives.length) return;
+        
+        setAiLoading(true);
+        setAiError(null);
+        
+        try {
+            const fromParam = searchParams.get("source") || fromQuery;
+            const toParam = searchParams.get("destination") || toQuery;
+            const fromLat = searchParams.get("fromLat");
+            const fromLon = searchParams.get("fromLon");
+            const toLat = searchParams.get("toLat");
+            const toLon = searchParams.get("toLon");
+            
+            const response = await fetch('/api/ai/suggest-stations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sourceQuery: fromParam,
+                    destinationQuery: toParam,
+                    fromLat,
+                    fromLon,
+                    toLat,
+                    toLon,
+                    fromAlternatives: fromAlternatives.length > 0 ? fromAlternatives : (selectedFrom ? [selectedFrom] : []),
+                    toAlternatives: toAlternatives.length > 0 ? toAlternatives : (selectedTo ? [selectedTo] : [])
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                setAiSuggestions(data.suggestions);
+            } else {
+                setAiError(data.error || 'Failed to get AI suggestions');
+            }
+        } catch (err) {
+            console.error('AI suggestion error:', err);
+            setAiError('Failed to get AI suggestions');
+        } finally {
+            setAiLoading(false);
+        }
+    }, [fromAlternatives, toAlternatives, fromQuery, toQuery, searchParams, selectedFrom, selectedTo]);
+
+    // Apply AI Suggestion (auto or manual)
+    const applyAISuggestion = useCallback((type, autoApply = false) => {
+        if (!aiSuggestions) {
+            console.log('No AI suggestions available');
+            return;
+        }
+        
+        if (type === 'from' && aiSuggestions.fromRecommendation) {
+            const targetId = String(aiSuggestions.fromRecommendation.stationId);
+            console.log('Applying FROM suggestion:', targetId, 'Current:', selectedFrom?.id, 'Auto:', autoApply);
+            
+            // Skip if already selected
+            if (String(selectedFrom?.id) === targetId) {
+                console.log('Station already selected');
+                return;
+            }
+            
+            // Find in alternatives (convert both to string for comparison)
+            const suggestedStation = fromAlternatives.find(s => String(s.id) === targetId);
+            
+            if (!suggestedStation) {
+                console.log('Station not found in alternatives. Available:', fromAlternatives.map(s => s.id));
+                return;
+            }
+            
+            console.log('Found station:', suggestedStation.name);
+            
+            // Store original selection before changing (only if not already stored)
+            if (autoApply && !aiApplied.from && selectedFrom) {
+                setOriginalSelection(prev => ({ ...prev, from: selectedFrom }));
+            }
+            
+            // Optimistic update
+            if (selectedFrom) {
+                // Swap: add current to alternatives, remove suggested from alternatives
+                setFromAlternatives(prev => [...prev.filter(c => String(c.id) !== targetId), selectedFrom]);
+            } else {
+                setFromAlternatives(prev => prev.filter(c => String(c.id) !== targetId));
+            }
+            setSelectedFrom(suggestedStation);
+            setFromQuery(suggestedStation.name);
+            setAiApplied(prev => ({ ...prev, from: true }));
+        }
+        
+        if (type === 'to' && aiSuggestions.toRecommendation) {
+            const targetId = String(aiSuggestions.toRecommendation.stationId);
+            console.log('Applying TO suggestion:', targetId, 'Current:', selectedTo?.id, 'Auto:', autoApply);
+            
+            // Skip if already selected
+            if (String(selectedTo?.id) === targetId) {
+                console.log('Station already selected');
+                return;
+            }
+            
+            // Find in alternatives (convert both to string for comparison)
+            const suggestedStation = toAlternatives.find(s => String(s.id) === targetId);
+            
+            if (!suggestedStation) {
+                console.log('Station not found in alternatives. Available:', toAlternatives.map(s => s.id));
+                return;
+            }
+            
+            console.log('Found station:', suggestedStation.name);
+            
+            // Store original selection before changing (only if not already stored)
+            if (autoApply && !aiApplied.to && selectedTo) {
+                setOriginalSelection(prev => ({ ...prev, to: selectedTo }));
+            }
+            
+            // Optimistic update
+            if (selectedTo) {
+                // Swap: add current to alternatives, remove suggested from alternatives
+                setToAlternatives(prev => [...prev.filter(c => String(c.id) !== targetId), selectedTo]);
+            } else {
+                setToAlternatives(prev => prev.filter(c => String(c.id) !== targetId));
+            }
+            setSelectedTo(suggestedStation);
+            setToQuery(suggestedStation.name);
+            setAiApplied(prev => ({ ...prev, to: true }));
+        }
+    }, [aiSuggestions, fromAlternatives, toAlternatives, selectedFrom, selectedTo, aiApplied]);
+
+    // Revert AI Suggestion
+    const revertAISuggestion = useCallback((type) => {
+        if (type === 'from' && originalSelection.from) {
+            const original = originalSelection.from;
+            const targetId = String(original.id);
+            
+            // Move current selection back to alternatives if it's different
+            if (selectedFrom && String(selectedFrom.id) !== targetId) {
+                setFromAlternatives(prev => [...prev.filter(c => String(c.id) !== targetId), selectedFrom]);
+            }
+            
+            setSelectedFrom(original);
+            setFromQuery(original.name);
+            setAiApplied(prev => ({ ...prev, from: false }));
+            setOriginalSelection(prev => ({ ...prev, from: null }));
+        }
+        
+        if (type === 'to' && originalSelection.to) {
+            const original = originalSelection.to;
+            const targetId = String(original.id);
+            
+            // Move current selection back to alternatives if it's different
+            if (selectedTo && String(selectedTo.id) !== targetId) {
+                setToAlternatives(prev => [...prev.filter(c => String(c.id) !== targetId), selectedTo]);
+            }
+            
+            setSelectedTo(original);
+            setToQuery(original.name);
+            setAiApplied(prev => ({ ...prev, to: false }));
+            setOriginalSelection(prev => ({ ...prev, to: null }));
+        }
+    }, [originalSelection, selectedFrom, selectedTo]);
 
     // Handlers
     const handleFromChange = (e) => {
@@ -297,6 +466,32 @@ function BusContent() {
         }
     }, []);
 
+    // Auto-call AI when enabled and alternatives are loaded
+    useEffect(() => {
+        if (aiEnabled && !hasAutoCalledAI.current && 
+            (fromAlternatives.length > 0 || toAlternatives.length > 0) &&
+            !aiLoading && !aiSuggestions) {
+            hasAutoCalledAI.current = true;
+            getAIStationSuggestions();
+        }
+    }, [aiEnabled, fromAlternatives, toAlternatives, aiLoading, aiSuggestions, getAIStationSuggestions]);
+
+    // Auto-apply AI suggestions when they arrive
+    useEffect(() => {
+        if (aiSuggestions && aiEnabled) {
+            // Small delay to allow UI to render first
+            const timer = setTimeout(() => {
+                if (aiSuggestions.fromRecommendation) {
+                    applyAISuggestion('from', true);
+                }
+                if (aiSuggestions.toRecommendation) {
+                    applyAISuggestion('to', true);
+                }
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [aiSuggestions, aiEnabled, applyAISuggestion]);
+
     const BookLink = ({ from, to, date }) => {
         if (!from || !to || !date) return <button className="btn btn-sm btn-disabled w-full">Select Details</button>;
 
@@ -326,6 +521,59 @@ function BusContent() {
                     <p className="text-base-content/60">Find and book bus tickets online (Powered by AbhiBus)</p>
                 </div>
 
+                {/* AI Toggle */}
+                <div className="mb-4 flex items-center justify-between">
+                    <button
+                        onClick={() => {
+                            setAiEnabled(!aiEnabled);
+                            if (!aiEnabled) {
+                                hasAutoCalledAI.current = false;
+                                setAiSuggestions(null);
+                                setAiApplied({ from: false, to: false });
+                            }
+                        }}
+                        className={`btn btn-sm gap-2 ${aiEnabled ? 'btn-primary' : 'btn-outline'}`}
+                    >
+                        <Brain className="w-4 h-4" />
+                        {aiEnabled ? 'AI Assist ON' : 'Enable AI Assist'}
+                    </button>
+                    {aiEnabled && (aiApplied.from || aiApplied.to) && (
+                        <button
+                            onClick={() => {
+                                if (aiApplied.from) revertAISuggestion('from');
+                                if (aiApplied.to) revertAISuggestion('to');
+                            }}
+                            className="btn btn-xs btn-ghost gap-1"
+                        >
+                            <ArrowLeft className="w-3 h-3" />
+                            Revert AI changes
+                        </button>
+                    )}
+                </div>
+
+                {/* AI Clarification - Minimal */}
+                {aiEnabled && (aiApplied.from || aiApplied.to) && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-xs text-base-content/60 mb-3 flex items-center gap-1"
+                    >
+                        <Sparkles className="w-3 h-3 text-primary" />
+                        AI matched stations to your search
+                    </motion.div>
+                )}
+
+                {/* AI Error */}
+                {aiEnabled && aiError && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-xs text-error mb-3"
+                    >
+                        {aiError}
+                    </motion.div>
+                )}
+
                 {/* Search Interface */}
                 <div className="card bg-base-100 shadow-xl border border-base-200 p-6 z-20 overflow-visible">
                     <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto] gap-4 items-start relative">
@@ -353,17 +601,29 @@ function BusContent() {
 
                             {/* Similar/Alternative Locations - Always Visible */}
                             {fromAlternatives.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-1 items-center">
-                                    <span className="text-xs text-base-content/50 mr-1">Similar:</span>
-                                    {fromAlternatives.slice(0, 4).map((alt) => (
-                                        <button
-                                            key={alt.id}
-                                            onClick={() => selectFromAlternative(alt)}
-                                            className="badge badge-outline badge-sm hover:badge-primary cursor-pointer transition-colors"
-                                        >
-                                            {alt.name}
-                                        </button>
-                                    ))}
+                                <div className="mt-2">
+                                    <span className="text-xs text-base-content/50 block mb-1">More suggestions:</span>
+                                    <div className="flex flex-wrap gap-1">
+                                        {fromAlternatives.slice(0, 5).map((alt) => {
+                                            const locationParts = alt.subtext ? alt.subtext.split(',').slice(0, 2) : [];
+                                            const locationStr = locationParts.length > 0 ? `(${locationParts.join(', ')})` : '';
+                                            return (
+                                                <button
+                                                    key={alt.id}
+                                                    onClick={() => selectFromAlternative(alt)}
+                                                    className="badge badge-outline badge-sm hover:badge-primary cursor-pointer transition-colors"
+                                                    title={alt.subtext}
+                                                >
+                                                    {alt.name} {locationStr}
+                                                </button>
+                                            );
+                                        })}
+                                        {fromAlternatives.length > 5 && (
+                                            <span className="text-xs text-base-content/40 self-center">
+                                                +{fromAlternatives.length - 5} more
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             )}
 
@@ -446,17 +706,29 @@ function BusContent() {
 
                             {/* Similar/Alternative Locations - Always Visible */}
                             {toAlternatives.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-1 items-center">
-                                    <span className="text-xs text-base-content/50 mr-1">Similar:</span>
-                                    {toAlternatives.slice(0, 4).map((alt) => (
-                                        <button
-                                            key={alt.id}
-                                            onClick={() => selectToAlternative(alt)}
-                                            className="badge badge-outline badge-sm hover:badge-primary cursor-pointer transition-colors"
-                                        >
-                                            {alt.name}
-                                        </button>
-                                    ))}
+                                <div className="mt-2">
+                                    <span className="text-xs text-base-content/50 block mb-1">More suggestions:</span>
+                                    <div className="flex flex-wrap gap-1">
+                                        {toAlternatives.slice(0, 5).map((alt) => {
+                                            const locationParts = alt.subtext ? alt.subtext.split(',').slice(0, 2) : [];
+                                            const locationStr = locationParts.length > 0 ? `(${locationParts.join(', ')})` : '';
+                                            return (
+                                                <button
+                                                    key={alt.id}
+                                                    onClick={() => selectToAlternative(alt)}
+                                                    className="badge badge-outline badge-sm hover:badge-primary cursor-pointer transition-colors"
+                                                    title={alt.subtext}
+                                                >
+                                                    {alt.name} {locationStr}
+                                                </button>
+                                            );
+                                        })}
+                                        {toAlternatives.length > 5 && (
+                                            <span className="text-xs text-base-content/40 self-center">
+                                                +{toAlternatives.length - 5} more
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             )}
 
