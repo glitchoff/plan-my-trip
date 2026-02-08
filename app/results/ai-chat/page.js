@@ -98,11 +98,11 @@ export default function Page() {
     }, [status, sendMessage]);
 
     const suggestedPrompts = [
-        "What are the best places to visit at my destination?",
+        "Best places to visit near my location in a budget friendly way",
         "Suggest a budget-friendly itinerary for my trip",
-        "What's the best time to visit this place?",
+        "Best place to visit this season",
         "Recommend local food and restaurants to try",
-        "What should I pack for this trip?",
+        "What should I pack for my north India trip this winter?",
         "Tell me about local customs and etiquette",
     ];
 
