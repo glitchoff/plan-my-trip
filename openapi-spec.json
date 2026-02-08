@@ -1,0 +1,860 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Plan My Trip API",
+        "description": "Complete API collection for the Plan My Trip application - Travel planning, train booking, flights, buses, and more",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Plan My Trip"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Local Development Server"
+        }
+    ],
+    "paths": {
+        "/api/ai": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "AI Station Search",
+                "description": "Search for railway stations using AI assistance",
+                "operationId": "aiStationSearch",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "prompt": {
+                                        "type": "string",
+                                        "example": "Find railway stations in Mumbai"
+                                    }
+                                },
+                                "required": [
+                                    "prompt"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response with stations list"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/ai/chat": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "AI Chat",
+                "description": "Chat with AI assistant for trip planning",
+                "operationId": "aiChat",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "messages": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "role": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "user",
+                                                        "assistant"
+                                                    ]
+                                                },
+                                                "content": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "example": [
+                                            {
+                                                "role": "user",
+                                                "content": "What are some good places to visit in Delhi?"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "messages"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Streaming response with AI chat"
+                    }
+                }
+            }
+        },
+        "/api/ai/chat-specific": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "AI Find Stations for Journey",
+                "description": "Find railway stations for source and destination using AI",
+                "operationId": "aiChatSpecific",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "source": {
+                                        "type": "string",
+                                        "example": "Mumbai, Maharashtra"
+                                    },
+                                    "destination": {
+                                        "type": "string",
+                                        "example": "Delhi, NCR"
+                                    },
+                                    "fromLat": {
+                                        "type": "number",
+                                        "example": 19.076
+                                    },
+                                    "fromLon": {
+                                        "type": "number",
+                                        "example": 72.8777
+                                    },
+                                    "toLat": {
+                                        "type": "number",
+                                        "example": 28.6139
+                                    },
+                                    "toLon": {
+                                        "type": "number",
+                                        "example": 77.209
+                                    }
+                                },
+                                "required": [
+                                    "source",
+                                    "destination"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Source and destination stations"
+                    }
+                }
+            }
+        },
+        "/api/amadeus": {
+            "get": {
+                "tags": [
+                    "Flights"
+                ],
+                "summary": "Amadeus API",
+                "description": "Search for airports or flights using Amadeus API",
+                "operationId": "amadeusApi",
+                "parameters": [
+                    {
+                        "name": "action",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "searchAirports",
+                                "searchFlights"
+                            ]
+                        },
+                        "description": "Action to perform"
+                    },
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "Mumbai"
+                        },
+                        "description": "Search query (for searchAirports)"
+                    },
+                    {
+                        "name": "origin",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "BOM"
+                        },
+                        "description": "Origin airport code (for searchFlights)"
+                    },
+                    {
+                        "name": "destination",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "DEL"
+                        },
+                        "description": "Destination airport code (for searchFlights)"
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-03-15"
+                        },
+                        "description": "Departure date (for searchFlights)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "400": {
+                        "description": "Invalid action or missing parameters"
+                    }
+                }
+            }
+        },
+        "/api/bus/city-search": {
+            "get": {
+                "tags": [
+                    "Bus"
+                ],
+                "summary": "Bus City Search",
+                "description": "Search for bus cities/stops by name",
+                "operationId": "busCitySearch",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Hyderabad"
+                        },
+                        "description": "City name to search"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of matching cities"
+                    }
+                }
+            }
+        },
+        "/api/geocode": {
+            "get": {
+                "tags": [
+                    "Geocoding"
+                ],
+                "summary": "Geocode API",
+                "description": "Forward geocoding, reverse geocoding, or autocomplete",
+                "operationId": "geocode",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "search",
+                                "reverse",
+                                "autocomplete"
+                            ],
+                            "default": "search"
+                        },
+                        "description": "Type of geocoding operation"
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "Connaught Place, Delhi"
+                        },
+                        "description": "Search query (for search/autocomplete)"
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "example": 28.6139
+                        },
+                        "description": "Latitude (for reverse geocoding)"
+                    },
+                    {
+                        "name": "lon",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "example": 77.209
+                        },
+                        "description": "Longitude (for reverse geocoding)"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 5,
+                            "example": 10
+                        },
+                        "description": "Maximum number of results"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoJSON FeatureCollection"
+                    }
+                }
+            }
+        },
+        "/api/images": {
+            "get": {
+                "tags": [
+                    "Images"
+                ],
+                "summary": "Image Search",
+                "description": "Search for images using Unsplash",
+                "operationId": "imageSearch",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Mumbai Gateway of India"
+                        },
+                        "description": "Image search query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Image URL response"
+                    }
+                }
+            }
+        },
+        "/api/placedetails": {
+            "get": {
+                "tags": [
+                    "Places"
+                ],
+                "summary": "Place Details",
+                "description": "Get detailed information about a place by Geoapify place_id",
+                "operationId": "placeDetails",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Geoapify place_id"
+                    },
+                    {
+                        "name": "features",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "default": "details",
+                            "example": "details,geometry"
+                        },
+                        "description": "Comma-separated features (details, geometry, building, drive_distance)"
+                    },
+                    {
+                        "name": "lang",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "default": "en"
+                        },
+                        "description": "Language code"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Place details"
+                    }
+                }
+            }
+        },
+        "/api/places": {
+            "get": {
+                "tags": [
+                    "Places"
+                ],
+                "summary": "Places Search",
+                "description": "Search for places by category or name",
+                "operationId": "placesSearch",
+                "parameters": [
+                    {
+                        "name": "categories",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "accommodation.hotel"
+                        },
+                        "description": "Comma-separated categories"
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "Taj Hotel"
+                        },
+                        "description": "Place name to search"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "circle:77.209,28.6139,5000"
+                        },
+                        "description": "Geographic filter (circle:lon,lat,radius or rect:lon1,lat1,lon2,lat2)"
+                    },
+                    {
+                        "name": "bias",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "proximity:77.209,28.6139"
+                        },
+                        "description": "Bias results near location"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 50
+                        },
+                        "description": "Maximum results"
+                    },
+                    {
+                        "name": "conditions",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Additional filters (internet_access, wheelchair)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of places"
+                    }
+                }
+            }
+        },
+        "/api/railradar/search/stations": {
+            "get": {
+                "tags": [
+                    "RailRadar"
+                ],
+                "summary": "Search Stations",
+                "description": "Search for Indian railway stations by code or name",
+                "operationId": "railradarSearchStations",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "mumbai"
+                        },
+                        "description": "Station name or code"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of matching stations"
+                    }
+                }
+            }
+        },
+        "/api/railradar/search/trains": {
+            "get": {
+                "tags": [
+                    "RailRadar"
+                ],
+                "summary": "Search Trains",
+                "description": "Search for Indian trains by number or name",
+                "operationId": "railradarSearchTrains",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "rajdhani"
+                        },
+                        "description": "Train number or name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of matching trains"
+                    }
+                }
+            }
+        },
+        "/api/railradar/stations/{stationCode}/info": {
+            "get": {
+                "tags": [
+                    "RailRadar"
+                ],
+                "summary": "Station Info",
+                "description": "Get static information about a railway station",
+                "operationId": "railradarStationInfo",
+                "parameters": [
+                    {
+                        "name": "stationCode",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "NDLS"
+                        },
+                        "description": "Station code (e.g., NDLS, BCT, MAS)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Station information"
+                    }
+                }
+            }
+        },
+        "/api/railradar/stations/{stationCode}/live": {
+            "get": {
+                "tags": [
+                    "RailRadar"
+                ],
+                "summary": "Station Live Board",
+                "description": "Get real-time departures and arrivals at a station",
+                "operationId": "railradarStationLive",
+                "parameters": [
+                    {
+                        "name": "stationCode",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "NDLS"
+                        },
+                        "description": "Station code"
+                    },
+                    {
+                        "name": "hours",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 8,
+                            "minimum": 1,
+                            "maximum": 8
+                        },
+                        "description": "Hours to look ahead"
+                    },
+                    {
+                        "name": "toStationCode",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "BCT"
+                        },
+                        "description": "Filter trains going to specific destination"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Live station board"
+                    }
+                }
+            }
+        },
+        "/api/railradar/trains/{trainNumber}": {
+            "get": {
+                "tags": [
+                    "RailRadar"
+                ],
+                "summary": "Train Details",
+                "description": "Get comprehensive train data (static + live)",
+                "operationId": "railradarTrainDetails",
+                "parameters": [
+                    {
+                        "name": "trainNumber",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^\\d{5}$",
+                            "example": "12301"
+                        },
+                        "description": "5-digit train number"
+                    },
+                    {
+                        "name": "dataType",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "full",
+                                "static",
+                                "live"
+                            ],
+                            "default": "full"
+                        },
+                        "description": "Type of data to return"
+                    },
+                    {
+                        "name": "journeyDate",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-02-10"
+                        },
+                        "description": "Journey date (YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "dataProvider",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Data provider for live info"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Train details"
+                    }
+                }
+            }
+        },
+        "/api/railradar/trains/between": {
+            "get": {
+                "tags": [
+                    "RailRadar"
+                ],
+                "summary": "Trains Between Stations",
+                "description": "Find all trains running between two stations",
+                "operationId": "railradarTrainsBetween",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "NDLS"
+                        },
+                        "description": "Source station code"
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "BCT"
+                        },
+                        "description": "Destination station code"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of trains"
+                    }
+                }
+            }
+        },
+        "/api/station/{city}": {
+            "get": {
+                "tags": [
+                    "Station"
+                ],
+                "summary": "Get Station by City",
+                "description": "Get train stations by city name (path parameter)",
+                "operationId": "stationByCity",
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "NDLS"
+                        },
+                        "description": "City/station code"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Station data"
+                    }
+                }
+            }
+        },
+        "/api/station/from-city": {
+            "get": {
+                "tags": [
+                    "Station"
+                ],
+                "summary": "Get Station from City Query",
+                "description": "Get train stations by city name (query parameter)",
+                "operationId": "stationFromCity",
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Mumbai"
+                        },
+                        "description": "City name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Station data"
+                    }
+                }
+            }
+        },
+        "/api/train": {
+            "get": {
+                "tags": [
+                    "Train"
+                ],
+                "summary": "Train API",
+                "description": "Get trains between stations, on specific date, or train route",
+                "operationId": "trainApi",
+                "parameters": [
+                    {
+                        "name": "action",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "betweenStations",
+                                "getTrainOn",
+                                "getRoute"
+                            ]
+                        },
+                        "description": "Action to perform"
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "NDLS"
+                        },
+                        "description": "Source station code (for betweenStations, getTrainOn)"
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "BCT"
+                        },
+                        "description": "Destination station code (for betweenStations, getTrainOn)"
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "15-03-2026"
+                        },
+                        "description": "Date in DD-MM-YYYY format (for getTrainOn)"
+                    },
+                    {
+                        "name": "trainNo",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "12301"
+                        },
+                        "description": "Train number (for getRoute)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "400": {
+                        "description": "Invalid action or missing parameters"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "AI",
+            "description": "AI-powered search and chat endpoints"
+        },
+        {
+            "name": "Flights",
+            "description": "Amadeus flight search APIs"
+        },
+        {
+            "name": "Bus",
+            "description": "Bus city and route search"
+        },
+        {
+            "name": "Geocoding",
+            "description": "Address and location services"
+        },
+        {
+            "name": "Images",
+            "description": "Image search using Unsplash"
+        },
+        {
+            "name": "Places",
+            "description": "Places and POI search"
+        },
+        {
+            "name": "RailRadar",
+            "description": "Indian Railways train and station data"
+        },
+        {
+            "name": "Station",
+            "description": "Railway station information"
+        },
+        {
+            "name": "Train",
+            "description": "Train search and route information"
+        }
+    ]
+}
