@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import ProfileDrop from "./ProfileDrop";
 import { ThemePicker } from "./themes/ThemeController";
@@ -12,6 +13,27 @@ export default function Navbar() {
     const { data: session } = useSession();
     const user = session?.user;
     const pathname = usePathname();
+    
+    // Typewriter animation state
+    const fullText = t('planMyTrip');
+    const [displayedText, setDisplayedText] = useState('');
+    const [showCursor, setShowCursor] = useState(true);
+    
+    useEffect(() => {
+        let timeout;
+        if (displayedText.length < fullText.length) {
+            // Still typing
+            timeout = setTimeout(() => {
+                setDisplayedText(fullText.slice(0, displayedText.length + 1));
+            }, 100);
+        } else {
+            // Finished typing, wait then restart
+            timeout = setTimeout(() => {
+                setDisplayedText('');
+            }, 2000);
+        }
+        return () => clearTimeout(timeout);
+    }, [displayedText, fullText]);
 
     const isActive = (path) => pathname === path;
 
@@ -21,7 +43,8 @@ export default function Navbar() {
                 <div className="flex justify-between items-center h-16">
                     <div className="flex-shrink-0 flex items-center">
                         <Link href="/" className="text-2xl text-primary tracking-tight" style={{ fontFamily: 'var(--font-pacifico), cursive' }}>
-                            {t('planMyTrip')}
+                            {displayedText}
+                            <span className={`inline-block w-0.5 h-6 bg-primary ml-0.5 align-middle ${showCursor ? 'animate-pulse' : 'opacity-0'}`}></span>
                         </Link>
                     </div>
 

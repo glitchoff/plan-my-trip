@@ -98,12 +98,10 @@ export default function Page() {
     }, [status, sendMessage]);
 
     const suggestedPrompts = [
-        "Best places to visit near my location in a budget friendly way",
-        "Suggest a budget-friendly itinerary for my trip",
-        "Best place to visit this season",
-        "Recommend local food and restaurants to try",
-        "What should I pack for my north India trip this winter?",
-        "Tell me about local customs and etiquette",
+        "What type of places do you love to visit?",
+        "Which places in India are currently good to go this season?",
+        "Need help planning your next adventure?",
+        "Looking for hidden gems to explore in India?",
     ];
 
     return (

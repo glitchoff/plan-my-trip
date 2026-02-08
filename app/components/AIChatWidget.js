@@ -7,9 +7,8 @@ import { Bot, Globe, Sparkles, Heart, Plane } from "lucide-react";
 const promptMessages = [
     { text: "What type of places do you love to visit?", icon: Heart },
     { text: "Which places in India are currently good to go this season?", icon: Plane },
-    { text: "Tell me about your favourite travel memories!", icon: Sparkles },
     { text: "Need help planning your next adventure?", icon: Globe },
-    { text: "Looking for hidden gems to explore?", icon: Sparkles },
+    { text: "Looking for hidden gems to explore in India?", icon: Sparkles },
 ];
 
 export default function AIChatWidget() {
