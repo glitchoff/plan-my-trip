@@ -1,13 +1,14 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { destinations } from "@/app/lib/destinations";
 import PlacesToVisit from "@/app/components/PlacesToVisit";
 import NearbyPlaces from "@/app/lib/NearbyPlaces";
 
-export default function ItineraryPage() {
+function ItineraryContent() {
     const searchParams = useSearchParams();
-    
+
     // Get parameters similar to Best Route page, plus legacy support
     const destinationParam = searchParams.get("destination") || searchParams.get("to") || searchParams.get("end");
     const latParam = searchParams.get("toLat") || searchParams.get("lat");
@@ -27,17 +28,17 @@ export default function ItineraryPage() {
         const query = destinationParam.toLowerCase().trim();
         const id = d.id.toLowerCase();
         const name = d.name.toLowerCase();
-        
+
         // Exact matches
         if (id === query || name === query) return true;
-        
+
         // Partial matches
         if (query.includes(name) || name.includes(query)) return true;
-        
+
         // City, Country check
         const queryParts = query.split(',').map(p => p.trim());
         if (queryParts.length > 0 && queryParts[0] === name) return true;
-        
+
         return false;
     });
 
@@ -60,20 +61,32 @@ export default function ItineraryPage() {
 
     return (
         <div className="space-y-8">
-            <PlacesToVisit 
-                destinationLat={latitude} 
-                destinationLon={longitude} 
+            <PlacesToVisit
+                destinationLat={latitude}
+                destinationLon={longitude}
                 destinationName={name}
                 initialPlaces={initialPlaces}
             />
-            
+
             <div className="bg-base-100/50 backdrop-blur-sm border border-base-content/5 rounded-2xl p-6">
-                 <NearbyPlaces 
-                    destination={name} 
-                    lat={latitude} 
-                    lon={longitude} 
+                <NearbyPlaces
+                    destination={name}
+                    lat={latitude}
+                    lon={longitude}
                 />
             </div>
         </div>
+    );
+}
+
+export default function ItineraryPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex justify-center items-center h-40 bg-base-100 rounded-xl shadow-sm border border-base-content/5 mt-4">
+                <span className="loading loading-spinner loading-lg text-primary"></span>
+            </div>
+        }>
+            <ItineraryContent />
+        </Suspense>
     );
 }

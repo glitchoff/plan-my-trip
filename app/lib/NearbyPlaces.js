@@ -15,9 +15,6 @@ export default function NearbyPlaces({ destination, lat, lon, radius = 5000 }) {
     const [places, setPlaces] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState("tourism");
-    const [selectedPlace, setSelectedPlace] = useState(null);
-    const [placeDetails, setPlaceDetails] = useState(null);
-    const [detailsLoading, setDetailsLoading] = useState(false);
 
     const categories = [
         { id: "tourism", label: "Attractions", icon: Camera },
@@ -50,30 +47,22 @@ export default function NearbyPlaces({ destination, lat, lon, radius = 5000 }) {
         fetchPlaces();
     }, [lat, lon, radius, selectedCategory]);
 
-    const handlePlaceClick = async (place) => {
-        setSelectedPlace(place);
-        setPlaceDetails(null);
-        setDetailsLoading(true);
+    const getGoogleMapsUrl = (place) => {
+        const name = place.properties?.name || "Place";
 
-        // Open modal immediately
-        document.getElementById('place_details_modal').showModal();
-
-        try {
-            const placeId = place.properties.place_id;
-            if (!placeId) throw new Error("No place ID");
-
-            const res = await fetch(`/api/placedetails?id=${placeId}`);
-            if (!res.ok) throw new Error("Failed to fetch details");
-            
-            const data = await res.json();
-            setPlaceDetails(data.features?.[0]?.properties || {});
-        } catch (err) {
-            console.error("Error fetching details:", err);
-            // Fallback to existing properties if fetch fails
-            setPlaceDetails(place.properties); 
-        } finally {
-            setDetailsLoading(false);
+        // GeoJSON coordinates are [lon, lat]
+        if (place.geometry?.coordinates) {
+            const [lon, lat] = place.geometry.coordinates;
+            // Check if it's a valid coordinate pair
+            if (typeof lat === 'number' && typeof lon === 'number') {
+                return `https://www.google.com/maps/search/${encodeURIComponent(name)}/@${lat},${lon},17z`;
+            }
         }
+
+        // Fallback using address or name
+        const address = place.properties?.address_line2 || place.properties?.formatted || "";
+        const query = `${name} ${address}`.trim();
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     };
 
     return (
@@ -92,8 +81,8 @@ export default function NearbyPlaces({ destination, lat, lon, radius = 5000 }) {
                             key={cat.id}
                             onClick={() => setSelectedCategory(cat.id)}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${selectedCategory === cat.id
-                                    ? "bg-primary text-primary-foreground shadow-md"
-                                    : "bg-base-200 text-base-content/70 hover:bg-base-300"
+                                ? "bg-primary text-primary-foreground shadow-md"
+                                : "bg-base-200 text-base-content/70 hover:bg-base-300"
                                 }`}
                         >
                             <Icon className="w-4 h-4" />
@@ -106,7 +95,7 @@ export default function NearbyPlaces({ destination, lat, lon, radius = 5000 }) {
             {/* Places Grid */}
             {loading ? (
                 <div className="flex items-center justify-center py-12">
-                     <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 </div>
             ) : places.length === 0 ? (
                 <div className="text-center py-12 text-base-content/60">
@@ -115,86 +104,18 @@ export default function NearbyPlaces({ destination, lat, lon, radius = 5000 }) {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {places.map((place, idx) => (
-                        <div key={place.properties.place_id || idx} onClick={() => handlePlaceClick(place)}>
+                        <a
+                            key={place.properties.place_id || idx}
+                            href={getGoogleMapsUrl(place)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                        >
                             <PlaceCard place={place} />
-                        </div>
+                        </a>
                     ))}
                 </div>
             )}
-
-            {/* Details Modal */}
-            <dialog id="place_details_modal" className="modal">
-                <div className="modal-box w-11/12 max-w-3xl p-0 overflow-hidden bg-base-100">
-                    {selectedPlace && (
-                        <div className="flex flex-col h-full max-h-[85vh]">
-                             {/* Header image / map placeholder */}
-                            <div className="h-48 bg-primary/10 flex items-center justify-center relative">
-                                <MapPin className="w-16 h-16 text-primary/30" />
-                                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 bg-base-100/50 hover:bg-base-100" onClick={() => document.getElementById('place_details_modal').close()}>✕</button>
-                            </div>
-                            
-                            <div className="p-6 overflow-y-auto">
-                                <h3 className="text-2xl font-bold mb-1">
-                                    {selectedPlace.properties.name || selectedPlace.properties.address_line1}
-                                </h3>
-                                <p className="text-base-content/60 text-sm mb-4">
-                                     {selectedPlace.properties.address_line2}
-                                </p>
-
-                                {detailsLoading ? (
-                                    <div className="flex justify-center py-8">
-                                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                                    </div>
-                                ) : placeDetails ? (
-                                    <div className="space-y-4">
-                                        {placeDetails.description && (
-                                            <div>
-                                                <h4 className="font-semibold mb-1">About</h4>
-                                                <p className="text-sm">{placeDetails.description}</p>
-                                            </div>
-                                        )}
-                                        
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            {placeDetails.website && (
-                                                 <div className="flex items-start gap-2">
-                                                    <ExternalLink className="w-4 h-4 mt-1 text-primary" />
-                                                    <a href={placeDetails.website} target="_blank" rel="noopener noreferrer" className="link link-primary text-sm break-all">
-                                                        {placeDetails.website}
-                                                    </a>
-                                                </div>
-                                            )}
-                                             {placeDetails.contact?.phone && (
-                                                 <div className="flex items-start gap-2">
-                                                    <div className="mt-1">📞</div>
-                                                    <span className="text-sm">{placeDetails.contact.phone}</span>
-                                                </div>
-                                            )}
-                                             {placeDetails.opening_hours && (
-                                                 <div className="flex items-start gap-2">
-                                                    <div className="mt-1">🕒</div>
-                                                    <span className="text-sm">{placeDetails.opening_hours}</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Raw data fallback for debug/richness if description is missing */}
-                                        <div className="flex flex-wrap gap-2 mt-4">
-                                            {(placeDetails.categories || []).map(cat => (
-                                                <span key={cat} className="badge badge-outline badge-sm">{cat.split('.').pop()}</span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <p>No additional details available.</p>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
         </section>
     );
 }

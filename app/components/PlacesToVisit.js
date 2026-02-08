@@ -42,46 +42,12 @@ function PlaceImage({ placeName, fallbackImage, alt, className }) {
     return (
         <div className={`${className} relative flex items-center justify-center ${imageSrc ? '' : 'bg-gradient-to-br from-primary/20 to-secondary/20'}`}>
             {imageSrc ? (
-               <img src={imageSrc} alt={alt} className="w-full h-full object-cover transition-opacity duration-500" />
+                <img src={imageSrc} alt={alt} className="w-full h-full object-cover transition-opacity duration-500" />
             ) : (
                 <MapPin className="w-8 h-8 text-primary/40" />
             )}
         </div>
     );
-}
-
-// Internal component for the Modal Image
-function ModalImage({ placeName, fallbackImage, alt }) {
-     const [imageSrc, setImageSrc] = useState(fallbackImage);
-    
-    useEffect(() => {
-        if (fallbackImage) return;
-
-        let isMounted = true;
-        const fetchImage = async () => {
-            try {
-                const res = await fetch(`/api/images?query=${encodeURIComponent(placeName)}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (isMounted && data.imageUrl) {
-                        setImageSrc(data.imageUrl);
-                    }
-                }
-            } catch (error) {
-                console.error("Failed to load modal image for", placeName);
-            }
-        };
-
-        fetchImage();
-        return () => { isMounted = false; };
-    }, [placeName, fallbackImage]);
-    
-    return (
-         <div className="h-48 bg-primary/10 flex items-center justify-center relative bg-cover bg-center" style={imageSrc ? {backgroundImage: `url(${imageSrc})`} : {}}>
-            {!imageSrc && <MapPin className="w-16 h-16 text-primary/30" />}
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 bg-base-100/50 hover:bg-base-100" onClick={() => document.getElementById('places_to_visit_modal').close()}>✕</button>
-        </div>
-    )
 }
 
 export default function PlacesToVisit({
@@ -96,9 +62,6 @@ export default function PlacesToVisit({
     const [places, setPlaces] = useState(initialPlaces);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedPlace, setSelectedPlace] = useState(null);
-    const [placeDetails, setPlaceDetails] = useState(null);
-    const [detailsLoading, setDetailsLoading] = useState(false);
 
     useEffect(() => {
         if (!destinationLat || !destinationLon) {
@@ -126,26 +89,13 @@ export default function PlacesToVisit({
                 const uniqueApiPlaces = apiPlaces.filter(apiPlace => {
                     const apiName = apiPlace.properties.name?.toLowerCase();
                     if (!apiName) return false;
-                    
-                    return !initialPlaces.some(initPlace => 
-                        initPlace.name.toLowerCase().includes(apiName) || 
+
+                    return !initialPlaces.some(initPlace =>
+                        initPlace.name.toLowerCase().includes(apiName) ||
                         apiName.includes(initPlace.name.toLowerCase())
                     );
                 });
-                
-                // transform initialPlaces to match API structure implicitly or just combine
-                // Since rendering handles properties, we need to ensure structure compatibility or handle both
-                
-                // Let's standardise the structure for rendering
-                // initialPlaces have { name, image, description }
-                // apiPlaces have { properties: { name, formatted, ... } }
-                
-                // We will keep them separate in state or normalize?
-                // Easiest is to keep them in a combined list but rendering needs to handle both formats.
-                
-                // Let's rely on the rendering logic.
-                // WE NEED TO ADAPT THE RENDERING LOGIC below to handle both formats.
-                
+
                 setPlaces([...initialPlaces, ...uniqueApiPlaces]);
 
             } catch (err) {
@@ -159,41 +109,30 @@ export default function PlacesToVisit({
         }
 
         fetchPlaces();
-        fetchPlaces();
     }, [destinationLat, destinationLon, radius, categories, limit, initialPlaces]);
 
-    const handlePlaceClick = async (place) => {
-        setSelectedPlace(place);
-        setPlaceDetails(null);
-        setDetailsLoading(true);
+    const getGoogleMapsUrl = (place) => {
+        const name = place.name || place.properties?.name || "Destination";
 
-        // Open modal
-        document.getElementById('places_to_visit_modal').showModal();
-
-        try {
-            // Check if it's a curated place (might not have properties.place_id directly)
-            const placeId = place.properties?.place_id;
-
-            if (placeId) {
-                const res = await fetch(`/api/placedetails?id=${placeId}`);
-                if (!res.ok) throw new Error("Failed to fetch details");
-                
-                const data = await res.json();
-                setPlaceDetails(data.features?.[0]?.properties || {});
-            } else {
-                setPlaceDetails({
-                    description: place.description || place.properties?.description || "No description available.",
-                });
-            }
-        } catch (err) {
-            console.error("Error fetching details:", err);
-            setPlaceDetails(place.properties || place);
-        } finally {
-            setDetailsLoading(false);
+        // If we have coordinates (from Geoapify), use them to center the map while searching for the name
+        // GeoJSON coordinates are [lon, lat]
+        if (place.geometry?.coordinates) {
+            const [lon, lat] = place.geometry.coordinates;
+            return `https://www.google.com/maps/search/${encodeURIComponent(name)}/@${lat},${lon},17z`;
         }
+
+        // If we have specific lat/lon properties (curated places might have them)
+        if (place.latitude && place.longitude) {
+            return `https://www.google.com/maps/search/${encodeURIComponent(name)}/@${place.latitude},${place.longitude},17z`;
+        }
+
+        // Fallback to name search with destination context
+        const address = place.properties?.address_line2 || place.location || "";
+        const query = `${name} ${address} ${destinationName}`.trim();
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     };
 
-    if (!destinationLat || !destinationLon && initialPlaces.length === 0) {
+    if (!destinationLat && !destinationLon && initialPlaces.length === 0) {
         return null;
     }
 
@@ -228,9 +167,9 @@ export default function PlacesToVisit({
                 <MapPin className="w-5 h-5" />
                 Places to Visit in {destinationName}
             </h3>
-            
+
             {loading && places.length === 0 ? (
-                 <div className="flex gap-4 overflow-x-auto pb-4">
+                <div className="flex gap-4 overflow-x-auto pb-4">
                     {[...Array(4)].map((_, i) => (
                         <div key={i} className="min-w-[250px] h-48 bg-base-200 animate-pulse rounded-xl" />
                     ))}
@@ -243,21 +182,24 @@ export default function PlacesToVisit({
                         const desc = getPlaceDesc(place);
                         const image = getPlaceImage(place);
                         const categories = getPlaceCategories(place);
+                        const mapUrl = getGoogleMapsUrl(place);
 
                         return (
-                            <div
+                            <a
                                 key={idx}
-                                onClick={() => handlePlaceClick(place)}
-                                className="min-w-[220px] max-w-[220px] bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex-shrink-0 group cursor-pointer"
+                                href={mapUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="min-w-[220px] max-w-[220px] bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex-shrink-0 group cursor-pointer block"
                             >
                                 {/* Image or Placeholder using PlaceImage */}
-                                <PlaceImage 
-                                    placeName={name} 
-                                    fallbackImage={image} 
-                                    alt={name} 
-                                    className="h-28" 
+                                <PlaceImage
+                                    placeName={name}
+                                    fallbackImage={image}
+                                    alt={name}
+                                    className="h-28"
                                 />
-                                
+
                                 <div className="absolute top-2 right-2 flex flex-col items-end gap-1 pointer-events-none">
                                     {!isCurated && categories && (
                                         <div className={`badge ${getCategoryColor(categories)} badge-sm shadow-sm`}>
@@ -270,10 +212,11 @@ export default function PlacesToVisit({
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 <div className="p-3">
-                                    <h4 className="font-semibold text-sm text-base-content line-clamp-1 group-hover:text-primary transition-colors">
+                                    <h4 className="font-semibold text-sm text-base-content line-clamp-1 group-hover:text-primary transition-colors flex items-center gap-1">
                                         {name}
+                                        <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </h4>
                                     <p className="text-xs text-base-content/60 mt-1 line-clamp-2">
                                         {desc}
@@ -284,86 +227,11 @@ export default function PlacesToVisit({
                                         </p>
                                     )}
                                 </div>
-                            </div>
+                            </a>
                         );
                     })}
                 </div>
             )}
-
-            {/* Details Modal */}
-             <dialog id="places_to_visit_modal" className="modal">
-                <div className="modal-box w-11/12 max-w-3xl p-0 overflow-hidden bg-base-100">
-                    {selectedPlace && (
-                        <div className="flex flex-col h-full max-h-[85vh]">
-                             {/* Header image using ModalImage */}
-                             <ModalImage 
-                                placeName={getPlaceName(selectedPlace)} 
-                                fallbackImage={getPlaceImage(selectedPlace)} 
-                                alt={getPlaceName(selectedPlace)}
-                             />
-                            
-                            <div className="p-6 overflow-y-auto">
-                                <h3 className="text-2xl font-bold mb-1">
-                                    {getPlaceName(selectedPlace)}
-                                </h3>
-                                <p className="text-base-content/60 text-sm mb-4">
-                                     {selectedPlace.properties?.address_line2 || selectedPlace.location || ""}
-                                </p>
-
-                                {detailsLoading ? (
-                                    <div className="flex justify-center py-8">
-                                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                                    </div>
-                                ) : placeDetails ? (
-                                    <div className="space-y-4">
-                                        {placeDetails.description && (
-                                            <div>
-                                                <h4 className="font-semibold mb-1">About</h4>
-                                                <p className="text-sm text-base-content/80">{placeDetails.description}</p>
-                                            </div>
-                                        )}
-                                        
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            {placeDetails.website && (
-                                                 <div className="flex items-start gap-2">
-                                                    <ExternalLink className="w-4 h-4 mt-1 text-primary" />
-                                                    <a href={placeDetails.website} target="_blank" rel="noopener noreferrer" className="link link-primary text-sm break-all">
-                                                        {placeDetails.website}
-                                                    </a>
-                                                </div>
-                                            )}
-                                             {placeDetails.contact?.phone && (
-                                                 <div className="flex items-start gap-2">
-                                                    <div className="mt-1">📞</div>
-                                                    <span className="text-sm">{placeDetails.contact.phone}</span>
-                                                </div>
-                                            )}
-                                             {placeDetails.opening_hours && (
-                                                 <div className="flex items-start gap-2">
-                                                    <div className="mt-1">🕒</div>
-                                                    <span className="text-sm">{placeDetails.opening_hours}</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Categories */}
-                                        <div className="flex flex-wrap gap-2 mt-4">
-                                            {(placeDetails.categories || selectedPlace.properties?.categories || []).map(cat => (
-                                                <span key={cat} className="badge badge-outline badge-sm">{cat.split('.').pop()}</span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <p>No additional details available.</p>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
         </div>
     );
 }
